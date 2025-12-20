@@ -1,3 +1,5 @@
+"use client";
+
 import DashboardHeader from "@/components/common/DashboardHeader";
 import MobileMenu from "@/components/common/mobile-menu";
 import DboardMobileNavigation from "@/components/property/dashboard/DboardMobileNavigation";
@@ -6,12 +8,18 @@ import SidebarDashboard from "@/components/property/dashboard/SidebarDashboard";
 import RecentActivities from "@/components/property/dashboard/dashboard-home/RecentActivities";
 import TopStateBlock from "@/components/property/dashboard/dashboard-home/TopStateBlock";
 import PropertyViews from "@/components/property/dashboard/dashboard-home/property-view";
-
-export const metadata = {
-  title: "Dashboard Home || Homez - Real Estate NextJS Template",
-};
+import { useEffect, useState } from "react";
 
 const DashboardHome = () => {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
   return (
     <>
       {/* Main Header Nav */}
@@ -38,7 +46,7 @@ const DashboardHome = () => {
 
                 <div className="col-lg-12">
                   <div className="dashboard_title_area">
-                    <h2>Howdy, Ali!</h2>
+                    <h2>Howdy, {user ? user.name : "User"}!</h2>
                     <p className="text">We are glad to see you again!</p>
                   </div>
                 </div>

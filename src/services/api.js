@@ -44,6 +44,18 @@ export const authAPI = {
     if (!response.ok) throw new Error('Logout failed');
     return response.json();
   },
+
+  getProfile: async () => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_URL}/auth/profile`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw new Error('Failed to fetch profile');
+    return response.json();
+  },
 };
 
 /**
@@ -58,12 +70,12 @@ export const kycAPI = {
       formData.append(key, kycData[key]);
     });
 
-    // Append files
-    if (files.frontImage) formData.append('frontImage', files.frontImage);
-    if (files.backImage) formData.append('backImage', files.backImage);
+    // Append files (use lowercase field names to match backend)
+    if (files.frontImage) formData.append('frontimage', files.frontImage);
+    if (files.backImage) formData.append('backimage', files.backImage);
 
     const token = localStorage.getItem('authToken');
-    const response = await fetch(`${API_URL}/kyc/submit`, {
+    const response = await fetch(`${API_URL}/kyc/upload`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -83,6 +95,144 @@ export const kycAPI = {
       },
     });
     if (!response.ok) throw new Error('Failed to fetch KYC status');
+    return response.json();
+  },
+};
+
+/**
+ * Properties API calls
+ */
+export const propertiesAPI = {
+  getAll: async (filters = {}) => {
+    const queryParams = new URLSearchParams(filters);
+    const response = await fetch(`${API_URL}/properties?${queryParams}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!response.ok) throw new Error('Failed to fetch properties');
+    return response.json();
+  },
+
+  getById: async (id) => {
+    const response = await fetch(`${API_URL}/properties/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!response.ok) throw new Error('Failed to fetch property');
+    return response.json();
+  },
+
+  create: async (propertyData) => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_URL}/properties`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(propertyData),
+    });
+    if (!response.ok) throw new Error('Failed to create property');
+    return response.json();
+  },
+
+  update: async (id, propertyData) => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_URL}/properties/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(propertyData),
+    });
+    if (!response.ok) throw new Error('Failed to update property');
+    return response.json();
+  },
+
+  delete: async (id) => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_URL}/properties/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw new Error('Failed to delete property');
+    return response.json();
+  },
+};
+
+/**
+ * Agents API calls
+ */
+export const agentsAPI = {
+  getAll: async () => {
+    const response = await fetch(`${API_URL}/agents`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!response.ok) throw new Error('Failed to fetch agents');
+    return response.json();
+  },
+
+  getById: async (id) => {
+    const response = await fetch(`${API_URL}/agents/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!response.ok) throw new Error('Failed to fetch agent');
+    return response.json();
+  },
+};
+
+/**
+ * Favorites API calls
+ */
+export const favoritesAPI = {
+  getAll: async () => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_URL}/favorites`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw new Error('Failed to fetch favorites');
+    return response.json();
+  },
+
+  add: async (propertyId) => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_URL}/favorites`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ propertyId }),
+    });
+    if (!response.ok) throw new Error('Failed to add favorite');
+    return response.json();
+  },
+
+  remove: async (propertyId) => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_URL}/favorites/${propertyId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw new Error('Failed to remove favorite');
     return response.json();
   },
 };
