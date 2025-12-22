@@ -8,6 +8,7 @@ import SidebarDashboard from "@/components/property/dashboard/SidebarDashboard";
 import RecentActivities from "@/components/property/dashboard/dashboard-home/RecentActivities";
 import TopStateBlock from "@/components/property/dashboard/dashboard-home/TopStateBlock";
 import PropertyViews from "@/components/property/dashboard/dashboard-home/property-view";
+import KYCStatus from "@/components/property/dashboard/dashboard-home/KYCStatus";
 import { useEffect, useState } from "react";
 
 const DashboardHome = () => {
@@ -58,6 +59,13 @@ const DashboardHome = () => {
                 <TopStateBlock />
               </div>
               {/* End .row */}
+
+              <div className="row">
+                <div className="col-12">
+                  <KYCStatus />
+                </div>
+              </div>
+              {/* End .row - KYC Status */}
 
               <div className="row">
                 <div className="col-xl-8">
