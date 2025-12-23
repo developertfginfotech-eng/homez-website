@@ -77,6 +77,7 @@ export default function PropertyFiltering() {
             yearBuilding: prop.yearBuilt || new Date().getFullYear(),
             image: prop.images?.[0] || "/images/listings/list-1.jpg",
             features: Array.isArray(prop.amenities) ? prop.amenities : [],
+            category: Array.isArray(prop.category) ? prop.category : [],
             propertyType: prop.propertyType || "Rent",
             forRent: prop.propertyType === "Rent",
             approvalStatus: prop.approvalStatus,
@@ -240,7 +241,11 @@ export default function PropertyFiltering() {
       !categories.length
         ? [...refItems]
         : refItems.filter((elm) =>
-            categories.every((elem) => elm.features.includes(elem))
+            categories.some((elem) =>
+              elm.category && elm.category.some((cat) =>
+                cat.toLowerCase() === elem.toLowerCase()
+              )
+            )
           ),
     ];
 
