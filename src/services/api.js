@@ -105,14 +105,36 @@ export const kycAPI = {
 export const propertiesAPI = {
   getAll: async (filters = {}) => {
     const queryParams = new URLSearchParams(filters);
-    const response = await fetch(`${API_URL}/properties?${queryParams}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    if (!response.ok) throw new Error('Failed to fetch properties');
-    return response.json();
+    const url = `${API_URL}/properties?${queryParams}`;
+
+    console.log(`📡 Fetching properties from: ${url}`, filters);
+
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`❌ API Error ${response.status}:`, {
+          url,
+          status: response.status,
+          statusText: response.statusText,
+          body: errorText,
+        });
+        throw new Error(`API Error ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log(`✅ API Success:`, { properties: data.properties?.length || 0, data });
+      return data;
+    } catch (error) {
+      console.error(`🔴 Failed to fetch properties:`, { error, url, filters });
+      throw error;
+    }
   },
 
   getById: async (id) => {
