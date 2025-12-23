@@ -1,6 +1,5 @@
 import DashboardHeader from "@/components/common/DashboardHeader";
 import MobileMenu from "@/components/common/mobile-menu";
-import Pagination from "@/components/property/Pagination";
 import Footer from "@/components/property/dashboard/Footer";
 import SidebarDashboard from "@/components/property/dashboard/SidebarDashboard";
 import FilterHeader from "../../../../components/property/dashboard/dashboard-my-properties/FilterHeader";
@@ -56,10 +55,6 @@ const DashboardMyProperties = () => {
                   <div className="ps-widget bgc-white bdrs12 default-box-shadow2 p30 mb30 overflow-hidden position-relative">
                     <div className="packages_table table-responsive">
                       <PropertyDataTable />
-
-                      <div className="mt30">
-                        <Pagination />
-                      </div>
                     </div>
                   </div>
                 </div>

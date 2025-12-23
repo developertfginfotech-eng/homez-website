@@ -100,18 +100,19 @@ const PropertyDataTable = () => {
   }
 
   return (
-    <table className="table-style3 table at-savesearch">
-      <thead className="t-head">
-        <tr>
-          <th scope="col">Listing title</th>
-          <th scope="col">Date Published</th>
-          <th scope="col">Status</th>
-          <th scope="col">Price</th>
-          <th scope="col">Action</th>
-        </tr>
-      </thead>
-      <tbody className="t-body">
-        {currentProperties.map((property) => (
+    <>
+      <table className="table-style3 table at-savesearch">
+        <thead className="t-head">
+          <tr>
+            <th scope="col">Listing title</th>
+            <th scope="col">Date Published</th>
+            <th scope="col">Status</th>
+            <th scope="col">Price</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody className="t-body">
+          {currentProperties.map((property) => (
           <tr key={property._id}>
             <th scope="row">
               <div className="listing-style1 dashboard-style d-xxl-flex align-items-center mb-0">
@@ -177,59 +178,60 @@ const PropertyDataTable = () => {
               </div>
             </td>
           </tr>
-        ))}
-      </tbody>
-    </table>
+          ))}
+        </tbody>
+      </table>
 
-    {/* Show pagination only if there are multiple pages */}
-    {showPagination && (
-      <div style={{ marginTop: "30px", display: "flex", justifyContent: "center", gap: "10px" }}>
-        <button
-          onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-          disabled={currentPage === 1}
-          style={{
-            padding: "8px 12px",
-            border: "1px solid #ddd",
-            borderRadius: "4px",
-            cursor: currentPage === 1 ? "not-allowed" : "pointer",
-            opacity: currentPage === 1 ? 0.5 : 1,
-          }}
-        >
-          Previous
-        </button>
-
-        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+      {/* Show pagination only if there are multiple pages */}
+      {showPagination && (
+        <div style={{ marginTop: "30px", display: "flex", justifyContent: "center", gap: "10px" }}>
           <button
-            key={page}
-            onClick={() => setCurrentPage(page)}
+            onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+            disabled={currentPage === 1}
             style={{
               padding: "8px 12px",
               border: "1px solid #ddd",
               borderRadius: "4px",
-              backgroundColor: currentPage === page ? "#eb6753" : "transparent",
-              color: currentPage === page ? "white" : "black",
-              cursor: "pointer",
+              cursor: currentPage === 1 ? "not-allowed" : "pointer",
+              opacity: currentPage === 1 ? 0.5 : 1,
             }}
           >
-            {page}
+            Previous
           </button>
-        ))}
 
-        <button
-          onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-          disabled={currentPage === totalPages}
-          style={{
-            padding: "8px 12px",
-            border: "1px solid #ddd",
-            borderRadius: "4px",
-            cursor: currentPage === totalPages ? "not-allowed" : "pointer",
-            opacity: currentPage === totalPages ? 0.5 : 1,
-          }}
-        >
-          Next
-        </button>
-      </div>
-    )}
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <button
+              key={page}
+              onClick={() => setCurrentPage(page)}
+              style={{
+                padding: "8px 12px",
+                border: "1px solid #ddd",
+                borderRadius: "4px",
+                backgroundColor: currentPage === page ? "#eb6753" : "transparent",
+                color: currentPage === page ? "white" : "black",
+                cursor: "pointer",
+              }}
+            >
+              {page}
+            </button>
+          ))}
+
+          <button
+            onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+            disabled={currentPage === totalPages}
+            style={{
+              padding: "8px 12px",
+              border: "1px solid #ddd",
+              borderRadius: "4px",
+              cursor: currentPage === totalPages ? "not-allowed" : "pointer",
+              opacity: currentPage === totalPages ? 0.5 : 1,
+            }}
+          >
+            Next
+          </button>
+        </div>
+      )}
+    </>
   );
 };
 
