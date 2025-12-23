@@ -105,7 +105,7 @@ export const kycAPI = {
 export const propertiesAPI = {
   getAll: async (filters = {}) => {
     const queryParams = new URLSearchParams(filters);
-    const url = `${API_URL}/properties?${queryParams}`;
+    const url = `${API_URL}/property/all?${queryParams}`;
 
     console.log(`📡 Fetching properties from: ${url}`, filters);
 
@@ -138,7 +138,7 @@ export const propertiesAPI = {
   },
 
   getById: async (id) => {
-    const response = await fetch(`${API_URL}/properties/${id}`, {
+    const response = await fetch(`${API_URL}/property/${id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -150,7 +150,7 @@ export const propertiesAPI = {
 
   create: async (propertyData) => {
     const token = localStorage.getItem('authToken');
-    const response = await fetch(`${API_URL}/properties`, {
+    const response = await fetch(`${API_URL}/property/add`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -164,7 +164,7 @@ export const propertiesAPI = {
 
   update: async (id, propertyData) => {
     const token = localStorage.getItem('authToken');
-    const response = await fetch(`${API_URL}/properties/${id}`, {
+    const response = await fetch(`${API_URL}/property/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -178,7 +178,7 @@ export const propertiesAPI = {
 
   delete: async (id) => {
     const token = localStorage.getItem('authToken');
-    const response = await fetch(`${API_URL}/properties/${id}`, {
+    const response = await fetch(`${API_URL}/property/${id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`,
