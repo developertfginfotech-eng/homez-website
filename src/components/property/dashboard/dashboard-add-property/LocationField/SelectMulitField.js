@@ -1,57 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
-
-const options = {
-  countries: [
-    "Belgium",
-    "France",
-    "Kuwait",
-    "Qatar",
-    "Netherlands",
-    "Germany",
-    "Turkey",
-    "UK",
-    "United Kingdom",
-    "USA",
-    "Japan",
-    "Canada",
-    "Australia",
-    "India",
-  ],
-  cities: [
-    "California",
-    "Chicago",
-    "Los Angeles",
-    "Manhattan",
-    "New Jersey",
-    "New York",
-    "San Diego",
-    "San Francisco",
-    "Texas",
-    "London",
-    "Paris",
-    "Tokyo",
-    "Dubai",
-    "Toronto",
-  ],
-  additionalCountries: [
-    "Belgium",
-    "France",
-    "Kuwait",
-    "Qatar",
-    "Netherlands",
-    "Germany",
-    "Turkey",
-    "UK",
-    "United Kingdom",
-    "USA",
-    "Japan",
-    "Canada",
-    "Australia",
-    "India",
-  ],
-};
+import {
+  getAllCountries,
+  getStatesByCountry,
+  getCitiesByCountry,
+} from "@/data/locationData";
 
 const customStyles = {
   option: (styles, { isFocused, isSelected, isHovered }) => {
@@ -70,57 +24,163 @@ const customStyles = {
 
 const SelectMultiField = () => {
   const [showSelect, setShowSelect] = useState(false);
-  const [countryState, setCountryState] = useState(null);
-  const [city, setCity] = useState(null);
-  const [country, setCountry] = useState(null);
+  const [countries, setCountries] = useState([]);
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
+
+  const [selectedCountry, setSelectedCountry] = useState(null);
+  const [selectedState, setSelectedState] = useState(null);
+  const [selectedCity, setSelectedCity] = useState(null);
 
   useEffect(() => {
+    // Load all countries
+    const allCountries = getAllCountries();
+    setCountries(allCountries);
     setShowSelect(true);
   }, []);
 
-  const fieldTitles = ["Country / State", "City", "Country"];
-  const placeholders = ["Search or select country/state...", "Search or select city...", "Search or select country..."];
-  const fieldNames = ["countryState", "city", "country"];
+  const handleCountryChange = (selectedOption) => {
+    setSelectedCountry(selectedOption);
+    setSelectedState(null);
+    setSelectedCity(null);
 
-  const handleSelectChange = (index, selectedOption) => {
-    if (index === 0) setCountryState(selectedOption);
-    if (index === 1) setCity(selectedOption);
-    if (index === 2) setCountry(selectedOption);
+    if (selectedOption && selectedOption.value) {
+      const countryStates = getStatesByCountry(selectedOption.value);
+      setStates(countryStates);
+      const countryCities = getCitiesByCountry(selectedOption.value);
+      setCities(countryCities);
+    } else {
+      setStates([]);
+      setCities([]);
+    }
   };
+
+  const handleStateChange = (selectedOption) => {
+    setSelectedState(selectedOption);
+  };
+
+  const handleCityChange = (selectedOption) => {
+    setSelectedCity(selectedOption);
+  };
+
+  const countryOptions = countries.map((country) => ({
+    value: country,
+    label: country,
+  }));
+
+  const stateOptions = states.map((state) => ({
+    value: state,
+    label: state,
+  }));
+
+  const cityOptions = cities.map((city) => ({
+    value: city,
+    label: city,
+  }));
 
   return (
     <>
-      {Object.keys(options).map((key, index) => (
-        <div className="col-sm-6 col-xl-4" key={index}>
-          <div className="mb20">
-            <label className="heading-color ff-heading fw600 mb10">
-              {fieldTitles[index]}
-            </label>
-            <div className="location-area">
-              {showSelect && (
-                <Select
-                  styles={customStyles}
-                  className="select-custom pl-0"
-                  classNamePrefix="select"
-                  required
-                  isSingleValue={true}
-                  isMulti={false}
-                  isSearchable={true}
-                  isClearable={true}
-                  placeholder={placeholders[index]}
-                  value={index === 0 ? countryState : index === 1 ? city : country}
-                  onChange={(opt) => handleSelectChange(index, opt)}
-                  options={options[key].map((item) => ({
-                    value: item,
-                    label: item,
-                  }))}
-                />
-              )}
-            </div>
+      {/* Country Select */}
+      <div className="col-sm-6 col-xl-4">
+        <div className="mb20">
+          <label className="heading-color ff-heading fw600 mb10">
+            Country
+          </label>
+          <div className="location-area">
+            {showSelect && (
+              <Select
+                styles={customStyles}
+                className="select-custom pl-0"
+                classNamePrefix="select"
+                required
+                isSingleValue={true}
+                isMulti={false}
+                isSearchable={true}
+                isClearable={true}
+                placeholder="Search or select country..."
+                value={selectedCountry}
+                onChange={handleCountryChange}
+                options={countryOptions}
+              />
+            )}
           </div>
-          <input type="hidden" name={fieldNames[index]} value={index === 0 ? countryState?.value || "" : index === 1 ? city?.value || "" : country?.value || ""} />
+          <input
+            type="hidden"
+            name="country"
+            value={selectedCountry?.value || ""}
+          />
         </div>
-      ))}
+      </div>
+
+      {/* State/Province Select */}
+      <div className="col-sm-6 col-xl-4">
+        <div className="mb20">
+          <label className="heading-color ff-heading fw600 mb10">
+            {selectedCountry?.value === "India" ? "State" : "State / Province"}
+          </label>
+          <div className="location-area">
+            {showSelect && (
+              <Select
+                styles={customStyles}
+                className="select-custom pl-0"
+                classNamePrefix="select"
+                isSingleValue={true}
+                isMulti={false}
+                isSearchable={true}
+                isClearable={true}
+                isDisabled={!selectedCountry}
+                placeholder={
+                  selectedCountry
+                    ? "Search or select state..."
+                    : "Select country first"
+                }
+                value={selectedState}
+                onChange={handleStateChange}
+                options={stateOptions}
+              />
+            )}
+          </div>
+          <input
+            type="hidden"
+            name="countryState"
+            value={selectedState?.value || ""}
+          />
+        </div>
+      </div>
+
+      {/* City Select */}
+      <div className="col-sm-6 col-xl-4">
+        <div className="mb20">
+          <label className="heading-color ff-heading fw600 mb10">City</label>
+          <div className="location-area">
+            {showSelect && (
+              <Select
+                styles={customStyles}
+                className="select-custom pl-0"
+                classNamePrefix="select"
+                isSingleValue={true}
+                isMulti={false}
+                isSearchable={true}
+                isClearable={true}
+                isDisabled={!selectedCountry}
+                placeholder={
+                  selectedCountry
+                    ? "Search or select city..."
+                    : "Select country first"
+                }
+                value={selectedCity}
+                onChange={handleCityChange}
+                options={cityOptions}
+              />
+            )}
+          </div>
+          <input
+            type="hidden"
+            name="city"
+            value={selectedCity?.value || ""}
+          />
+        </div>
+      </div>
     </>
   );
 };
