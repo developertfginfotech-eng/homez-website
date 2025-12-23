@@ -13,6 +13,7 @@ const LocationField = () => {
             </label>
             <input
               type="text"
+              name="address"
               className="form-control"
               placeholder="Your Name"
             />
@@ -25,7 +26,7 @@ const LocationField = () => {
         <div className="col-sm-6 col-xl-4">
           <div className="mb20">
             <label className="heading-color ff-heading fw600 mb10">Zip</label>
-            <input type="text" className="form-control" />
+            <input type="text" name="zipCode" className="form-control" />
           </div>
         </div>
         {/* End col-4 */}
@@ -37,6 +38,7 @@ const LocationField = () => {
             </label>
             <input
               type="text"
+              name="neighborhood"
               className="form-control"
               placeholder="Neighborhood"
             />
@@ -62,7 +64,7 @@ const LocationField = () => {
             <label className="heading-color ff-heading fw600 mb10">
               Latitude
             </label>
-            <input type="text" className="form-control" />
+            <input type="text" name="latitude" className="form-control" />
           </div>
         </div>
         {/* End .col-sm-6 */}
@@ -72,7 +74,7 @@ const LocationField = () => {
             <label className="heading-color ff-heading fw600 mb10">
               Longitude
             </label>
-            <input type="text" className="form-control" />
+            <input type="text" name="longitude" className="form-control" />
           </div>
         </div>
       </div>
