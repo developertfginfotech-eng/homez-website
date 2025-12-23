@@ -4,7 +4,7 @@ import StructureType from "./StructureType";
 
 const DetailsFiled = () => {
   return (
-    <form className="form-style1">
+    <div className="form-style1">
       <div className="row">
         <div className="col-sm-6 col-xl-4">
           <div className="mb20">
@@ -218,7 +218,7 @@ const DetailsFiled = () => {
         </div>
         {/* End .col-12 */}
       </div>
-    </form>
+    </div>
   );
 };
 
