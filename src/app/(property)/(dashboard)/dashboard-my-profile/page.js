@@ -12,9 +12,6 @@ import SocialField from "@/components/property/dashboard/dashboard-profile/Socia
 import KYCStatus from "@/components/property/dashboard/dashboard-home/KYCStatus";
 import { useEffect, useState } from "react";
 
-export const metadata = {
-  title: "Dashboard My Profile || Homez - Real Estate NextJS Template",
-};
 
 const DashboardMyProfile = () => {
   const [userRole, setUserRole] = useState(null);
