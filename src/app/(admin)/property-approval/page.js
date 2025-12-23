@@ -1,6 +1,6 @@
 "use client";
 import PropertyApprovalDashboard from "@/components/property/admin/PropertyApprovalDashboard";
-import Wrapper from "../layout-wrapper/wrapper";
+import Wrapper from "../../layout-wrapper/wrapper";
 
 export default function PropertyApprovalPage() {
   return (
