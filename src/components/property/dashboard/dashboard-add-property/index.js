@@ -81,13 +81,22 @@ const AddPropertyTabContent = () => {
         amenities: amenities,
       };
 
+      console.log("Submitting property data:", propertyData);
+      console.log("Image data present:", !!propertyData.imagesText);
+      if (propertyData.imagesText) {
+        console.log("Image data length:", propertyData.imagesText.length);
+      }
+
       const response = await addProperty(propertyData);
+      console.log("API response:", response);
 
       if (response.success) {
         setSuccess("Property added successfully! Redirecting...");
         setTimeout(() => {
           router.push("/dashboard-my-properties");
         }, 2000);
+      } else {
+        setError(response.message || "Failed to add property. Please try again.");
       }
     } catch (err) {
       setError(err.message || "Failed to add property. Please try again.");

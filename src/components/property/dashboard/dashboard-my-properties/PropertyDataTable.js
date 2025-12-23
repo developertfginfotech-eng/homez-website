@@ -46,7 +46,12 @@ const PropertyDataTable = () => {
         if (response.success && response.data) {
           setProperties(response.data);
         } else {
-          setError("Failed to fetch properties");
+          const errorMsg = response.error || "Failed to fetch properties";
+          if (errorMsg.includes("401") || errorMsg.includes("Unauthorized")) {
+            setError("You must be logged in to view your properties. Please log in first.");
+          } else {
+            setError(errorMsg);
+          }
         }
       } catch (err) {
         setError(err.message || "Failed to fetch properties");

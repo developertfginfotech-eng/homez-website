@@ -5,16 +5,24 @@ import Image from "next/image";
 
 const UploadPhotoGallery = () => {
   const [uploadedImages, setUploadedImages] = useState([]);
+  const [imageUrls, setImageUrls] = useState("");
   const fileInputRef = useRef(null);
 
   const handleUpload = (files) => {
     const newImages = [...uploadedImages];
+    const urls = [];
 
     for (const file of files) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        newImages.push(e.target.result);
+        const base64Data = e.target.result;
+        newImages.push(base64Data);
+        urls.push(base64Data);
         setUploadedImages(newImages);
+        // Store first image URL for form submission
+        if (urls.length > 0) {
+          setImageUrls(urls[0]);
+        }
       };
       reader.readAsDataURL(file);
     }
@@ -73,7 +81,7 @@ const UploadPhotoGallery = () => {
       <input
         type="hidden"
         name="images"
-        value={uploadedImages.length > 0 ? uploadedImages[0] : ""}
+        value={imageUrls}
       />
 
       {/* Display uploaded images */}
