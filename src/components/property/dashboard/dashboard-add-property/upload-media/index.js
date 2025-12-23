@@ -25,12 +25,13 @@ const UploadMedia = () => {
           <div className="col-sm-6 col-xl-12">
             <div className="mb30">
               <label className="heading-color ff-heading fw600 mb10">
-                Virtual Tour
+                Virtual Tour URL
               </label>
               <input
                 type="text"
+                name="virtualTour"
                 className="form-control"
-                placeholder="Virtual Tour"
+                placeholder="Virtual Tour URL"
               />
             </div>
           </div>

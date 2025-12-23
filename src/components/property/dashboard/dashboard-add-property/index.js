@@ -50,6 +50,7 @@ const AddPropertyTabContent = () => {
         imagesText: data.images || "",
         videoUrl: data.videoUrl || "",
         videoOption: data.videoOption || "youtube",
+        virtualTour: data.virtualTour || "",
         address: data.address || "",
         countryState: data.countryState || "",
         city: data.city || "",

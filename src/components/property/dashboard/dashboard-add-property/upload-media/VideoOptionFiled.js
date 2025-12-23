@@ -3,9 +3,9 @@ import { useEffect, useState } from "react";
 import Select from "react-select";
 
 const videoField = [
-  { value: "Youtube", label: "Youtube" },
-  { value: "Facebook", label: "Facebook" },
-  { value: "Vimeo", label: "Vimeo" },
+  { value: "youtube", label: "Youtube" },
+  { value: "facebook", label: "Facebook" },
+  { value: "vimeo", label: "Vimeo" },
 ];
 
 const customStyles = {
@@ -25,9 +25,12 @@ const customStyles = {
 
 const VideoOptionFiled = () => {
   const [showSelect, setShowSelect] = useState(false);
+  const [videoOption, setVideoOption] = useState(videoField[0]);
+
   useEffect(() => {
     setShowSelect(true);
   }, []);
+
   return (
     <>
       <div className="col-sm-6 col-xl-4">
@@ -38,17 +41,18 @@ const VideoOptionFiled = () => {
           <div className="location-area">
             {showSelect && (
               <Select
-                defaultValue={[videoField[1]]}
-                name="colors"
+                value={videoOption}
+                onChange={(opt) => setVideoOption(opt)}
                 options={videoField}
                 styles={customStyles}
                 className="select-custom pl-0"
                 classNamePrefix="select"
-                required
-                isMulti
+                isSingleValue={true}
+                isMulti={false}
               />
             )}
           </div>
+          <input type="hidden" name="videoOption" value={videoOption?.value || "youtube"} />
         </div>
       </div>
       <div className="col-sm-6 col-xl-4">
@@ -56,7 +60,12 @@ const VideoOptionFiled = () => {
           <label className="heading-color ff-heading fw600 mb10">
             Embed Video id
           </label>
-          <input type="text" className="form-control" placeholder="Your Name" />
+          <input
+            type="text"
+            name="videoUrl"
+            className="form-control"
+            placeholder="Your Name"
+          />
         </div>
       </div>
     </>
