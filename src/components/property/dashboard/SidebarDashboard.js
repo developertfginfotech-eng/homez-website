@@ -108,19 +108,21 @@ const SidebarDashboard = () => {
             >
               {section.title}
             </p>
-            {section.items.map((item, itemIndex) => (
-              <div key={itemIndex} className="sidebar_list_item">
-                <Link
-                  href={item.href}
-                  className={`items-center   ${
-                    pathname == item.href ? "-is-active" : ""
-                  } `}
-                >
-                  <i className={`${item.icon} mr15`} />
-                  {item.text}
-                </Link>
-              </div>
-            ))}
+            {section.items
+              .filter((item) => !item.visibleTo || (userRole && item.visibleTo.includes(userRole)))
+              .map((item, itemIndex) => (
+                <div key={itemIndex} className="sidebar_list_item">
+                  <Link
+                    href={item.href}
+                    className={`items-center   ${
+                      pathname == item.href ? "-is-active" : ""
+                    } `}
+                  >
+                    <i className={`${item.icon} mr15`} />
+                    {item.text}
+                  </Link>
+                </div>
+              ))}
           </div>
         ))}
       </div>
