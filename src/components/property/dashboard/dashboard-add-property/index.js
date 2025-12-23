@@ -117,7 +117,7 @@ const AddPropertyTabContent = () => {
         </div>
       )}
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} noValidate>
         <nav>
           <div className="nav nav-tabs" id="nav-tab2" role="tablist">
             <button
