@@ -10,6 +10,8 @@ const SignUp = () => {
     email: "",
     password: "",
     phone: "",
+    role: "buyer",
+    userType: "individual",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -45,7 +47,15 @@ const SignUp = () => {
           modalElement.click();
         }
 
-        // Check KYC status
+        // Admins bypass KYC and go directly to dashboard
+        if (response.user.role === "admin") {
+          setTimeout(() => {
+            window.location.href = "/dashboard-home";
+          }, 1500);
+          return;
+        }
+
+        // Check KYC status for non-admin users
         try {
           const kycStatus = await kycAPI.getKYCStatus();
 
@@ -131,6 +141,37 @@ const SignUp = () => {
         />
       </div>
       {/* End Phone */}
+
+      <div className="mb25">
+        <label className="form-label fw600 dark-color">I am a</label>
+        <select
+          name="role"
+          className="form-control"
+          value={formData.role}
+          onChange={handleChange}
+          required
+        >
+          <option value="buyer">Buyer</option>
+          <option value="seller">Seller</option>
+          <option value="broker">Broker / Agent</option>
+        </select>
+      </div>
+      {/* End Role */}
+
+      <div className="mb25">
+        <label className="form-label fw600 dark-color">Account Type</label>
+        <select
+          name="userType"
+          className="form-control"
+          value={formData.userType}
+          onChange={handleChange}
+          required
+        >
+          <option value="individual">Individual</option>
+          <option value="organization">Organization / Company</option>
+        </select>
+      </div>
+      {/* End Account Type */}
 
       <div className="mb20">
         <label className="form-label fw600 dark-color">Password</label>
