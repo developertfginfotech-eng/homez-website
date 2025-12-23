@@ -13,6 +13,7 @@ const DetailsFiled = () => {
             </label>
             <input
               type="text"
+              name="sizeInFt"
               className="form-control"
               placeholder="Your Name"
             />
@@ -27,6 +28,7 @@ const DetailsFiled = () => {
             </label>
             <input
               type="text"
+              name="lotSizeInFt"
               className="form-control"
               placeholder="Your Name"
             />
@@ -39,6 +41,7 @@ const DetailsFiled = () => {
             <label className="heading-color ff-heading fw600 mb10">Rooms</label>
             <input
               type="text"
+              name="rooms"
               className="form-control"
               placeholder="Your Name"
             />
@@ -53,6 +56,7 @@ const DetailsFiled = () => {
             </label>
             <input
               type="text"
+              name="bedrooms"
               className="form-control"
               placeholder="Your Name"
             />
@@ -67,6 +71,7 @@ const DetailsFiled = () => {
             </label>
             <input
               type="text"
+              name="bathrooms"
               className="form-control"
               placeholder="Your Name"
             />
@@ -81,6 +86,7 @@ const DetailsFiled = () => {
             </label>
             <input
               type="text"
+              name="customId"
               className="form-control"
               placeholder="Your Name"
             />
@@ -95,6 +101,7 @@ const DetailsFiled = () => {
             </label>
             <input
               type="text"
+              name="garages"
               className="form-control"
               placeholder="Your Name"
             />
@@ -109,6 +116,7 @@ const DetailsFiled = () => {
             </label>
             <input
               type="text"
+              name="garageSize"
               className="form-control"
               placeholder="Your Name"
             />
@@ -121,7 +129,7 @@ const DetailsFiled = () => {
             <label className="heading-color ff-heading fw600 mb10">
               Year built (numeric)
             </label>
-            <input type="text" className="form-control" />
+            <input type="text" name="yearBuilt" className="form-control" />
           </div>
         </div>
         {/* End .col-4 */}
@@ -133,6 +141,7 @@ const DetailsFiled = () => {
             </label>
             <input
               type="text"
+              name="availableFrom"
               className="form-control"
               placeholder="99.aa.yyyy"
             />
@@ -147,6 +156,7 @@ const DetailsFiled = () => {
             </label>
             <input
               type="text"
+              name="basement"
               className="form-control"
               placeholder="Your Name"
             />
@@ -161,6 +171,7 @@ const DetailsFiled = () => {
             </label>
             <input
               type="text"
+              name="extraDetails"
               className="form-control"
               placeholder="Your Name"
             />
@@ -175,6 +186,7 @@ const DetailsFiled = () => {
             </label>
             <input
               type="text"
+              name="roofing"
               className="form-control"
               placeholder="Your Name"
             />
@@ -189,6 +201,7 @@ const DetailsFiled = () => {
             </label>
             <input
               type="text"
+              name="exteriorMaterial"
               className="form-control"
               placeholder="Your Name"
             />
@@ -211,6 +224,7 @@ const DetailsFiled = () => {
             <textarea
               cols={30}
               rows={5}
+              name="ownerAgentNotes"
               placeholder="There are many variations of passages."
               defaultValue={""}
             />
