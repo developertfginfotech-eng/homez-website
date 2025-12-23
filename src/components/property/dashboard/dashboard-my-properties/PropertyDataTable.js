@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { Tooltip as ReactTooltip } from "react-tooltip";
-import { getPropertiesByAgent } from "@/helpers/propertyApi";
+import { getPropertiesByAgent, updateProperty, deleteProperty } from "@/helpers/propertyApi";
 
 const getStatusStyle = (status) => {
   switch (status) {
@@ -42,6 +42,11 @@ const PropertyDataTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [editingProperty, setEditingProperty] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editFormData, setEditFormData] = useState({});
+  const [deletingProperty, setDeletingProperty] = useState(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useEffect(() => {
     const fetchProperties = async () => {
@@ -167,14 +172,30 @@ const PropertyDataTable = () => {
                 <button
                   className="icon"
                   style={{ border: "none" }}
+                  onClick={() => {
+                    setEditingProperty(property);
+                    setEditFormData({
+                      title: property.title,
+                      description: property.description,
+                      price: property.price,
+                      propertyStatus: property.propertyStatus,
+                    });
+                    setShowEditModal(true);
+                  }}
                   data-tooltip-id={`edit-${property._id}`}
+                  title="Edit Property"
                 >
                   <span className="fas fa-pen fa" />
                 </button>
                 <button
                   className="icon"
                   style={{ border: "none" }}
+                  onClick={() => {
+                    setDeletingProperty(property);
+                    setShowDeleteConfirm(true);
+                  }}
                   data-tooltip-id={`delete-${property._id}`}
+                  title="Delete Property"
                 >
                   <span className="flaticon-bin" />
                 </button>
@@ -200,6 +221,278 @@ const PropertyDataTable = () => {
           ))}
         </tbody>
       </table>
+
+      {/* Edit Modal */}
+      {showEditModal && editingProperty && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 9999,
+          }}
+          onClick={() => setShowEditModal(false)}
+        >
+          <div
+            style={{
+              backgroundColor: "white",
+              borderRadius: "8px",
+              maxWidth: "500px",
+              width: "90%",
+              padding: "30px",
+              boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+              <h4 style={{ margin: 0 }}>Edit Property</h4>
+              <button
+                onClick={() => setShowEditModal(false)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  fontSize: "24px",
+                  cursor: "pointer",
+                  color: "#666",
+                }}
+              >
+                ×
+              </button>
+            </div>
+
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              try {
+                setLoading(true);
+                // Call update API
+                const updateData = {
+                  title: editFormData.title,
+                  description: editFormData.description,
+                  price: editFormData.price,
+                  propertyStatus: editFormData.propertyStatus,
+                };
+                const response = await updateProperty(editingProperty._id, updateData);
+                console.log("Update response:", response);
+                alert("Property updated successfully!");
+                setShowEditModal(false);
+
+                // Refresh properties list
+                const updatedProperties = await getPropertiesByAgent();
+                if (updatedProperties.success && updatedProperties.data) {
+                  setProperties(updatedProperties.data);
+                } else {
+                  setProperties(updatedProperties);
+                }
+              } catch (err) {
+                console.error("Error updating property:", err);
+                alert("Failed to update property: " + (err.message || err));
+              } finally {
+                setLoading(false);
+              }
+            }}>
+              <div style={{ marginBottom: "15px" }}>
+                <label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>Title</label>
+                <input
+                  type="text"
+                  value={editFormData.title || ""}
+                  onChange={(e) => setEditFormData({ ...editFormData, title: e.target.value })}
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                    border: "1px solid #ddd",
+                    borderRadius: "4px",
+                    fontSize: "14px",
+                    boxSizing: "border-box",
+                  }}
+                  required
+                />
+              </div>
+
+              <div style={{ marginBottom: "15px" }}>
+                <label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>Description</label>
+                <textarea
+                  value={editFormData.description || ""}
+                  onChange={(e) => setEditFormData({ ...editFormData, description: e.target.value })}
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                    border: "1px solid #ddd",
+                    borderRadius: "4px",
+                    fontSize: "14px",
+                    boxSizing: "border-box",
+                    minHeight: "100px",
+                  }}
+                />
+              </div>
+
+              <div style={{ marginBottom: "15px" }}>
+                <label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>Price</label>
+                <input
+                  type="number"
+                  value={editFormData.price || ""}
+                  onChange={(e) => setEditFormData({ ...editFormData, price: parseFloat(e.target.value) })}
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                    border: "1px solid #ddd",
+                    borderRadius: "4px",
+                    fontSize: "14px",
+                    boxSizing: "border-box",
+                  }}
+                  required
+                />
+              </div>
+
+              <div style={{ marginBottom: "20px" }}>
+                <label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>Property Status</label>
+                <select
+                  value={editFormData.propertyStatus || "Pending"}
+                  onChange={(e) => setEditFormData({ ...editFormData, propertyStatus: e.target.value })}
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                    border: "1px solid #ddd",
+                    borderRadius: "4px",
+                    fontSize: "14px",
+                    boxSizing: "border-box",
+                  }}
+                >
+                  <option value="Pending">Pending</option>
+                  <option value="Processing">Processing</option>
+                  <option value="Published">Published</option>
+                </select>
+              </div>
+
+              <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end" }}>
+                <button
+                  type="button"
+                  onClick={() => setShowEditModal(false)}
+                  style={{
+                    padding: "10px 20px",
+                    backgroundColor: "#f0f0f0",
+                    color: "#333",
+                    border: "none",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                    fontSize: "14px",
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  style={{
+                    padding: "10px 20px",
+                    backgroundColor: "#eb6753",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                    fontSize: "14px",
+                  }}
+                >
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && deletingProperty && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 9999,
+          }}
+          onClick={() => setShowDeleteConfirm(false)}
+        >
+          <div
+            style={{
+              backgroundColor: "white",
+              borderRadius: "8px",
+              maxWidth: "400px",
+              width: "90%",
+              padding: "30px",
+              boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+              textAlign: "center",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h4 style={{ marginBottom: "15px", color: "#d32f2f" }}>Delete Property?</h4>
+            <p style={{ marginBottom: "20px", color: "#666" }}>
+              Are you sure you want to delete <strong>"{deletingProperty.title}"</strong>? This action cannot be undone.
+            </p>
+            <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                style={{
+                  padding: "10px 20px",
+                  backgroundColor: "#f0f0f0",
+                  color: "#333",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  fontSize: "14px",
+                  minWidth: "100px",
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  try {
+                    setLoading(true);
+                    await deleteProperty(deletingProperty._id);
+                    alert("Property deleted successfully!");
+                    setShowDeleteConfirm(false);
+
+                    // Refresh properties list
+                    const updatedProperties = await getPropertiesByAgent();
+                    if (updatedProperties.success && updatedProperties.data) {
+                      setProperties(updatedProperties.data);
+                    } else {
+                      setProperties(updatedProperties);
+                    }
+                  } catch (err) {
+                    console.error("Error deleting property:", err);
+                    alert("Failed to delete property: " + (err.message || err));
+                  } finally {
+                    setLoading(false);
+                  }
+                }}
+                style={{
+                  padding: "10px 20px",
+                  backgroundColor: "#d32f2f",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  fontSize: "14px",
+                  minWidth: "100px",
+                }}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Details Modal */}
       {showDetailsModal && selectedProperty && (
