@@ -33,10 +33,13 @@ const formatDate = (date) => {
   });
 };
 
+const ITEMS_PER_PAGE = 10;
+
 const PropertyDataTable = () => {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     const fetchProperties = async () => {
@@ -45,6 +48,7 @@ const PropertyDataTable = () => {
         const response = await getPropertiesByAgent();
         if (response.success && response.data) {
           setProperties(response.data);
+          setCurrentPage(1);
         } else {
           const errorMsg = response.error || "Failed to fetch properties";
           if (errorMsg.includes("401") || errorMsg.includes("Unauthorized")) {
@@ -63,6 +67,13 @@ const PropertyDataTable = () => {
 
     fetchProperties();
   }, []);
+
+  // Calculate pagination
+  const totalPages = Math.ceil(properties.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentProperties = properties.slice(startIndex, endIndex);
+  const showPagination = properties.length > ITEMS_PER_PAGE;
 
   if (loading) {
     return (
@@ -100,7 +111,7 @@ const PropertyDataTable = () => {
         </tr>
       </thead>
       <tbody className="t-body">
-        {properties.map((property) => (
+        {currentProperties.map((property) => (
           <tr key={property._id}>
             <th scope="row">
               <div className="listing-style1 dashboard-style d-xxl-flex align-items-center mb-0">
