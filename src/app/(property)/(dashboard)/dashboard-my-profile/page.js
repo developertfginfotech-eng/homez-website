@@ -1,3 +1,5 @@
+"use client";
+
 import DashboardHeader from "@/components/common/DashboardHeader";
 import MobileMenu from "@/components/common/mobile-menu";
 import DboardMobileNavigation from "@/components/property/dashboard/DboardMobileNavigation";
