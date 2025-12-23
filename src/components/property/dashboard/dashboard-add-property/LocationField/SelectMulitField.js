@@ -12,7 +12,12 @@ const options = {
     "Germany",
     "Turkey",
     "UK",
+    "United Kingdom",
     "USA",
+    "Japan",
+    "Canada",
+    "Australia",
+    "India",
   ],
   cities: [
     "California",
@@ -24,6 +29,11 @@ const options = {
     "San Diego",
     "San Francisco",
     "Texas",
+    "London",
+    "Paris",
+    "Tokyo",
+    "Dubai",
+    "Toronto",
   ],
   additionalCountries: [
     "Belgium",
@@ -34,7 +44,12 @@ const options = {
     "Germany",
     "Turkey",
     "UK",
+    "United Kingdom",
     "USA",
+    "Japan",
+    "Canada",
+    "Australia",
+    "India",
   ],
 };
 
@@ -59,6 +74,8 @@ const SelectMultiField = () => {
     setShowSelect(true);
   }, []);
   const fieldTitles = ["Country / State", "City", "Country"];
+  const placeholders = ["Search or select country/state...", "Search or select city...", "Search or select country..."];
+
   return (
     <>
       {Object.keys(options).map((key, index) => (
@@ -75,6 +92,9 @@ const SelectMultiField = () => {
                   classNamePrefix="select"
                   required
                   isMulti
+                  isSearchable={true}
+                  isClearable={true}
+                  placeholder={placeholders[index]}
                   options={options[key].map((item) => ({
                     value: item,
                     label: item,

@@ -3,9 +3,9 @@ import React, { useEffect, useState } from "react";
 import Select from "react-select";
 
 const options = {
-  floorNo: ["1st", "2nd", "3rd", "4th"],
-  energyClass: ["All Listing", "Active", "Sold", "Processing"],
-  energyIndex: ["All Cities", "Pending", "Processing", "Published"],
+  floorNo: ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th"],
+  energyClass: ["A", "B", "C", "D", "E", "F", "G"],
+  energyIndex: ["20", "30", "40", "50", "60", "65", "75", "85", "95"],
 };
 
 const customStyles = {
@@ -30,6 +30,8 @@ const MultiSelectField = () => {
   }, []);
 
   const fieldTitles = ["Floors no", "Energy Class", "Energy index in kWh/m2a"];
+  const placeholders = ["Select floors...", "Search or select energy class...", "Search or select energy index..."];
+
   return (
     <>
       {Object.keys(options).map((key, index) => (
@@ -46,6 +48,9 @@ const MultiSelectField = () => {
                   classNamePrefix="select"
                   required
                   isMulti
+                  isSearchable={true}
+                  isClearable={true}
+                  placeholder={placeholders[index]}
                   options={options[key].map((item) => ({
                     value: item,
                     label: item,
