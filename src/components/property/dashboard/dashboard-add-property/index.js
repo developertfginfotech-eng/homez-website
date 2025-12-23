@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 
 const AddPropertyTabContent = () => {
   const router = useRouter();
+  const [activeTab, setActiveTab] = useState("nav-item1");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -120,62 +121,57 @@ const AddPropertyTabContent = () => {
         <nav>
           <div className="nav nav-tabs" id="nav-tab2" role="tablist">
             <button
-              className="nav-link active fw600 ms-3"
+              className={`nav-link fw600 ms-3 ${activeTab === "nav-item1" ? "active" : ""}`}
               id="nav-item1-tab"
-              data-bs-toggle="tab"
-              data-bs-target="#nav-item1"
+              onClick={() => setActiveTab("nav-item1")}
               type="button"
               role="tab"
               aria-controls="nav-item1"
-              aria-selected="true"
+              aria-selected={activeTab === "nav-item1"}
             >
               1. Description
             </button>
             <button
-              className="nav-link fw600"
+              className={`nav-link fw600 ${activeTab === "nav-item2" ? "active" : ""}`}
               id="nav-item2-tab"
-              data-bs-toggle="tab"
-              data-bs-target="#nav-item2"
+              onClick={() => setActiveTab("nav-item2")}
               type="button"
               role="tab"
               aria-controls="nav-item2"
-              aria-selected="false"
+              aria-selected={activeTab === "nav-item2"}
             >
               2. Media
             </button>
             <button
-              className="nav-link fw600"
+              className={`nav-link fw600 ${activeTab === "nav-item3" ? "active" : ""}`}
               id="nav-item3-tab"
-              data-bs-toggle="tab"
-              data-bs-target="#nav-item3"
+              onClick={() => setActiveTab("nav-item3")}
               type="button"
               role="tab"
               aria-controls="nav-item3"
-              aria-selected="false"
+              aria-selected={activeTab === "nav-item3"}
             >
               3. Location
             </button>
             <button
-              className="nav-link fw600"
+              className={`nav-link fw600 ${activeTab === "nav-item4" ? "active" : ""}`}
               id="nav-item4-tab"
-              data-bs-toggle="tab"
-              data-bs-target="#nav-item4"
+              onClick={() => setActiveTab("nav-item4")}
               type="button"
               role="tab"
               aria-controls="nav-item4"
-              aria-selected="false"
+              aria-selected={activeTab === "nav-item4"}
             >
               4. Detail
             </button>
             <button
-              className="nav-link fw600"
+              className={`nav-link fw600 ${activeTab === "nav-item5" ? "active" : ""}`}
               id="nav-item5-tab"
-              data-bs-toggle="tab"
-              data-bs-target="#nav-item5"
+              onClick={() => setActiveTab("nav-item5")}
               type="button"
               role="tab"
               aria-controls="nav-item5"
-              aria-selected="false"
+              aria-selected={activeTab === "nav-item5"}
             >
               5. Amenities
             </button>
@@ -185,7 +181,7 @@ const AddPropertyTabContent = () => {
 
         <div className="tab-content" id="nav-tabContent">
           <div
-            className="tab-pane fade show active"
+            className={`tab-pane fade ${activeTab === "nav-item1" ? "show active" : ""}`}
             id="nav-item1"
             role="tabpanel"
             aria-labelledby="nav-item1-tab"
@@ -198,8 +194,7 @@ const AddPropertyTabContent = () => {
                   <button
                     type="button"
                     className="btn btn-primary"
-                    data-bs-toggle="tab"
-                    data-bs-target="#nav-item2"
+                    onClick={() => setActiveTab("nav-item2")}
                   >
                     Next: Media →
                   </button>
@@ -210,7 +205,7 @@ const AddPropertyTabContent = () => {
           {/* End tab for Property Description */}
 
           <div
-            className="tab-pane fade"
+            className={`tab-pane fade ${activeTab === "nav-item2" ? "show active" : ""}`}
             id="nav-item2"
             role="tabpanel"
             aria-labelledby="nav-item2-tab"
@@ -221,16 +216,14 @@ const AddPropertyTabContent = () => {
                 <button
                   type="button"
                   className="btn btn-outline-primary"
-                  data-bs-toggle="tab"
-                  data-bs-target="#nav-item1"
+                  onClick={() => setActiveTab("nav-item1")}
                 >
                   ← Previous
                 </button>
                 <button
                   type="button"
                   className="btn btn-primary"
-                  data-bs-toggle="tab"
-                  data-bs-target="#nav-item3"
+                  onClick={() => setActiveTab("nav-item3")}
                 >
                   Next: Location →
                 </button>
@@ -240,7 +233,7 @@ const AddPropertyTabContent = () => {
           {/* End tab for Upload photos of your property */}
 
           <div
-            className="tab-pane fade"
+            className={`tab-pane fade ${activeTab === "nav-item3" ? "show active" : ""}`}
             id="nav-item3"
             role="tabpanel"
             aria-labelledby="nav-item3-tab"
@@ -253,16 +246,14 @@ const AddPropertyTabContent = () => {
                   <button
                     type="button"
                     className="btn btn-outline-primary"
-                    data-bs-toggle="tab"
-                    data-bs-target="#nav-item2"
+                    onClick={() => setActiveTab("nav-item2")}
                   >
                     ← Previous
                   </button>
                   <button
                     type="button"
                     className="btn btn-primary"
-                    data-bs-toggle="tab"
-                    data-bs-target="#nav-item4"
+                    onClick={() => setActiveTab("nav-item4")}
                   >
                     Next: Details →
                   </button>
@@ -273,7 +264,7 @@ const AddPropertyTabContent = () => {
           {/* End tab for Listing Location */}
 
           <div
-            className="tab-pane fade"
+            className={`tab-pane fade ${activeTab === "nav-item4" ? "show active" : ""}`}
             id="nav-item4"
             role="tabpanel"
             aria-labelledby="nav-item4-tab"
@@ -286,16 +277,14 @@ const AddPropertyTabContent = () => {
                   <button
                     type="button"
                     className="btn btn-outline-primary"
-                    data-bs-toggle="tab"
-                    data-bs-target="#nav-item3"
+                    onClick={() => setActiveTab("nav-item3")}
                   >
                     ← Previous
                   </button>
                   <button
                     type="button"
                     className="btn btn-primary"
-                    data-bs-toggle="tab"
-                    data-bs-target="#nav-item5"
+                    onClick={() => setActiveTab("nav-item5")}
                   >
                     Next: Amenities →
                   </button>
@@ -306,7 +295,7 @@ const AddPropertyTabContent = () => {
           {/* End tab for Listing Details */}
 
           <div
-            className="tab-pane fade"
+            className={`tab-pane fade ${activeTab === "nav-item5" ? "show active" : ""}`}
             id="nav-item5"
             role="tabpanel"
             aria-labelledby="nav-item5-tab"
@@ -321,8 +310,7 @@ const AddPropertyTabContent = () => {
                   <button
                     type="button"
                     className="btn btn-outline-primary"
-                    data-bs-toggle="tab"
-                    data-bs-target="#nav-item4"
+                    onClick={() => setActiveTab("nav-item4")}
                   >
                     ← Previous
                   </button>
