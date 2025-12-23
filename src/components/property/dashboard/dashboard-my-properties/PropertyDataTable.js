@@ -40,6 +40,8 @@ const PropertyDataTable = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedProperty, setSelectedProperty] = useState(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
 
   useEffect(() => {
     const fetchProperties = async () => {
@@ -143,13 +145,25 @@ const PropertyDataTable = () => {
             </th>
             <td className="vam">{formatDate(property.createdAt)}</td>
             <td className="vam">
-              <span className={getStatusStyle(property.propertyStatus)}>
-                {property.propertyStatus || "Pending"}
+              <span className={getStatusStyle(property.approvalStatus || property.propertyStatus)}>
+                {property.approvalStatus || property.propertyStatus || "Pending"}
               </span>
             </td>
             <td className="vam">${property.price?.toLocaleString() || "0"}</td>
             <td className="vam">
               <div className="d-flex">
+                <button
+                  className="icon"
+                  style={{ border: "none" }}
+                  onClick={() => {
+                    setSelectedProperty(property);
+                    setShowDetailsModal(true);
+                  }}
+                  data-tooltip-id={`view-${property._id}`}
+                  title="View Details"
+                >
+                  <span className="fas fa-eye" />
+                </button>
                 <button
                   className="icon"
                   style={{ border: "none" }}
@@ -166,6 +180,11 @@ const PropertyDataTable = () => {
                 </button>
 
                 <ReactTooltip
+                  id={`view-${property._id}`}
+                  place="top"
+                  content="View Details"
+                />
+                <ReactTooltip
                   id={`edit-${property._id}`}
                   place="top"
                   content="Edit"
@@ -181,6 +200,145 @@ const PropertyDataTable = () => {
           ))}
         </tbody>
       </table>
+
+      {/* Details Modal */}
+      {showDetailsModal && selectedProperty && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 9999,
+          }}
+          onClick={() => setShowDetailsModal(false)}
+        >
+          <div
+            style={{
+              backgroundColor: "white",
+              borderRadius: "8px",
+              maxWidth: "600px",
+              maxHeight: "80vh",
+              overflowY: "auto",
+              padding: "30px",
+              boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+              <h4 style={{ margin: 0 }}>{selectedProperty.title}</h4>
+              <button
+                onClick={() => setShowDetailsModal(false)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  fontSize: "24px",
+                  cursor: "pointer",
+                  color: "#666",
+                }}
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Basic Information */}
+            <div style={{ marginBottom: "20px" }}>
+              <h6 style={{ fontWeight: "bold", marginBottom: "10px" }}>Basic Information</h6>
+              <p><strong>Title:</strong> {selectedProperty.title}</p>
+              <p><strong>Description:</strong> {selectedProperty.description || "N/A"}</p>
+              <p><strong>Category:</strong> {selectedProperty.structureType || selectedProperty.category || "N/A"}</p>
+              <p><strong>Status:</strong> <span style={{ padding: "4px 8px", borderRadius: "4px", backgroundColor: (selectedProperty.approvalStatus || selectedProperty.propertyStatus) === "pending" ? "#fff3cd" : (selectedProperty.approvalStatus || selectedProperty.propertyStatus) === "approved" ? "#d4edda" : (selectedProperty.approvalStatus || selectedProperty.propertyStatus) === "Published" ? "#d4edda" : "#f8d7da", color: (selectedProperty.approvalStatus || selectedProperty.propertyStatus) === "pending" ? "#856404" : (selectedProperty.approvalStatus || selectedProperty.propertyStatus) === "approved" ? "#155724" : (selectedProperty.approvalStatus || selectedProperty.propertyStatus) === "Published" ? "#155724" : "#721c24" }}>{selectedProperty.approvalStatus || selectedProperty.propertyStatus || "Pending"}</span></p>
+            </div>
+
+            <hr style={{ margin: "15px 0" }} />
+
+            {/* Location & Address */}
+            <div style={{ marginBottom: "20px" }}>
+              <h6 style={{ fontWeight: "bold", marginBottom: "10px" }}>Location & Address</h6>
+              <p><strong>Address:</strong> {selectedProperty.address || "N/A"}</p>
+              <p><strong>City:</strong> {selectedProperty.city || "N/A"}</p>
+              <p><strong>Neighborhood:</strong> {selectedProperty.neighborhood || "N/A"}</p>
+              <p><strong>Country:</strong> {selectedProperty.country || "N/A"}</p>
+              <p><strong>ZIP Code:</strong> {selectedProperty.zipCode || "N/A"}</p>
+            </div>
+
+            <hr style={{ margin: "15px 0" }} />
+
+            {/* Property Details */}
+            <div style={{ marginBottom: "20px" }}>
+              <h6 style={{ fontWeight: "bold", marginBottom: "10px" }}>Property Details</h6>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+                <p><strong>Type:</strong> {selectedProperty.propertyType || "N/A"}</p>
+                <p><strong>Bedrooms:</strong> {selectedProperty.bedrooms || "N/A"}</p>
+                <p><strong>Bathrooms:</strong> {selectedProperty.bathrooms || "N/A"}</p>
+                <p><strong>Rooms:</strong> {selectedProperty.rooms || "N/A"}</p>
+                <p><strong>Garages:</strong> {selectedProperty.garageSize || "N/A"}</p>
+                <p><strong>Size:</strong> {selectedProperty.sizeInFt || "N/A"} sq ft</p>
+                <p><strong>Lot Size:</strong> {selectedProperty.lotSizeInFt || "N/A"} sq ft</p>
+                <p><strong>Floors:</strong> {selectedProperty.floorsNo || "N/A"}</p>
+                <p><strong>Year Built:</strong> {selectedProperty.yearBuilt || "N/A"}</p>
+              </div>
+            </div>
+
+            <hr style={{ margin: "15px 0" }} />
+
+            {/* Pricing & Financial */}
+            <div style={{ marginBottom: "20px" }}>
+              <h6 style={{ fontWeight: "bold", marginBottom: "10px" }}>Pricing & Financial</h6>
+              <p><strong>Price:</strong> ${selectedProperty.price?.toLocaleString() || "0"}</p>
+              <p><strong>Yearly Tax Rate:</strong> {selectedProperty.yearlyTaxRate || "N/A"}%</p>
+              <p><strong>Price Label:</strong> {selectedProperty.afterPriceLabel || "N/A"}</p>
+            </div>
+
+            <hr style={{ margin: "15px 0" }} />
+
+            {/* Property Features */}
+            <div style={{ marginBottom: "20px" }}>
+              <h6 style={{ fontWeight: "bold", marginBottom: "10px" }}>Property Features</h6>
+              <p><strong>Basement:</strong> {selectedProperty.basement || "N/A"}</p>
+              <p><strong>Roofing:</strong> {selectedProperty.roofing || "N/A"}</p>
+              <p><strong>Exterior Material:</strong> {selectedProperty.exteriorMaterial || "N/A"}</p>
+              <p><strong>Energy Class:</strong> {selectedProperty.energyClass || "N/A"}</p>
+              <p><strong>Energy Index:</strong> {selectedProperty.energyIndex || "N/A"}</p>
+            </div>
+
+            <hr style={{ margin: "15px 0" }} />
+
+            {/* Additional Information */}
+            <div style={{ marginBottom: "20px" }}>
+              <h6 style={{ fontWeight: "bold", marginBottom: "10px" }}>Additional Information</h6>
+              <p><strong>Available From:</strong> {selectedProperty.availableFrom ? new Date(selectedProperty.availableFrom).toLocaleDateString() : "N/A"}</p>
+              <p><strong>Extra Details:</strong> {selectedProperty.extraDetails || "N/A"}</p>
+              <p><strong>Agent Notes:</strong> {selectedProperty.ownerAgentNotes || "N/A"}</p>
+              {selectedProperty.amenities && selectedProperty.amenities.length > 0 && (
+                <p><strong>Amenities:</strong> {Array.isArray(selectedProperty.amenities) ? selectedProperty.amenities.join(", ") : "N/A"}</p>
+              )}
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "20px" }}>
+              <button
+                onClick={() => setShowDetailsModal(false)}
+                style={{
+                  padding: "10px 20px",
+                  backgroundColor: "#eb6753",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  fontSize: "14px",
+                }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Show pagination only if there are multiple pages */}
       {showPagination && (
