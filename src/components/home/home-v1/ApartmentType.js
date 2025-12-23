@@ -6,6 +6,12 @@ import { Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
 const ApartmentType = () => {
+  const getCategoryUrl = (categoryTitle) => {
+    // Convert category title to lowercase for API filtering
+    const categoryName = categoryTitle.toLowerCase();
+    return `/grid-default?category=${encodeURIComponent(categoryName)}`;
+  };
+
   return (
     <Swiper
       className="overflow-visible"
@@ -49,7 +55,7 @@ const ApartmentType = () => {
       {apartmentType.map((type) => (
         <SwiperSlide key={type.id}>
           <div className="item">
-            <Link href="/grid-default">
+            <Link href={getCategoryUrl(type.title)}>
               <div className="iconbox-style1">
                 <span className={`icon ${type.icon}`} />
                 <div className="iconbox-content">

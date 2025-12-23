@@ -2,14 +2,20 @@
 
 import listings from "@/data/listings";
 import React, { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import ListingSidebar from "../../sidebar";
 import TopFilterBar from "./TopFilterBar";
 import FeaturedListings from "./FeatuerdListings";
-
+import { propertiesAPI } from "@/services/api";
 import PaginationTwo from "../../PaginationTwo";
 
 export default function PropertyFiltering() {
+  const searchParams = useSearchParams();
+  const categoryFromUrl = searchParams.get("category");
+
   const [filteredData, setFilteredData] = useState([]);
+  const [apiProperties, setApiProperties] = useState([]);
+  const [isLoadingApi, setIsLoadingApi] = useState(false);
 
   const [currentSortingOption, setCurrentSortingOption] = useState("Newest");
 
@@ -42,6 +48,60 @@ export default function PropertyFiltering() {
   const [yearBuild, setyearBuild] = useState([]);
   const [categories, setCategories] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Fetch properties from API
+  useEffect(() => {
+    const fetchProperties = async () => {
+      try {
+        setIsLoadingApi(true);
+        const filters = {};
+
+        // Add category filter if provided in URL
+        if (categoryFromUrl) {
+          filters.category = categoryFromUrl;
+        }
+
+        const response = await propertiesAPI.getAll(filters);
+
+        if (response.properties && Array.isArray(response.properties)) {
+          // Convert API properties to listings format
+          const convertedProperties = response.properties.map((prop) => ({
+            id: prop._id,
+            title: prop.title,
+            price: `$${prop.price}`,
+            location: `${prop.city}, ${prop.country}`,
+            city: prop.city,
+            bed: prop.bedrooms || 0,
+            bath: prop.bathrooms || 0,
+            sqft: prop.sizeInFt || 0,
+            yearBuilding: prop.yearBuilt || new Date().getFullYear(),
+            image: prop.images?.[0] || "/images/listings/list-1.jpg",
+            features: Array.isArray(prop.amenities) ? prop.amenities : [],
+            propertyType: prop.propertyType || "Rent",
+            forRent: prop.propertyType === "Rent",
+            approvalStatus: prop.approvalStatus,
+          }));
+
+          setApiProperties(convertedProperties);
+        }
+      } catch (error) {
+        console.warn("Failed to fetch properties from API, using mock data:", error);
+        // Fallback to mock data if API fails
+        setApiProperties([]);
+      } finally {
+        setIsLoadingApi(false);
+      }
+    };
+
+    fetchProperties();
+  }, [categoryFromUrl]);
+
+  // Pre-set category filter if category is provided in URL
+  useEffect(() => {
+    if (categoryFromUrl) {
+      setCategories([categoryFromUrl]);
+    }
+  }, [categoryFromUrl]);
 
   const resetFilter = () => {
     setListingStatus("All");
@@ -126,7 +186,10 @@ export default function PropertyFiltering() {
   };
 
   useEffect(() => {
-    const refItems = listings.filter((elm) => {
+    // Use API properties if available, otherwise use mock listings
+    const dataSource = apiProperties.length > 0 ? apiProperties : listings;
+
+    const refItems = dataSource.filter((elm) => {
       if (listingStatus == "All") {
         return true;
       } else if (listingStatus == "Buy") {
@@ -231,6 +294,7 @@ export default function PropertyFiltering() {
     yearBuild,
     categories,
     searchQuery,
+    apiProperties,
   ]);
 
   useEffect(() => {

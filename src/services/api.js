@@ -255,6 +255,66 @@ export const contactAPI = {
 };
 
 /**
+ * Tour Request API calls
+ */
+export const tourAPI = {
+  submitTourRequest: async (tourData) => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_URL}/tours/request`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { 'Authorization': `Bearer ${token}` }),
+      },
+      body: JSON.stringify(tourData),
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Tour request submission failed');
+    }
+    return response.json();
+  },
+
+  getMyTours: async () => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_URL}/tours/my-tours`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw new Error('Failed to fetch tours');
+    return response.json();
+  },
+
+  getToursByProperty: async (propertyId) => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_URL}/tours/property/${propertyId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw new Error('Failed to fetch property tours');
+    return response.json();
+  },
+
+  updateTourStatus: async (tourId, status) => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_URL}/tours/${tourId}/status`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ status }),
+    });
+    if (!response.ok) throw new Error('Failed to update tour status');
+    return response.json();
+  },
+};
+
+/**
  * Generic API call handler with error handling
  */
 export const apiCall = async (endpoint, options = {}) => {

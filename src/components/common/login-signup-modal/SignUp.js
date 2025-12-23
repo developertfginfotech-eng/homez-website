@@ -47,7 +47,7 @@ const SignUp = () => {
           modalElement.click();
         }
 
-        // Admins bypass KYC and go directly to dashboard
+        // Admins bypass KYC and go to dashboard
         if (response.user.role === "admin") {
           setTimeout(() => {
             window.location.href = "/dashboard-home";
@@ -55,27 +55,37 @@ const SignUp = () => {
           return;
         }
 
-        // Check KYC status for non-admin users
-        try {
-          const kycStatus = await kycAPI.getKYCStatus();
+        // Buyers bypass KYC and go to home page
+        if (response.user.role === "buyer") {
+          setTimeout(() => {
+            window.location.href = "/";
+          }, 1500);
+          return;
+        }
 
-          // If KYC is not verified and not submitted, redirect to KYC page
-          if (!kycStatus.verified && !kycStatus.submitted) {
+        // Only sellers and brokers need KYC verification
+        if (response.user.role === "seller" || response.user.role === "broker") {
+          try {
+            const kycStatus = await kycAPI.getKYCStatus();
+
+            // If KYC is not verified and not submitted, redirect to KYC page
+            if (!kycStatus.verified && !kycStatus.submitted) {
+              setTimeout(() => {
+                window.location.href = "/kyc-verification";
+              }, 1500);
+              return;
+            }
+          } catch (kycErr) {
+            // If error checking KYC, redirect to KYC page
+            console.error("KYC check error:", kycErr);
             setTimeout(() => {
               window.location.href = "/kyc-verification";
             }, 1500);
             return;
           }
-        } catch (kycErr) {
-          // If error checking KYC, redirect to KYC page
-          console.error("KYC check error:", kycErr);
-          setTimeout(() => {
-            window.location.href = "/kyc-verification";
-          }, 1500);
-          return;
         }
 
-        // If KYC is done, redirect to dashboard
+        // All other cases: redirect to dashboard
         setTimeout(() => {
           window.location.href = "/dashboard-home";
         }, 1500);
