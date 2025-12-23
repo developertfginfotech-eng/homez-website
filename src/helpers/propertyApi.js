@@ -1,0 +1,99 @@
+import axios from 'axios';
+
+const API_URL = 'https://homez-q5lh.onrender.com/api';
+// For local testing, use:
+// const API_URL = 'http://localhost:5000/api';
+
+const apiClient = axios.create({
+  baseURL: API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  withCredentials: false,
+});
+
+const getAuthToken = () => {
+  return localStorage.getItem('authToken');
+};
+
+// Add new property
+export const addProperty = async (propertyData) => {
+  try {
+    const response = await apiClient.post('/property/add', propertyData, {
+      headers: {
+        Authorization: `Bearer ${getAuthToken()}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error adding property:', error);
+    throw error.response?.data || error;
+  }
+};
+
+// Get all properties
+export const getAllProperties = async () => {
+  try {
+    const response = await apiClient.get('/property/all');
+    return response.data.properties || [];
+  } catch (error) {
+    console.error('Error fetching properties:', error);
+    throw error;
+  }
+};
+
+// Get properties by agent
+export const getPropertiesByAgent = async () => {
+  try {
+    const response = await apiClient.get('/property/agent/properties', {
+      headers: {
+        Authorization: `Bearer ${getAuthToken()}`,
+      },
+    });
+    return response.data.properties || [];
+  } catch (error) {
+    console.error('Error fetching agent properties:', error);
+    throw error;
+  }
+};
+
+// Get property by ID
+export const getPropertyById = async (propertyId) => {
+  try {
+    const response = await apiClient.get(`/property/${propertyId}`);
+    return response.data.property;
+  } catch (error) {
+    console.error('Error fetching property:', error);
+    throw error;
+  }
+};
+
+// Update property
+export const updateProperty = async (propertyId, propertyData) => {
+  try {
+    const response = await apiClient.put(`/property/${propertyId}`, propertyData, {
+      headers: {
+        Authorization: `Bearer ${getAuthToken()}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error updating property:', error);
+    throw error.response?.data || error;
+  }
+};
+
+// Delete property
+export const deleteProperty = async (propertyId) => {
+  try {
+    const response = await apiClient.delete(`/property/${propertyId}`, {
+      headers: {
+        Authorization: `Bearer ${getAuthToken()}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting property:', error);
+    throw error.response?.data || error;
+  }
+};
