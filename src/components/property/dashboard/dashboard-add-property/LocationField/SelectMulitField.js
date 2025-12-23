@@ -70,11 +70,23 @@ const customStyles = {
 
 const SelectMultiField = () => {
   const [showSelect, setShowSelect] = useState(false);
+  const [countryState, setCountryState] = useState(null);
+  const [city, setCity] = useState(null);
+  const [country, setCountry] = useState(null);
+
   useEffect(() => {
     setShowSelect(true);
   }, []);
+
   const fieldTitles = ["Country / State", "City", "Country"];
   const placeholders = ["Search or select country/state...", "Search or select city...", "Search or select country..."];
+  const fieldNames = ["countryState", "city", "country"];
+
+  const handleSelectChange = (index, selectedOption) => {
+    if (index === 0) setCountryState(selectedOption);
+    if (index === 1) setCity(selectedOption);
+    if (index === 2) setCountry(selectedOption);
+  };
 
   return (
     <>
@@ -91,10 +103,13 @@ const SelectMultiField = () => {
                   className="select-custom pl-0"
                   classNamePrefix="select"
                   required
-                  isMulti
+                  isSingleValue={true}
+                  isMulti={false}
                   isSearchable={true}
                   isClearable={true}
                   placeholder={placeholders[index]}
+                  value={index === 0 ? countryState : index === 1 ? city : country}
+                  onChange={(opt) => handleSelectChange(index, opt)}
                   options={options[key].map((item) => ({
                     value: item,
                     label: item,
@@ -103,6 +118,7 @@ const SelectMultiField = () => {
               )}
             </div>
           </div>
+          <input type="hidden" name={fieldNames[index]} value={index === 0 ? countryState?.value || "" : index === 1 ? city?.value || "" : country?.value || ""} />
         </div>
       ))}
     </>
