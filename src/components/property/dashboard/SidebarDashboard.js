@@ -1,10 +1,24 @@
 "use client";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 
 const SidebarDashboard = () => {
   const pathname = usePathname();
+  const [userRole, setUserRole] = useState(null);
+
+  useEffect(() => {
+    // Get user role from localStorage
+    const userStr = localStorage.getItem("user");
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        setUserRole(user.role);
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+      }
+    }
+  }, []);
 
   const sidebarItems = [
     {
@@ -29,16 +43,19 @@ const SidebarDashboard = () => {
           href: "/dashboard-add-property",
           icon: "flaticon-new-tab",
           text: "Add New Property",
+          visibleTo: ["broker", "seller"],
         },
         {
           href: "/dashboard-my-properties",
           icon: "flaticon-home",
           text: "My Properties",
+          visibleTo: ["broker", "seller"],
         },
         {
           href: "/dashboard-tour-requests",
           icon: "flaticon-calendar",
           text: "Tour Requests",
+          visibleTo: ["broker", "seller"],
         },
         {
           href: "/dashboard-my-favourites",
