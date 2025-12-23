@@ -186,6 +186,18 @@ const AddPropertyTabContent = () => {
             <div className="ps-widget bgc-white bdrs12 p30 overflow-hidden position-relative">
               <h4 className="title fz17 mb30">Property Description</h4>
               <PropertyDescription />
+              <div className="row mt30">
+                <div className="col-12 d-flex justify-content-end">
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    data-bs-toggle="tab"
+                    data-bs-target="#nav-item2"
+                  >
+                    Next: Media →
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
           {/* End tab for Property Description */}
@@ -197,6 +209,26 @@ const AddPropertyTabContent = () => {
             aria-labelledby="nav-item2-tab"
           >
             <UploadMedia />
+            <div className="row mt30">
+              <div className="col-12 d-flex justify-content-between">
+                <button
+                  type="button"
+                  className="btn btn-outline-primary"
+                  data-bs-toggle="tab"
+                  data-bs-target="#nav-item1"
+                >
+                  ← Previous
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  data-bs-toggle="tab"
+                  data-bs-target="#nav-item3"
+                >
+                  Next: Location →
+                </button>
+              </div>
+            </div>
           </div>
           {/* End tab for Upload photos of your property */}
 
@@ -209,6 +241,26 @@ const AddPropertyTabContent = () => {
             <div className="ps-widget bgc-white bdrs12 p30 overflow-hidden position-relative">
               <h4 className="title fz17 mb30">Listing Location</h4>
               <LocationField />
+              <div className="row mt30">
+                <div className="col-12 d-flex justify-content-between">
+                  <button
+                    type="button"
+                    className="btn btn-outline-primary"
+                    data-bs-toggle="tab"
+                    data-bs-target="#nav-item2"
+                  >
+                    ← Previous
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    data-bs-toggle="tab"
+                    data-bs-target="#nav-item4"
+                  >
+                    Next: Details →
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
           {/* End tab for Listing Location */}
@@ -222,6 +274,26 @@ const AddPropertyTabContent = () => {
             <div className="ps-widget bgc-white bdrs12 p30 overflow-hidden position-relative">
               <h4 className="title fz17 mb30">Listing Details</h4>
               <DetailsFiled />
+              <div className="row mt30">
+                <div className="col-12 d-flex justify-content-between">
+                  <button
+                    type="button"
+                    className="btn btn-outline-primary"
+                    data-bs-toggle="tab"
+                    data-bs-target="#nav-item3"
+                  >
+                    ← Previous
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    data-bs-toggle="tab"
+                    data-bs-target="#nav-item5"
+                  >
+                    Next: Amenities →
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
           {/* End tab for Listing Details */}
@@ -237,45 +309,49 @@ const AddPropertyTabContent = () => {
               <div className="row">
                 <Amenities />
               </div>
-            </div>
-          </div>
-          {/* End tab for Select Amenities */}
-        </div>
-
-        {/* Submit Buttons */}
-        <div className="ps-widget bgc-white bdrs12 p30 overflow-hidden position-relative mt30">
-          <div className="row">
-            <div className="col-sm-12">
-              <div className="d-flex gap-3 justify-content-end">
-                <button
-                  type="button"
-                  className="btn btn-outline-primary"
-                  onClick={() => router.back()}
-                  disabled={loading}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="btn btn-primary"
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <>
-                      <span
-                        className="spinner-border spinner-border-sm me-2"
-                        role="status"
-                        aria-hidden="true"
-                      ></span>
-                      Submitting...
-                    </>
-                  ) : (
-                    "Submit Property"
-                  )}
-                </button>
+              <div className="row mt30">
+                <div className="col-12 d-flex justify-content-between">
+                  <button
+                    type="button"
+                    className="btn btn-outline-primary"
+                    data-bs-toggle="tab"
+                    data-bs-target="#nav-item4"
+                  >
+                    ← Previous
+                  </button>
+                  <div className="d-flex gap-2">
+                    <button
+                      type="button"
+                      className="btn btn-outline-danger"
+                      onClick={() => router.back()}
+                      disabled={loading}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="btn btn-primary"
+                      disabled={loading}
+                    >
+                      {loading ? (
+                        <>
+                          <span
+                            className="spinner-border spinner-border-sm me-2"
+                            role="status"
+                            aria-hidden="true"
+                          ></span>
+                          Submitting...
+                        </>
+                      ) : (
+                        "Submit Property"
+                      )}
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+          {/* End tab for Select Amenities */}
         </div>
       </form>
     </>
