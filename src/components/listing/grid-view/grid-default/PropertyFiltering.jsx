@@ -97,12 +97,8 @@ export default function PropertyFiltering() {
     fetchProperties();
   }, [categoryFromUrl]);
 
-  // Pre-set category filter if category is provided in URL
-  useEffect(() => {
-    if (categoryFromUrl) {
-      setCategories([categoryFromUrl]);
-    }
-  }, [categoryFromUrl]);
+  // Note: Don't set categories from URL as API already filters by category
+  // Only use categories array for sidebar filter selections
 
   const resetFilter = () => {
     setListingStatus("All");
