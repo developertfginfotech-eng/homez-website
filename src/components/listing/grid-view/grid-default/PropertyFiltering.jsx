@@ -83,10 +83,15 @@ export default function PropertyFiltering() {
             approvalStatus: prop.approvalStatus,
           }));
 
+          console.log(`✓ API returned ${convertedProperties.length} properties`, { filters, convertedProperties });
           setApiProperties(convertedProperties);
+        } else {
+          console.warn("API response format unexpected:", response);
+          setApiProperties([]);
         }
       } catch (error) {
-        console.warn("Failed to fetch properties from API, using mock data:", error);
+        console.error("Failed to fetch properties from API:", error);
+        console.warn("⚠ Using mock data fallback");
         // Fallback to mock data if API fails
         setApiProperties([]);
       } finally {
@@ -185,6 +190,13 @@ export default function PropertyFiltering() {
   useEffect(() => {
     // Use API properties if available, otherwise use mock listings
     const dataSource = apiProperties.length > 0 ? apiProperties : listings;
+    const isUsingMockData = apiProperties.length === 0;
+
+    if (isUsingMockData && !isLoadingApi) {
+      console.warn(`📦 Using mock data (${listings.length} listings available) because API returned empty or failed`);
+    } else if (apiProperties.length > 0) {
+      console.log(`✓ Using API data (${apiProperties.length} real properties)`);
+    }
 
     const refItems = dataSource.filter((elm) => {
       if (listingStatus == "All") {
