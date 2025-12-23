@@ -44,7 +44,7 @@ const PropertyDescription = () => {
     setShowSelect(true);
   }, []);
   return (
-    <form className="form-style1">
+    <div className="form-style1">
       <div className="row">
         <div className="col-sm-12">
           <div className="mb20">
@@ -184,7 +184,7 @@ const PropertyDescription = () => {
         </div>
         {/* End .col-6 */}
       </div>
-    </form>
+    </div>
   );
 };
 
