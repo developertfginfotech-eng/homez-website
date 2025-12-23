@@ -3,6 +3,11 @@ import { useEffect, useState } from "react";
 import Select from "react-select";
 
 const PropertyDescription = () => {
+  const [showSelect, setShowSelect] = useState(false);
+  const [category, setCategory] = useState(null);
+  const [listedInValue, setListedInValue] = useState(null);
+  const [propertyStatusValue, setPropertyStatusValue] = useState(null);
+
   const catergoryOptions = [
     { value: "Apartments", label: "Apartments" },
     { value: "Bungalow", label: "Bungalow" },
@@ -25,6 +30,10 @@ const PropertyDescription = () => {
     { value: "Published", label: "Published" },
   ];
 
+  useEffect(() => {
+    setShowSelect(true);
+  }, []);
+
   const customStyles = {
     option: (styles, { isFocused, isSelected, isHovered }) => {
       return {
@@ -39,10 +48,7 @@ const PropertyDescription = () => {
       };
     },
   };
-  const [showSelect, setShowSelect] = useState(false);
-  useEffect(() => {
-    setShowSelect(true);
-  }, []);
+
   return (
     <div className="form-style1">
       <div className="row">
@@ -51,6 +57,7 @@ const PropertyDescription = () => {
             <label className="heading-color ff-heading fw600 mb10">Title</label>
             <input
               type="text"
+              name="title"
               className="form-control"
               placeholder="Your Name"
             />
@@ -66,6 +73,7 @@ const PropertyDescription = () => {
             <textarea
               cols={30}
               rows={5}
+              name="description"
               placeholder="There are many variations of passages."
               defaultValue={""}
             />
@@ -81,17 +89,19 @@ const PropertyDescription = () => {
             <div className="location-area">
               {showSelect && (
                 <Select
-                  defaultValue={[catergoryOptions[1]]}
-                  name="colors"
+                  value={category}
+                  onChange={(opt) => setCategory(opt)}
                   options={catergoryOptions}
                   styles={customStyles}
                   className="select-custom pl-0"
                   classNamePrefix="select"
                   required
-                  isMulti
+                  isSingleValue={true}
+                  isMulti={false}
                 />
               )}
             </div>
+            <input type="hidden" name="category" value={category?.value || ""} />
           </div>
         </div>
         {/* End .col-6 */}
@@ -104,17 +114,19 @@ const PropertyDescription = () => {
             <div className="location-area">
               {showSelect && (
                 <Select
-                  defaultValue={[listedIn[1]]}
-                  name="colors"
+                  value={listedInValue}
+                  onChange={(opt) => setListedInValue(opt)}
                   options={listedIn}
                   styles={customStyles}
                   className="select-custom pl-0"
                   classNamePrefix="select"
                   required
-                  isMulti
+                  isSingleValue={true}
+                  isMulti={false}
                 />
               )}
             </div>
+            <input type="hidden" name="listedIn" value={listedInValue?.value || "Active"} />
           </div>
         </div>
         {/* End .col-6 */}
@@ -127,17 +139,19 @@ const PropertyDescription = () => {
             <div className="location-area">
               {showSelect && (
                 <Select
-                  defaultValue={[PropertyStatus[1]]}
-                  name="colors"
+                  value={propertyStatusValue}
+                  onChange={(opt) => setPropertyStatusValue(opt)}
                   options={PropertyStatus}
                   styles={customStyles}
                   className="select-custom pl-0"
                   classNamePrefix="select"
                   required
-                  isMulti
+                  isSingleValue={true}
+                  isMulti={false}
                 />
               )}
             </div>
+            <input type="hidden" name="propertyStatus" value={propertyStatusValue?.value || "Published"} />
           </div>
         </div>
         {/* End .col-6 */}
@@ -149,6 +163,7 @@ const PropertyDescription = () => {
             </label>
             <input
               type="text"
+              name="price"
               className="form-control"
               placeholder="Your Name"
             />
@@ -163,6 +178,7 @@ const PropertyDescription = () => {
             </label>
             <input
               type="text"
+              name="yearlyTaxRate"
               className="form-control"
               placeholder="Your Name"
             />
@@ -177,6 +193,7 @@ const PropertyDescription = () => {
             </label>
             <input
               type="text"
+              name="afterPriceLabel"
               className="form-control"
               placeholder="Your Name"
             />
