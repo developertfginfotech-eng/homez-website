@@ -1,6 +1,5 @@
 "use client";
 
-import listings from "@/data/listings";
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import ListingSidebar from "../../sidebar";
@@ -188,14 +187,13 @@ export default function PropertyFiltering() {
   };
 
   useEffect(() => {
-    // Use API properties if available, otherwise use mock listings
-    const dataSource = apiProperties.length > 0 ? apiProperties : listings;
-    const isUsingMockData = apiProperties.length === 0;
+    // Only use API properties - no mock data fallback
+    const dataSource = apiProperties;
 
-    if (isUsingMockData && !isLoadingApi) {
-      console.warn(`📦 Using mock data (${listings.length} listings available) because API returned empty or failed`);
+    if (apiProperties.length === 0 && !isLoadingApi) {
+      console.warn(`⚠️ No properties found in database for the current filter`);
     } else if (apiProperties.length > 0) {
-      console.log(`✓ Using API data (${apiProperties.length} real properties)`);
+      console.log(`✓ Displaying ${apiProperties.length} real properties from database`);
     }
 
     const refItems = dataSource.filter((elm) => {
