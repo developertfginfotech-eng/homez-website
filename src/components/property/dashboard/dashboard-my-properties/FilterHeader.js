@@ -31,7 +31,7 @@ const FilterHeader = () => {
           </select>
         </div>
       </div>
-      <a href="#" className="ud-btn btn-thm">
+      <a href="/dashboard-add-property" className="ud-btn btn-thm">
         Add New Property
         <i className="fal fa-arrow-right-long" />
       </a>

@@ -50,10 +50,17 @@ export const getPropertiesByAgent = async () => {
         Authorization: `Bearer ${getAuthToken()}`,
       },
     });
-    return response.data.properties || [];
+    return {
+      success: true,
+      data: response.data.properties || response.data.data || [],
+    };
   } catch (error) {
     console.error('Error fetching agent properties:', error);
-    throw error;
+    return {
+      success: false,
+      data: [],
+      error: error.response?.data?.message || error.message,
+    };
   }
 };
 
