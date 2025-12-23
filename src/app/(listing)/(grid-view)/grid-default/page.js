@@ -2,7 +2,7 @@ import DefaultHeader from "@/components/common/DefaultHeader";
 import Footer from "@/components/common/default-footer";
 import MobileMenu from "@/components/common/mobile-menu";
 
-import React from "react";
+import React, { Suspense } from "react";
 import PropertyFiltering from "@/components/listing/grid-view/grid-default/PropertyFiltering";
 
 export const metadata = {
@@ -48,7 +48,9 @@ const GridDefault = () => {
       {/* End Breadcumb Sections */}
 
       {/* Property Filtering */}
-      <PropertyFiltering/>
+      <Suspense fallback={<div className="pt90 pb90 bgc-f7"><div className="container"><div className="row"><div className="col-lg-12 text-center"><div className="spinner-border text-primary" role="status"><span className="visually-hidden">Loading...</span></div></div></div></div></div>}>
+        <PropertyFiltering/>
+      </Suspense>
       {/* Property Filtering */}
 
       {/* Start Our Footer */}
