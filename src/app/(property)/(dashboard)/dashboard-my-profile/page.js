@@ -8,12 +8,27 @@ import PersonalInfo from "@/components/property/dashboard/dashboard-profile/Pers
 import ProfileBox from "@/components/property/dashboard/dashboard-profile/ProfileBox";
 import SocialField from "@/components/property/dashboard/dashboard-profile/SocialField";
 import KYCStatus from "@/components/property/dashboard/dashboard-home/KYCStatus";
+import { useEffect, useState } from "react";
 
 export const metadata = {
   title: "Dashboard My Profile || Homez - Real Estate NextJS Template",
 };
 
 const DashboardMyProfile = () => {
+  const [userRole, setUserRole] = useState(null);
+
+  useEffect(() => {
+    // Get user role from localStorage
+    const user = localStorage.getItem("user");
+    if (user) {
+      const userData = JSON.parse(user);
+      setUserRole(userData.role);
+    }
+  }, []);
+
+  // Show KYC only for sellers and brokers, not for buyers
+  const shouldShowKYC = userRole && (userRole === "seller" || userRole === "broker");
+
   return (
     <>
       {/* Main Header Nav */}
@@ -50,11 +65,14 @@ const DashboardMyProfile = () => {
               </div>
               {/* End .row */}
 
-              <div className="row">
-                <div className="col-xl-12">
-                  <KYCStatus />
+              {/* KYC Status - Only show for sellers and brokers */}
+              {shouldShowKYC && (
+                <div className="row">
+                  <div className="col-xl-12">
+                    <KYCStatus />
+                  </div>
                 </div>
-              </div>
+              )}
               {/* End .row - KYC Status */}
 
               <div className="row">

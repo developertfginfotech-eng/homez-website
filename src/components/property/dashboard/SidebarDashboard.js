@@ -36,6 +36,11 @@ const SidebarDashboard = () => {
           text: "My Properties",
         },
         {
+          href: "/dashboard-tour-requests",
+          icon: "flaticon-calendar",
+          text: "Tour Requests",
+        },
+        {
           href: "/dashboard-my-favourites",
           icon: "flaticon-like",
           text: "My Favorites",

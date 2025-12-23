@@ -60,11 +60,14 @@ const DashboardHome = () => {
               </div>
               {/* End .row */}
 
-              <div className="row">
-                <div className="col-12">
-                  <KYCStatus />
+              {/* KYC Status - Only show for sellers and brokers */}
+              {user && (user.role === "seller" || user.role === "broker") && (
+                <div className="row">
+                  <div className="col-12">
+                    <KYCStatus />
+                  </div>
                 </div>
-              </div>
+              )}
               {/* End .row - KYC Status */}
 
               <div className="row">
