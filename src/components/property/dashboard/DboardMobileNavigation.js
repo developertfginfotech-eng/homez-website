@@ -44,16 +44,19 @@ const DboardMobileNavigation = () => {
           href: "/dashboard-add-property",
           icon: "flaticon-new-tab",
           text: "Add New Property",
+          visibleTo: ["broker", "seller"],
         },
         {
           href: "/dashboard-my-properties",
           icon: "flaticon-home",
           text: "My Properties",
+          visibleTo: ["broker", "seller"],
         },
         {
           href: "/dashboard-tour-requests",
           icon: "flaticon-calendar",
           text: "Tour Requests",
+          visibleTo: ["broker", "seller"],
         },
         {
           href: "/dashboard-my-favourites",
@@ -113,19 +116,21 @@ const DboardMobileNavigation = () => {
               >
                 {section.title}
               </p>
-              {section.items.map((item, itemIndex) => (
-                <div key={itemIndex} className="sidebar_list_item">
-                  <Link
-                    href={item.href}
-                    className={`items-center   ${
-                      pathname == item.href ? "-is-active" : ""
-                    } `}
-                  >
-                    <i className={`${item.icon} mr15`} />
-                    {item.text}
-                  </Link>
-                </div>
-              ))}
+              {section.items
+                .filter((item) => !item.visibleTo || (userRole && item.visibleTo.includes(userRole)))
+                .map((item, itemIndex) => (
+                  <div key={itemIndex} className="sidebar_list_item">
+                    <Link
+                      href={item.href}
+                      className={`items-center   ${
+                        pathname == item.href ? "-is-active" : ""
+                      } `}
+                    >
+                      <i className={`${item.icon} mr15`} />
+                      {item.text}
+                    </Link>
+                  </div>
+                ))}
             </div>
           ))}
         </ul>
