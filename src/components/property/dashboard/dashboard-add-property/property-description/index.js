@@ -59,11 +59,25 @@ const PropertyDescription = () => {
               type="text"
               name="title"
               className="form-control"
-              placeholder="Your Name"
+              placeholder="Property Title"
             />
           </div>
         </div>
         {/* End .col-12 */}
+
+        <div className="col-sm-6 col-xl-4">
+          <div className="mb20">
+            <label className="heading-color ff-heading fw600 mb10">
+              Property Type
+            </label>
+            <select name="propertyType" className="form-control">
+              <option value="">Select Type</option>
+              <option value="Rent">Rent</option>
+              <option value="Sale">Sale</option>
+            </select>
+          </div>
+        </div>
+        {/* End .col-6 */}
 
         <div className="col-sm-12">
           <div className="mb20">
