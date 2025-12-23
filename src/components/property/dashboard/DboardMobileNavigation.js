@@ -5,7 +5,21 @@ import { usePathname } from "next/navigation";
 
 const DboardMobileNavigation = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [userRole, setUserRole] = useState(null);
   const pathname = usePathname();
+
+  useEffect(() => {
+    // Get user role from localStorage
+    const userStr = localStorage.getItem("user");
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        setUserRole(user.role);
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+      }
+    }
+  }, []);
 
   const sidebarItems = [
     {
