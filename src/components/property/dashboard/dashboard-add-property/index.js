@@ -21,9 +21,16 @@ const AddPropertyTabContent = () => {
       setLoading(true);
       setError("");
 
-      // Get all form data from the form fields
-      const formData = new FormData(document.querySelector("form"));
-      const data = Object.fromEntries(formData);
+      // Get all form inputs
+      const form = e.currentTarget;
+      const inputs = form.querySelectorAll("input[name], textarea[name], select[name]");
+      const data = {};
+
+      inputs.forEach((input) => {
+        if (input.name) {
+          data[input.name] = input.value;
+        }
+      });
 
       // Get checked amenities
       const amenitiesCheckboxes = document.querySelectorAll('input[name="amenity"]:checked');
