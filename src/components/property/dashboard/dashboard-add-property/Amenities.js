@@ -3,27 +3,27 @@ import React from "react";
 const amenitiesData = {
   column1: [
     { label: "Attic", defaultChecked: false },
-    { label: "Basketball court", defaultChecked: true },
-    { label: "Air Conditioning", defaultChecked: true },
-    { label: "Lawn", defaultChecked: true },
+    { label: "Basketball court", defaultChecked: false },
+    { label: "Air Conditioning", defaultChecked: false },
+    { label: "Lawn", defaultChecked: false },
     { label: "Swimming Pool", defaultChecked: false },
     { label: "Barbeque", defaultChecked: false },
     { label: "Microwave", defaultChecked: false },
   ],
   column2: [
     { label: "TV Cable", defaultChecked: false },
-    { label: "Dryer", defaultChecked: true },
-    { label: "Outdoor Shower", defaultChecked: true },
-    { label: "Washer", defaultChecked: true },
+    { label: "Dryer", defaultChecked: false },
+    { label: "Outdoor Shower", defaultChecked: false },
+    { label: "Washer", defaultChecked: false },
     { label: "Gym", defaultChecked: false },
     { label: "Ocean view", defaultChecked: false },
     { label: "Private space", defaultChecked: false },
   ],
   column3: [
     { label: "Lake view", defaultChecked: false },
-    { label: "Wine cellar", defaultChecked: true },
-    { label: "Front yard", defaultChecked: true },
-    { label: "Refrigerator", defaultChecked: true },
+    { label: "Wine cellar", defaultChecked: false },
+    { label: "Front yard", defaultChecked: false },
+    { label: "Refrigerator", defaultChecked: false },
     { label: "WiFi", defaultChecked: false },
     { label: "Laundry", defaultChecked: false },
     { label: "Sauna", defaultChecked: false },
@@ -41,6 +41,8 @@ const Amenities = () => {
                 {amenity.label}
                 <input
                   type="checkbox"
+                  name="amenity"
+                  value={amenity.label}
                   defaultChecked={amenity.defaultChecked}
                 />
                 <span className="checkmark" />
