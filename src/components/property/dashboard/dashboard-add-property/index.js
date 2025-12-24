@@ -43,6 +43,7 @@ const AddPropertyTabContent = () => {
         description: data.description || "",
         category: data.category ? [data.category] : [],
         listedIn: data.listedIn || "Active",
+        propertyType: data.propertyType || "Rent",
         propertyStatus: data.propertyStatus || "Published",
         price: parseFloat(data.price) || 0,
         yearlyTaxRate: parseFloat(data.yearlyTaxRate) || 0,
