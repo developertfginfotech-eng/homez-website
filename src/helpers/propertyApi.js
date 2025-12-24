@@ -20,12 +20,17 @@ export const addProperty = async (propertyData) => {
     // Check if propertyData is FormData (for file uploads)
     const isFormData = propertyData instanceof FormData;
 
+    const headers = {
+      Authorization: `Bearer ${getAuthToken()}`,
+    };
+
+    // For FormData, don't set Content-Type - axios will set it automatically with boundary
+    if (!isFormData) {
+      headers['Content-Type'] = 'application/json';
+    }
+
     const response = await apiClient.post('/property/add', propertyData, {
-      headers: {
-        Authorization: `Bearer ${getAuthToken()}`,
-        // Don't set Content-Type for FormData - axios will set it automatically with boundary
-        ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
-      },
+      headers,
     });
     return response.data;
   } catch (error) {
