@@ -9,6 +9,8 @@ import React, { useEffect, useState } from "react";
 
 const DefaultHeader = () => {
   const [navbar, setNavbar] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState("");
 
   const changeBackground = () => {
     if (window.scrollY >= 10) {
@@ -24,6 +26,30 @@ const DefaultHeader = () => {
       window.removeEventListener("scroll", changeBackground);
     };
   }, []);
+
+  useEffect(() => {
+    // Check authentication status
+    const token = localStorage.getItem("authToken");
+    const user = localStorage.getItem("user");
+
+    if (token && user) {
+      setIsLoggedIn(true);
+      try {
+        const userData = JSON.parse(user);
+        setUserName(userData.name || userData.email || "User");
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+      }
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("user");
+    setIsLoggedIn(false);
+    setUserName("");
+    window.location.href = "/";
+  };
 
   return (
     <>
@@ -65,16 +91,50 @@ const DefaultHeader = () => {
 
               <div className="col-auto">
                 <div className="d-flex align-items-center">
-                  <a
-                    href="#"
-                    className="login-info d-flex align-items-cente"
-                    data-bs-toggle="modal"
-                    data-bs-target="#loginSignupModal"
-                    role="button"
-                  >
-                    <i className="far fa-user-circle fz16 me-2" />{" "}
-                    <span className="d-none d-xl-block">Login / Register</span>
-                  </a>
+                  {!isLoggedIn ? (
+                    <a
+                      href="#"
+                      className="login-info d-flex align-items-center"
+                      data-bs-toggle="modal"
+                      data-bs-target="#loginSignupModal"
+                      role="button"
+                    >
+                      <i className="far fa-user-circle fz16 me-2" />{" "}
+                      <span className="d-none d-xl-block">Login / Register</span>
+                    </a>
+                  ) : (
+                    <div className="dropdown">
+                      <a
+                        href="#"
+                        className="login-info d-flex align-items-center dropdown-toggle"
+                        role="button"
+                        id="userDropdown"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                      >
+                        <i className="far fa-user-circle fz16 me-2" />{" "}
+                        <span className="d-none d-xl-block">{userName}</span>
+                      </a>
+                      <ul className="dropdown-menu" aria-labelledby="userDropdown">
+                        <li>
+                          <Link className="dropdown-item" href="/dashboard">
+                            Dashboard
+                          </Link>
+                        </li>
+                        <li>
+                          <Link className="dropdown-item" href="/dashboard-my-properties">
+                            My Properties
+                          </Link>
+                        </li>
+                        <li><hr className="dropdown-divider" /></li>
+                        <li>
+                          <a className="dropdown-item" href="#" onClick={handleLogout}>
+                            Logout
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+                  )}
                   <Link
                     className="ud-btn btn-white add-property bdrs60 mx-2 mx-xl-4"
                     href="/dashboard-add-property"
