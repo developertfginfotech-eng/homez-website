@@ -10,6 +10,22 @@ const nextConfig = {
       "global-builtin",
     ],
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: '16.16.211.219',
+        port: '5000',
+        pathname: '/uploads/**',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '5000',
+        pathname: '/uploads/**',
+      },
+    ],
+  },
 };
 
 module.exports = nextConfig;

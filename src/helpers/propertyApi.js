@@ -17,9 +17,14 @@ const getAuthToken = () => {
 // Add new property
 export const addProperty = async (propertyData) => {
   try {
+    // Check if propertyData is FormData (for file uploads)
+    const isFormData = propertyData instanceof FormData;
+
     const response = await apiClient.post('/property/add', propertyData, {
       headers: {
         Authorization: `Bearer ${getAuthToken()}`,
+        // Don't set Content-Type for FormData - axios will set it automatically with boundary
+        ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
       },
     });
     return response.data;
