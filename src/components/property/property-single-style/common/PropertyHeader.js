@@ -1,10 +1,39 @@
 "use client";
 
-import listings from "@/data/listings";
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { propertiesAPI } from "@/services/api";
 
 const PropertyHeader = ({ id }) => {
-  const data = listings.filter((elm) => elm.id == id)[0] || listings[0];
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProperty = async () => {
+      try {
+        setLoading(true);
+        const response = await propertiesAPI.getById(id);
+        if (response.property) {
+          setData(response.property);
+        }
+      } catch (error) {
+        console.error("Failed to fetch property:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchProperty();
+    }
+  }, [id]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!data) {
+    return <div>Property not found</div>;
+  }
   return (
     <>
       <div className="col-lg-8">
@@ -12,41 +41,39 @@ const PropertyHeader = ({ id }) => {
           <h2 className="sp-lg-title">{data.title}</h2>
           <div className="pd-meta mb15 d-md-flex align-items-center">
             <p className="text fz15 mb-0 bdrr1 pr10 bdrrn-sm">
-              {data.location}
+              {data.city}, {data.country}
             </p>
             <a
               className="ff-heading text-thm fz15 bdrr1 pr10 ml0-sm ml10 bdrrn-sm"
               href="#"
             >
               <i className="fas fa-circle fz10 pe-2" />
-              For {data.forRent ? "rent" : "sale"}
+              For {data.propertyType === "Rent" ? "rent" : "sale"}
             </a>
             <a
               className="ff-heading bdrr1 fz15 pr10 ml10 ml0-sm bdrrn-sm"
               href="#"
             >
               <i className="far fa-clock pe-2" />
-              {Number(new Date().getFullYear()) -
-                Number(data.yearBuilding)}{" "}
-              years ago
+              {data.yearBuilt ? `${Number(new Date().getFullYear()) - Number(data.yearBuilt)} years ago` : "New"}
             </a>
             <a className="ff-heading ml10 ml0-sm fz15" href="#">
               <i className="flaticon-fullscreen pe-2 align-text-top" />
-              8721
+              {data.sizeInFt || 0} sqft
             </a>
           </div>
           <div className="property-meta d-flex align-items-center">
             <a className="text fz15" href="#">
               <i className="flaticon-bed pe-2 align-text-top" />
-              {data.bed} bed
+              {data.bedrooms || 0} bed
             </a>
             <a className="text ml20 fz15" href="#">
               <i className="flaticon-shower pe-2 align-text-top" />
-              {data.bath} bath
+              {data.bathrooms || 0} bath
             </a>
             <a className="text ml20 fz15" href="#">
               <i className="flaticon-expand pe-2 align-text-top" />
-              {data.sqft} sqft
+              {data.sizeInFt || 0} sqft
             </a>
           </div>
         </div>
@@ -70,13 +97,9 @@ const PropertyHeader = ({ id }) => {
                 <span className="flaticon-printer" />
               </a>
             </div>
-            <h3 className="price mb-0">{data.price}</h3>
+            <h3 className="price mb-0">${data.price?.toLocaleString() || 0}</h3>
             <p className="text space fz15">
-              $
-              {(
-                Number(data.price.split("$")[1].split(",").join("")) / data.sqft
-              ).toFixed(2)}
-              /sq ft
+              ${data.sizeInFt ? (data.price / data.sizeInFt).toFixed(2) : 0}/sq ft
             </p>
           </div>
         </div>
