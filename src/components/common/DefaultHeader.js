@@ -135,13 +135,6 @@ const DefaultHeader = () => {
                       </ul>
                     </div>
                   )}
-                  <Link
-                    className="ud-btn btn-white add-property bdrs60 mx-2 mx-xl-4"
-                    href="/dashboard-add-property"
-                  >
-                    Add Property
-                    <i className="fal fa-arrow-right-long" />
-                  </Link>
                   <a
                     className="sidemenu-btn filter-btn-right"
                     href="#"
