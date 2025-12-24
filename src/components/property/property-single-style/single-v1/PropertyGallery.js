@@ -2,29 +2,47 @@
 import { Gallery, Item } from "react-photoswipe-gallery";
 import "photoswipe/dist/photoswipe.css";
 import Image from "next/image";
-import listings from "@/data/listings";
-
-const images = [
-  {
-    src: "/images/listings/listing-single-2.jpg",
-    alt: "2.jpg",
-  },
-  {
-    src: "/images/listings/listing-single-3.jpg",
-    alt: "3.jpg",
-  },
-  {
-    src: "/images/listings/listing-single-4.jpg",
-    alt: "4.jpg",
-  },
-  {
-    src: "/images/listings/listing-single-5.jpg",
-    alt: "5.jpg",
-  },
-];
+import { propertiesAPI } from "@/services/api";
+import { useState, useEffect } from "react";
 
 const PropertyGallery = ({id}) => {
-  const data = listings.filter((elm) => elm.id == id)[0] || listings[0];
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProperty = async () => {
+      try {
+        setLoading(true);
+        const response = await propertiesAPI.getById(id);
+        if (response.property) {
+          setData(response.property);
+        }
+      } catch (error) {
+        console.error("Failed to fetch property:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchProperty();
+    }
+  }, [id]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!data) {
+    return <div>No images available</div>;
+  }
+
+  const images = data.images && Array.isArray(data.images) && data.images.length > 0
+    ? data.images
+    : ["/images/listings/listing-single-1.jpg"];  // Fallback image
+
+  const mainImage = images[0];
+  const otherImages = images.slice(1, 5);  // Get up to 4 additional images
   return (
     <>
       <Gallery>
@@ -32,19 +50,19 @@ const PropertyGallery = ({id}) => {
           <div className="sp-img-content mb15-md">
             <div className="popup-img preview-img-1 sp-img">
               <Item
-                original={'/images/listings/listing-single-1.jpg'}
-                thumbnail={'/images/listings/listing-single-1.jpg'}
+                original={mainImage}
+                thumbnail={mainImage}
                 width={610}
                 height={510}
               >
                 {({ ref, open }) => (
                   <Image
-                    src={'/images/listings/listing-single-1.jpg'}
+                    src={mainImage}
                     width={591}
                     height={558}
                     ref={ref}
                     onClick={open}
-                    alt="image"
+                    alt={data.title || "Property image"}
                     role="button"
                     className="w-100 h-100 cover"
                   />
@@ -57,15 +75,15 @@ const PropertyGallery = ({id}) => {
 
         <div className="col-sm-6">
           <div className="row">
-            {images.map((image, index) => (
+            {otherImages.map((imageSrc, index) => (
               <div className="col-6 ps-sm-0" key={index}>
                 <div className="sp-img-content">
                   <div
                     className={`popup-img preview-img-${index + 2} sp-img mb10`}
                   >
                     <Item
-                      original={image.src}
-                      thumbnail={image.src}
+                      original={imageSrc}
+                      thumbnail={imageSrc}
                       width={270}
                       height={250}
                     >
@@ -77,8 +95,8 @@ const PropertyGallery = ({id}) => {
                           ref={ref}
                           onClick={open}
                           role="button"
-                          src={image.src}
-                          alt={image.alt}
+                          src={imageSrc}
+                          alt={`${data.title || "Property"} ${index + 2}`}
                         />
                       )}
                     </Item>
