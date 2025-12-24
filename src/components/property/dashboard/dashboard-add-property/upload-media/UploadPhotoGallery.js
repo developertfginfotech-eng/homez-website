@@ -84,13 +84,6 @@ const UploadPhotoGallery = ({ onFilesChange }) => {
         </label>
       </div>
 
-      {/* Hidden input to store images for form submission */}
-      <input
-        type="hidden"
-        name="images"
-        value={imageUrls}
-      />
-
       {/* Display uploaded images */}
       <div className="row profile-box position-relative d-md-flex align-items-end mb50">
         {uploadedImages.map((imageData, index) => (
