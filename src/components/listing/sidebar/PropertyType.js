@@ -19,8 +19,8 @@ const PropertyType = ({filterFunctions}) => {
     <label className="custom_checkbox"  >
           All
           <input type="checkbox"
-          checked={!filterFunctions?.propertyTypes.length}
-          onChange={(e=>{filterFunctions?.setPropertyTypes([])})}
+          checked={!filterFunctions?.categories.length}
+          onChange={(e=>{filterFunctions?.handlecategories("All")})}
   />
           <span className="checkmark" />
         </label>
@@ -28,8 +28,8 @@ const PropertyType = ({filterFunctions}) => {
         <label className="custom_checkbox" key={index} >
           {option.label}
           <input type="checkbox"
-          checked={filterFunctions?.propertyTypes.includes(option.label)}
-          onChange={(e=>{filterFunctions.handlepropertyTypes(option.label)})}
+          checked={filterFunctions?.categories.includes(option.label)}
+          onChange={(e=>{filterFunctions.handlecategories(option.label)})}
   />
           <span className="checkmark" />
         </label>
