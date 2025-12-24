@@ -115,7 +115,14 @@ const SidebarDashboard = () => {
               {section.title}
             </p>
             {section.items
-              .filter((item) => !item.visibleTo || (userRole && item.visibleTo.includes(userRole)))
+              .filter((item) => {
+                if (!item.visibleTo) return true; // Show if no role restriction
+                if (!userRole) {
+                  // If no role is set, treat as buyer
+                  return item.visibleTo.includes("buyer") || item.visibleTo.includes("user");
+                }
+                return item.visibleTo.includes(userRole);
+              })
               .map((item, itemIndex) => (
                 <div key={itemIndex} className="sidebar_list_item">
                   <Link
