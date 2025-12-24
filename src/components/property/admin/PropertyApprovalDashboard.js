@@ -21,10 +21,22 @@ const PropertyApprovalDashboard = () => {
     try {
       setLoading(true);
       setError("");
+
+      // Check if user is logged in
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        setError("You must be logged in to view properties. Please log in as an admin.");
+        setLoading(false);
+        return;
+      }
+
+      console.log('Fetching properties for status:', status);
       const data = await getPropertiesForApproval(status);
+      console.log('Received properties:', data);
       setProperties(data);
     } catch (err) {
-      setError(err.message || "Failed to fetch properties");
+      const errorMessage = err.message || err.error || "Failed to fetch properties from API";
+      setError(`API Error: ${errorMessage}`);
       console.error("Fetch error:", err);
     } finally {
       setLoading(false);
