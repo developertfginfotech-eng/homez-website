@@ -11,8 +11,15 @@ const TourRequestsList = () => {
   const [selectedTour, setSelectedTour] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [filterStatus, setFilterStatus] = useState("all");
+  const [isBuyer, setIsBuyer] = useState(false);
 
   useEffect(() => {
+    // Check if user is a buyer
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      const userData = JSON.parse(storedUser);
+      setIsBuyer(!userData.role || userData.role === 'buyer' || userData.role === 'user');
+    }
     fetchTourRequests();
   }, []);
 
@@ -130,8 +137,10 @@ const TourRequestsList = () => {
       ) : filteredTours.length === 0 ? (
         <div className="alert alert-info">
           {filterStatus === "all"
-            ? "No tour requests yet"
-            : `No ${filterStatus} tour requests`}
+            ? isBuyer
+              ? "No scheduled tours yet. Your tours will appear here once approved by the property owner."
+              : "No tour requests yet"
+            : `No ${filterStatus} ${isBuyer ? 'tours' : 'tour requests'}`}
         </div>
       ) : (
         <div className="table-responsive">
