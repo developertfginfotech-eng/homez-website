@@ -1,15 +1,13 @@
 import axios from 'axios';
 
-const API_URL = 'http://16.16.211.219:5000/api';
-// For local testing, use:
-// const API_URL = 'http://localhost:5000/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://16.16.211.219:5000/api';
 
 const apiClient = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: false,
+  withCredentials: true,
 });
 
 const getAuthToken = () => {
@@ -34,14 +32,28 @@ export const getPendingProperties = async () => {
 // Get all properties with filter
 export const getPropertiesForApproval = async (status = 'all') => {
   try {
+    const token = getAuthToken();
+    console.log('Fetching properties with status:', status);
+    console.log('Auth token present:', !!token);
+    console.log('API URL:', API_URL);
+
     const response = await apiClient.get(`/property/admin/approval?status=${status}`, {
       headers: {
-        Authorization: `Bearer ${getAuthToken()}`,
+        Authorization: `Bearer ${token}`,
       },
     });
+
+    console.log('API Response:', response.data);
+    console.log('Properties count:', response.data.properties?.length || 0);
+
     return response.data.properties || [];
   } catch (error) {
     console.error('Error fetching properties for approval:', error);
+    console.error('Error details:', {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
+    });
     throw error.response?.data || error;
   }
 };
