@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://homez-q5lh.onrender.com/api';
+const API_URL = 'http://16.16.211.219:5000/api';
 // For local testing, use:
 // const API_URL = 'http://localhost:5000/api';
 
