@@ -115,10 +115,8 @@ const AddPropertyTabContent = () => {
       formData.append('energyIndex', parseFloat(data.energyIndex) || 0);
       formData.append('ownerAgentNotes', data.ownerAgentNotes || "");
 
-      // Append amenities
-      amenities.forEach(amenity => {
-        formData.append('amenities', amenity);
-      });
+      // Append amenities as JSON string (for multipart/form-data compatibility)
+      formData.append('amenities', JSON.stringify(amenities));
 
       // Append image files
       console.log("📤 Uploading files:", uploadedFiles);
