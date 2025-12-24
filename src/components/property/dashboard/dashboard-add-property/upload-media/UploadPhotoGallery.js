@@ -3,29 +3,29 @@ import { Tooltip as ReactTooltip } from "react-tooltip";
 import React, { useState, useRef } from "react";
 import Image from "next/image";
 
-const UploadPhotoGallery = () => {
+const UploadPhotoGallery = ({ onFilesChange }) => {
   const [uploadedImages, setUploadedImages] = useState([]);
-  const [imageUrls, setImageUrls] = useState("");
+  const [uploadedFiles, setUploadedFiles] = useState([]);
   const fileInputRef = useRef(null);
 
   const handleUpload = (files) => {
     const newImages = [...uploadedImages];
-    const urls = [];
+    const newFiles = [...uploadedFiles];
 
-    for (const file of files) {
+    Array.from(files).forEach((file) => {
       const reader = new FileReader();
       reader.onload = (e) => {
-        const base64Data = e.target.result;
-        newImages.push(base64Data);
-        urls.push(base64Data);
-        setUploadedImages(newImages);
-        // Store first image URL for form submission
-        if (urls.length > 0) {
-          setImageUrls(urls[0]);
+        newImages.push(e.target.result); // For preview only
+        newFiles.push(file); // Store actual file object
+        setUploadedImages([...newImages]);
+        setUploadedFiles([...newFiles]);
+        // Notify parent component of file changes
+        if (onFilesChange) {
+          onFilesChange([...newFiles]);
         }
       };
       reader.readAsDataURL(file);
-    }
+    });
   };
 
   const handleDrop = (event) => {
@@ -45,8 +45,15 @@ const UploadPhotoGallery = () => {
 
   const handleDelete = (index) => {
     const newImages = [...uploadedImages];
+    const newFiles = [...uploadedFiles];
     newImages.splice(index, 1);
+    newFiles.splice(index, 1);
     setUploadedImages(newImages);
+    setUploadedFiles(newFiles);
+    // Notify parent component of file changes
+    if (onFilesChange) {
+      onFilesChange(newFiles);
+    }
   };
 
   return (
