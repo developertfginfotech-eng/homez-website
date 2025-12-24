@@ -9,20 +9,20 @@ const UploadPhotoGallery = ({ onFilesChange }) => {
   const fileInputRef = useRef(null);
 
   const handleUpload = (files) => {
-    const newImages = [...uploadedImages];
-    const newFiles = [...uploadedFiles];
+    const filesArray = Array.from(files);
+    const newFiles = [...uploadedFiles, ...filesArray];
 
-    Array.from(files).forEach((file) => {
+    // Update files immediately (for form submission)
+    setUploadedFiles(newFiles);
+    if (onFilesChange) {
+      onFilesChange(newFiles);
+    }
+
+    // Load previews asynchronously (for display only)
+    filesArray.forEach((file) => {
       const reader = new FileReader();
       reader.onload = (e) => {
-        newImages.push(e.target.result); // For preview only
-        newFiles.push(file); // Store actual file object
-        setUploadedImages([...newImages]);
-        setUploadedFiles([...newFiles]);
-        // Notify parent component of file changes
-        if (onFilesChange) {
-          onFilesChange([...newFiles]);
-        }
+        setUploadedImages((prev) => [...prev, e.target.result]);
       };
       reader.readAsDataURL(file);
     });

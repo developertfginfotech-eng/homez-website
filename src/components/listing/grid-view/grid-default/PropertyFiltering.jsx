@@ -97,20 +97,23 @@ export default function PropertyFiltering() {
         if (response.properties && Array.isArray(response.properties)) {
           // Convert API properties to listings format
           const convertedProperties = response.properties.map((prop) => {
-            // Handle image data - check if it's base64 or URL
+            // Handle image data - construct full backend URL for uploaded images
             let imageUrl = "/images/listings/list-1.jpg"; // Default fallback
 
             if (prop.images && prop.images.length > 0 && prop.images[0]) {
               const firstImage = prop.images[0];
-              // If image starts with 'data:image', it's already base64
-              // If it starts with 'http', it's a URL
-              // Otherwise, assume it's a path
-              if (firstImage.startsWith('data:image') || firstImage.startsWith('http')) {
+              // If it starts with 'http', it's already a full URL
+              if (firstImage.startsWith('http')) {
                 imageUrl = firstImage;
-              } else if (firstImage.startsWith('/')) {
+              } else if (firstImage.startsWith('/uploads')) {
+                // Construct full URL for uploaded images
+                const backendUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://16.16.211.219:5000';
+                imageUrl = `${backendUrl}${firstImage}`;
+              } else if (firstImage.startsWith('/images')) {
+                // Local static images
                 imageUrl = firstImage;
               }
-              console.log('🖼️ Image for', prop.title, ':', imageUrl.substring(0, 50));
+              console.log('🖼️ Image for', prop.title, ':', imageUrl);
             }
 
             return {

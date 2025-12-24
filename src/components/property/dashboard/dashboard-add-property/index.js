@@ -121,11 +121,21 @@ const AddPropertyTabContent = () => {
       });
 
       // Append image files
-      uploadedFiles.forEach((file) => {
+      console.log("📤 Uploading files:", uploadedFiles);
+      uploadedFiles.forEach((file, index) => {
+        console.log(`  File ${index + 1}:`, file.name, file.type, file.size, "bytes");
         formData.append('images', file);
       });
 
-      console.log("Submitting property with", uploadedFiles.length, "images");
+      console.log("📋 Submitting property with", uploadedFiles.length, "images");
+      console.log("📋 FormData entries:");
+      for (let pair of formData.entries()) {
+        if (pair[1] instanceof File) {
+          console.log(`  ${pair[0]}: [File] ${pair[1].name}`);
+        } else {
+          console.log(`  ${pair[0]}:`, pair[1]);
+        }
+      }
 
       const response = await addProperty(formData);
       console.log("API response:", response);
