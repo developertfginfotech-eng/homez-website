@@ -55,7 +55,13 @@ const SidebarDashboard = () => {
           href: "/dashboard-tour-requests",
           icon: "flaticon-calendar",
           text: "Tour Requests",
-          visibleTo: ["broker", "seller"],
+          visibleTo: ["broker", "seller", "admin"],
+        },
+        {
+          href: "/dashboard-tour-requests",
+          icon: "flaticon-calendar",
+          text: "My Scheduled Tours",
+          visibleTo: ["buyer", "user"],
         },
         {
           href: "/dashboard-my-favourites",
