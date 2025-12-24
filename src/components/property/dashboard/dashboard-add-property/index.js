@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PropertyDescription from "./property-description";
 import UploadMedia from "./upload-media";
 import LocationField from "./LocationField";
@@ -7,6 +7,7 @@ import DetailsFiled from "./details-field";
 import Amenities from "./Amenities";
 import { addProperty } from "@/helpers/propertyApi";
 import { useRouter } from "next/navigation";
+import { kycAPI } from "@/services/api";
 
 const AddPropertyTabContent = () => {
   const router = useRouter();
@@ -14,6 +15,38 @@ const AddPropertyTabContent = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [kycStatus, setKycStatus] = useState(null);
+  const [checkingKyc, setCheckingKyc] = useState(true);
+  const [userRole, setUserRole] = useState(null);
+
+  useEffect(() => {
+    // Check user role and KYC status
+    const checkKycStatus = async () => {
+      try {
+        const userStr = localStorage.getItem("user");
+        if (userStr) {
+          const user = JSON.parse(userStr);
+          setUserRole(user.role);
+
+          // Only check KYC for sellers and brokers (not admin or buyer)
+          if (user.role === "seller" || user.role === "broker") {
+            const response = await kycAPI.getKYCStatus();
+            setKycStatus(response.kyc?.status || "not_submitted");
+          } else {
+            // Admin and buyers don't need KYC
+            setKycStatus("approved");
+          }
+        }
+      } catch (err) {
+        console.error("Error checking KYC status:", err);
+        setKycStatus("not_submitted");
+      } finally {
+        setCheckingKyc(false);
+      }
+    };
+
+    checkKycStatus();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -128,7 +161,35 @@ const AddPropertyTabContent = () => {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} noValidate>
+      {/* KYC Warning for Sellers/Brokers */}
+      {!checkingKyc && (userRole === "seller" || userRole === "broker") && kycStatus !== "approved" && (
+        <div className="alert alert-warning mb30" role="alert">
+          <h5 className="alert-heading">
+            <i className="fas fa-exclamation-triangle me-2"></i>
+            KYC Verification Required
+          </h5>
+          <p className="mb-2">
+            You need to complete KYC verification before you can add properties.
+          </p>
+          <p className="mb-3">
+            <strong>Current Status: </strong>
+            <span className="badge bg-warning text-dark">
+              {kycStatus === "not_submitted" ? "Not Submitted" :
+               kycStatus === "pending" ? "Pending Review" :
+               kycStatus === "rejected" ? "Rejected" : kycStatus}
+            </span>
+          </p>
+          <a href="/kyc-verification" className="btn btn-warning btn-sm">
+            <i className="fas fa-id-card me-2"></i>
+            {kycStatus === "not_submitted" ? "Submit KYC Now" : "View KYC Status"}
+          </a>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} noValidate style={{
+        opacity: (!checkingKyc && (userRole === "seller" || userRole === "broker") && kycStatus !== "approved") ? 0.5 : 1,
+        pointerEvents: (!checkingKyc && (userRole === "seller" || userRole === "broker") && kycStatus !== "approved") ? 'none' : 'auto'
+      }}>
         <nav>
           <div className="nav nav-tabs" id="nav-tab2" role="tablist">
             <button
