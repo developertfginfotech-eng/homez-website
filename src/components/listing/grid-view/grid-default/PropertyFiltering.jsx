@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import ListingSidebar from "../../sidebar";
 import TopFilterBar from "./TopFilterBar";
 import FeaturedListings from "./FeatuerdListings";
@@ -8,6 +9,9 @@ import { propertiesAPI } from "@/services/api";
 import PaginationTwo from "../../PaginationTwo";
 
 export default function PropertyFiltering() {
+  const searchParams = useSearchParams();
+  const categoryParam = searchParams.get('category');
+
   const [filteredData, setFilteredData] = useState([]);
   const [apiProperties, setApiProperties] = useState([]);
   const [isLoadingApi, setIsLoadingApi] = useState(false);
@@ -58,6 +62,19 @@ export default function PropertyFiltering() {
   });
 
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Update categories when URL parameter changes (for navigation between pages)
+  useEffect(() => {
+    if (categoryParam) {
+      const formattedCategory = categoryParam.charAt(0).toUpperCase() + categoryParam.slice(1);
+      console.log('🔄 URL parameter changed, updating categories to:', [formattedCategory]);
+      setCategories([formattedCategory]);
+    } else {
+      // If no category in URL, clear the filter
+      console.log('🔄 URL has no category parameter, clearing categories');
+      setCategories([]);
+    }
+  }, [categoryParam]);
 
   // Fetch properties from API
   useEffect(() => {
