@@ -41,22 +41,27 @@ export default function PropertyFiltering() {
   const [location, setLocation] = useState("All Cities");
   const [squirefeet, setSquirefeet] = useState([]);
   const [yearBuild, setyearBuild] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
 
-  // Read category from URL on mount
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const categoryFromUrl = params.get('category');
-    if (categoryFromUrl) {
-      // Capitalize first letter to match category format in database
-      const formattedCategory = categoryFromUrl.charAt(0).toUpperCase() + categoryFromUrl.slice(1);
-      setCategories([formattedCategory]);
+  // Initialize categories from URL parameter
+  const [categories, setCategories] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const categoryFromUrl = params.get('category');
+      if (categoryFromUrl) {
+        // Capitalize first letter to match category format in database
+        const formattedCategory = categoryFromUrl.charAt(0).toUpperCase() + categoryFromUrl.slice(1);
+        console.log('🔗 Initialized categories from URL:', [formattedCategory]);
+        return [formattedCategory];
+      }
     }
-  }, []);
+    return [];
+  });
+
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Fetch properties from API
   useEffect(() => {
+    console.log('🔄 Fetch useEffect triggered. Categories:', categories);
     const fetchProperties = async () => {
       try {
         setIsLoadingApi(true);
@@ -65,6 +70,9 @@ export default function PropertyFiltering() {
         // Add category filter if categories are selected
         if (categories.length > 0) {
           filters.category = categories[0]; // Send first selected category
+          console.log('📊 Fetching with category filter:', filters.category);
+        } else {
+          console.log('📊 Fetching all properties (no category filter)');
         }
 
         const response = await propertiesAPI.getAll(filters);
@@ -157,6 +165,7 @@ export default function PropertyFiltering() {
     setyearBuild(elm);
   };
   const handlecategories = (elm) => {
+    console.log('🎯 handlecategories called with:', elm, 'Current categories:', categories);
     if (elm == "All") {
       setCategories([]);
     } else {
