@@ -37,8 +37,20 @@ const PropertyGallery = ({id}) => {
     return <div>No images available</div>;
   }
 
+  // Helper function to construct full image URL
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return "/images/listings/listing-single-1.jpg";
+    // If it's already a full URL or a local path starting with /, return as is
+    if (imagePath.startsWith('http') || imagePath.startsWith('/images')) {
+      return imagePath;
+    }
+    // Construct full URL for uploaded images
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://16.16.211.219:5000';
+    return `${backendUrl}${imagePath}`;
+  };
+
   const images = data.images && Array.isArray(data.images) && data.images.length > 0
-    ? data.images
+    ? data.images.map(getImageUrl)
     : ["/images/listings/listing-single-1.jpg"];  // Fallback image
 
   const mainImage = images[0];

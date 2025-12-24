@@ -18,6 +18,7 @@ const AddPropertyTabContent = () => {
   const [kycStatus, setKycStatus] = useState(null);
   const [checkingKyc, setCheckingKyc] = useState(true);
   const [userRole, setUserRole] = useState(null);
+  const [uploadedFiles, setUploadedFiles] = useState([]);
 
   useEffect(() => {
     // Check user role and KYC status
@@ -70,58 +71,63 @@ const AddPropertyTabContent = () => {
       const amenitiesCheckboxes = document.querySelectorAll('input[name="amenity"]:checked');
       const amenities = Array.from(amenitiesCheckboxes).map(cb => cb.value);
 
-      // Prepare the property data
-      const propertyData = {
-        title: data.title || "",
-        description: data.description || "",
-        category: data.category ? [data.category] : [],
-        listedIn: data.listedIn || "Active",
-        propertyType: data.propertyType || "Rent",
-        propertyStatus: data.propertyStatus || "Published",
-        price: parseFloat(data.price) || 0,
-        yearlyTaxRate: parseFloat(data.yearlyTaxRate) || 0,
-        afterPriceLabel: data.afterPriceLabel || "",
-        imagesText: data.images || "",
-        videoUrl: data.videoUrl || "",
-        videoOption: data.videoOption || "youtube",
-        virtualTour: data.virtualTour || "",
-        address: data.address || "",
-        countryState: data.countryState || "",
-        city: data.city || "",
-        country: data.country || "",
-        zipCode: data.zipCode || "",
-        neighborhood: data.neighborhood || "",
-        latitude: parseFloat(data.latitude) || 0,
-        longitude: parseFloat(data.longitude) || 0,
-        sizeInFt: parseFloat(data.sizeInFt) || 0,
-        lotSizeInFt: parseFloat(data.lotSizeInFt) || 0,
-        rooms: parseInt(data.rooms) || 0,
-        bedrooms: parseInt(data.bedrooms) || 0,
-        bathrooms: parseInt(data.bathrooms) || 0,
-        customId: data.customId || "",
-        garages: parseInt(data.garages) || 0,
-        garageSize: parseFloat(data.garageSize) || 0,
-        yearBuilt: parseInt(data.yearBuilt) || 0,
-        availableFrom: data.availableFrom || "",
-        basement: data.basement || "",
-        extraDetails: data.extraDetails || "",
-        roofing: data.roofing || "",
-        exteriorMaterial: data.exteriorMaterial || "",
-        structureType: data.structureType || "",
-        floorsNo: parseInt(data.floorsNo) || 0,
-        energyClass: data.energyClass || "",
-        energyIndex: parseFloat(data.energyIndex) || 0,
-        ownerAgentNotes: data.ownerAgentNotes || "",
-        amenities: amenities,
-      };
+      // Create FormData for file upload
+      const formData = new FormData();
 
-      console.log("Submitting property data:", propertyData);
-      console.log("Image data present:", !!propertyData.imagesText);
-      if (propertyData.imagesText) {
-        console.log("Image data length:", propertyData.imagesText.length);
-      }
+      // Append all property data fields
+      formData.append('title', data.title || "");
+      formData.append('description', data.description || "");
+      formData.append('category', data.category || "");
+      formData.append('listedIn', data.listedIn || "Active");
+      formData.append('propertyType', data.propertyType || "Rent");
+      formData.append('propertyStatus', data.propertyStatus || "Published");
+      formData.append('price', parseFloat(data.price) || 0);
+      formData.append('yearlyTaxRate', parseFloat(data.yearlyTaxRate) || 0);
+      formData.append('afterPriceLabel', data.afterPriceLabel || "");
+      formData.append('videoUrl', data.videoUrl || "");
+      formData.append('videoOption', data.videoOption || "youtube");
+      formData.append('virtualTour', data.virtualTour || "");
+      formData.append('address', data.address || "");
+      formData.append('countryState', data.countryState || "");
+      formData.append('city', data.city || "");
+      formData.append('country', data.country || "");
+      formData.append('zipCode', data.zipCode || "");
+      formData.append('neighborhood', data.neighborhood || "");
+      formData.append('latitude', parseFloat(data.latitude) || 0);
+      formData.append('longitude', parseFloat(data.longitude) || 0);
+      formData.append('sizeInFt', parseFloat(data.sizeInFt) || 0);
+      formData.append('lotSizeInFt', parseFloat(data.lotSizeInFt) || 0);
+      formData.append('rooms', parseInt(data.rooms) || 0);
+      formData.append('bedrooms', parseInt(data.bedrooms) || 0);
+      formData.append('bathrooms', parseInt(data.bathrooms) || 0);
+      formData.append('customId', data.customId || "");
+      formData.append('garages', parseInt(data.garages) || 0);
+      formData.append('garageSize', parseFloat(data.garageSize) || 0);
+      formData.append('yearBuilt', parseInt(data.yearBuilt) || 0);
+      formData.append('availableFrom', data.availableFrom || "");
+      formData.append('basement', data.basement || "");
+      formData.append('extraDetails', data.extraDetails || "");
+      formData.append('roofing', data.roofing || "");
+      formData.append('exteriorMaterial', data.exteriorMaterial || "");
+      formData.append('structureType', data.structureType || "");
+      formData.append('floorsNo', parseInt(data.floorsNo) || 0);
+      formData.append('energyClass', data.energyClass || "");
+      formData.append('energyIndex', parseFloat(data.energyIndex) || 0);
+      formData.append('ownerAgentNotes', data.ownerAgentNotes || "");
 
-      const response = await addProperty(propertyData);
+      // Append amenities
+      amenities.forEach(amenity => {
+        formData.append('amenities', amenity);
+      });
+
+      // Append image files
+      uploadedFiles.forEach((file) => {
+        formData.append('images', file);
+      });
+
+      console.log("Submitting property with", uploadedFiles.length, "images");
+
+      const response = await addProperty(formData);
       console.log("API response:", response);
 
       if (response.success) {
@@ -282,7 +288,7 @@ const AddPropertyTabContent = () => {
             role="tabpanel"
             aria-labelledby="nav-item2-tab"
           >
-            <UploadMedia />
+            <UploadMedia onFilesChange={setUploadedFiles} />
             <div className="row mt30">
               <div className="col-12 d-flex justify-content-between">
                 <button

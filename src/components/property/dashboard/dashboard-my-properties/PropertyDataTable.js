@@ -128,7 +128,11 @@ const PropertyDataTable = () => {
                     width={110}
                     height={94}
                     className="w-100"
-                    src={property.imagesText || "/images/listings/list-1.jpg"}
+                    src={
+                      property.images && property.images.length > 0
+                        ? `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '')}${property.images[0]}`
+                        : "/images/listings/list-1.jpg"
+                    }
                     alt={property.title}
                     onError={(e) => {
                       e.currentTarget.src = "/images/listings/list-1.jpg";
