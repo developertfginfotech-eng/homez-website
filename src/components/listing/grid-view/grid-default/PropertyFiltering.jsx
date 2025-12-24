@@ -96,23 +96,41 @@ export default function PropertyFiltering() {
 
         if (response.properties && Array.isArray(response.properties)) {
           // Convert API properties to listings format
-          const convertedProperties = response.properties.map((prop) => ({
-            id: prop._id,
-            title: prop.title,
-            price: `$${prop.price}`,
-            location: `${prop.city}, ${prop.country}`,
-            city: prop.city,
-            bed: prop.bedrooms || 0,
-            bath: prop.bathrooms || 0,
-            sqft: prop.sizeInFt || 0,
-            yearBuilding: prop.yearBuilt || new Date().getFullYear(),
-            image: prop.images?.[0] || "/images/listings/list-1.jpg",
-            features: Array.isArray(prop.amenities) ? prop.amenities : [],
-            category: Array.isArray(prop.category) ? prop.category : [],
-            propertyType: prop.propertyType || "Rent",
-            forRent: prop.propertyType === "Rent",
-            approvalStatus: prop.approvalStatus,
-          }));
+          const convertedProperties = response.properties.map((prop) => {
+            // Handle image data - check if it's base64 or URL
+            let imageUrl = "/images/listings/list-1.jpg"; // Default fallback
+
+            if (prop.images && prop.images.length > 0 && prop.images[0]) {
+              const firstImage = prop.images[0];
+              // If image starts with 'data:image', it's already base64
+              // If it starts with 'http', it's a URL
+              // Otherwise, assume it's a path
+              if (firstImage.startsWith('data:image') || firstImage.startsWith('http')) {
+                imageUrl = firstImage;
+              } else if (firstImage.startsWith('/')) {
+                imageUrl = firstImage;
+              }
+              console.log('🖼️ Image for', prop.title, ':', imageUrl.substring(0, 50));
+            }
+
+            return {
+              id: prop._id,
+              title: prop.title,
+              price: `$${prop.price}`,
+              location: `${prop.city}, ${prop.country}`,
+              city: prop.city,
+              bed: prop.bedrooms || 0,
+              bath: prop.bathrooms || 0,
+              sqft: prop.sizeInFt || 0,
+              yearBuilding: prop.yearBuilt || new Date().getFullYear(),
+              image: imageUrl,
+              features: Array.isArray(prop.amenities) ? prop.amenities : [],
+              category: Array.isArray(prop.category) ? prop.category : [],
+              propertyType: prop.propertyType || "Rent",
+              forRent: prop.propertyType === "Rent",
+              approvalStatus: prop.approvalStatus,
+            };
+          });
 
           console.log(`✓ API returned ${convertedProperties.length} properties`, { filters, convertedProperties });
           setApiProperties(convertedProperties);
