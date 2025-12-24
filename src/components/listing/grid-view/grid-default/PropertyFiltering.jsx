@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
 import ListingSidebar from "../../sidebar";
 import TopFilterBar from "./TopFilterBar";
 import FeaturedListings from "./FeatuerdListings";
@@ -9,9 +8,6 @@ import { propertiesAPI } from "@/services/api";
 import PaginationTwo from "../../PaginationTwo";
 
 export default function PropertyFiltering() {
-  const searchParams = useSearchParams();
-  const categoryFromUrl = searchParams.get("category");
-
   const [filteredData, setFilteredData] = useState([]);
   const [apiProperties, setApiProperties] = useState([]);
   const [isLoadingApi, setIsLoadingApi] = useState(false);
@@ -55,10 +51,14 @@ export default function PropertyFiltering() {
         setIsLoadingApi(true);
         const filters = {};
 
-        // Add category filter if provided in URL
-        if (categoryFromUrl) {
-          filters.category = categoryFromUrl;
+        // Add category filter based on propertyTypes selection
+        // If propertyTypes is empty (All is selected), don't filter by category
+        // This allows "All" checkbox to show all properties regardless of URL
+        if (propertyTypes.length > 0) {
+          // Use the selected property types for filtering
+          filters.category = propertyTypes[0]; // Send first selected type
         }
+        // Note: Intentionally ignoring categoryFromUrl when All is selected
 
         const response = await propertiesAPI.getAll(filters);
 
@@ -99,7 +99,7 @@ export default function PropertyFiltering() {
     };
 
     fetchProperties();
-  }, [categoryFromUrl]);
+  }, [propertyTypes]); // Re-fetch when property type checkboxes change
 
   // Note: Don't set categories from URL as API already filters by category
   // Only use categories array for sidebar filter selections
