@@ -39,7 +39,7 @@ export default function PropertyFiltering() {
 
   const [listingStatus, setListingStatus] = useState("All");
   const [propertyTypes, setPropertyTypes] = useState([]);
-  const [priceRange, setPriceRange] = useState([0, 100000]);
+  const [priceRange, setPriceRange] = useState([0, 10000000]); // Increased max price to $10M
   const [bedrooms, setBedrooms] = useState(0);
   const [bathroms, setBathroms] = useState(0);
   const [location, setLocation] = useState("All Cities");
@@ -136,7 +136,7 @@ export default function PropertyFiltering() {
   const resetFilter = () => {
     setListingStatus("All");
     setPropertyTypes([]);
-    setPriceRange([0, 100000]);
+    setPriceRange([0, 10000000]);
     setBedrooms(0);
     setBathroms(0);
     setLocation("All Cities");
@@ -236,6 +236,19 @@ export default function PropertyFiltering() {
       }
     });
 
+    console.log('🔍 After listing status filter:', refItems.length, 'properties');
+    console.log('🔍 Current filter states:', {
+      propertyTypes,
+      bedrooms,
+      bathroms,
+      location,
+      categories,
+      searchQuery,
+      priceRange,
+      squirefeet,
+      yearBuild
+    });
+
     let filteredArrays = [];
 
     if (propertyTypes.length > 0) {
@@ -322,6 +335,10 @@ export default function PropertyFiltering() {
     const commonItems = refItems.filter((item) =>
       filteredArrays.every((array) => array.includes(item))
     );
+
+    console.log('🔍 Final filtered data:', commonItems.length, 'properties');
+    console.log('🔍 filteredArrays lengths:', filteredArrays.map(arr => arr.length));
+    console.log('🔍 Final properties:', commonItems.map(p => ({ title: p.title, category: p.category })));
 
     setFilteredData(commonItems);
   }, [
