@@ -35,7 +35,7 @@ const AddPropertyTabContent = () => {
             setKycStatus(response.kyc?.status || "not_submitted");
           } else {
             // Admin and buyers don't need KYC
-            setKycStatus("approved");
+            setKycStatus("verified");
           }
         }
       } catch (err) {
@@ -168,7 +168,7 @@ const AddPropertyTabContent = () => {
       )}
 
       {/* KYC Warning for Sellers/Brokers */}
-      {!checkingKyc && (userRole === "seller" || userRole === "broker") && kycStatus !== "approved" && (
+      {!checkingKyc && (userRole === "seller" || userRole === "broker") && kycStatus !== "verified" && (
         <div className="alert alert-warning mb30" role="alert">
           <h5 className="alert-heading">
             <i className="fas fa-exclamation-triangle me-2"></i>
@@ -193,8 +193,8 @@ const AddPropertyTabContent = () => {
       )}
 
       <form onSubmit={handleSubmit} noValidate style={{
-        opacity: (!checkingKyc && (userRole === "seller" || userRole === "broker") && kycStatus !== "approved") ? 0.5 : 1,
-        pointerEvents: (!checkingKyc && (userRole === "seller" || userRole === "broker") && kycStatus !== "approved") ? 'none' : 'auto'
+        opacity: (!checkingKyc && (userRole === "seller" || userRole === "broker") && kycStatus !== "verified") ? 0.5 : 1,
+        pointerEvents: (!checkingKyc && (userRole === "seller" || userRole === "broker") && kycStatus !== "verified") ? 'none' : 'auto'
       }}>
         <nav>
           <div className="nav nav-tabs" id="nav-tab2" role="tablist">
