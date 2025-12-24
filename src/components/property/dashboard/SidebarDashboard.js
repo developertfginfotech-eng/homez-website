@@ -43,13 +43,13 @@ const SidebarDashboard = () => {
           href: "/dashboard-add-property",
           icon: "flaticon-new-tab",
           text: "Add New Property",
-          visibleTo: ["broker", "seller"],
+          visibleTo: ["broker", "seller", "admin"],
         },
         {
           href: "/dashboard-my-properties",
           icon: "flaticon-home",
           text: "My Properties",
-          visibleTo: ["broker", "seller"],
+          visibleTo: ["broker", "seller", "admin"],
         },
         {
           href: "/dashboard-tour-requests",
