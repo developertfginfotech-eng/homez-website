@@ -1,24 +1,21 @@
 
 'use client'
 
-
-
-import listings from "@/data/listings";
-import React, { useState,useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import ListingSidebar from '../../sidebar'
 import AdvanceFilterModal from '@/components/common/advance-filter-two'
 import TopFilterBar from './TopFilterBar'
 import FeaturedListings from './FeatuerdListings'
 import Pagination from '../../Pagination'
 import PaginationTwo from "../../PaginationTwo";
-
+import { getAllProperties } from "@/helpers/propertyApi";
 
 export default function ProperteyFiltering() {
   const [filteredData, setFilteredData] = useState([]);
-
-    const [currentSortingOption, setCurrentSortingOption] = useState('Newest')
-
-    const [sortedFilteredData, setSortedFilteredData] = useState([]);
+  const [apiProperties, setApiProperties] = useState([]);
+  const [isLoadingApi, setIsLoadingApi] = useState(false);
+  const [currentSortingOption, setCurrentSortingOption] = useState('Newest')
+  const [sortedFilteredData, setSortedFilteredData] = useState([]);
 
 
         const [pageNumber, setPageNumber] = useState(1)
@@ -130,7 +127,7 @@ export default function ProperteyFiltering() {
     listingStatus,
     propertyTypes,
     resetFilter,
-   
+
     bedrooms,
     bathroms,
     location,
@@ -140,11 +137,62 @@ export default function ProperteyFiltering() {
     setPropertyTypes
   }
 
+  // Fetch properties from API
+  useEffect(() => {
+    const fetchProperties = async () => {
+      try {
+        setIsLoadingApi(true);
+        const data = await getAllProperties();
 
+        if (data && Array.isArray(data)) {
+          // Convert API properties to listings format
+          const convertedProperties = data
+            .filter(p => p.approvalStatus === 'approved')
+            .map((prop) => {
+              const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://16.16.211.219:5000/api';
+              const backendUrl = API_URL.replace('/api', '');
+
+              let imageUrl = "/images/listings/list-1.jpg";
+              if (prop.images && prop.images.length > 0 && prop.images[0]) {
+                const firstImage = prop.images[0];
+                imageUrl = firstImage.startsWith('http') ? firstImage : `${backendUrl}${firstImage}`;
+              }
+
+              return {
+                id: prop._id,
+                title: prop.title,
+                price: `$${prop.price}`,
+                location: `${prop.city}, ${prop.country}`,
+                city: prop.city,
+                bed: prop.bedrooms || 0,
+                bath: prop.bathrooms || 0,
+                sqft: prop.sizeInFt || 0,
+                yearBuilding: prop.yearBuilt || new Date().getFullYear(),
+                image: imageUrl,
+                features: Array.isArray(prop.amenities) ? prop.amenities : [],
+                category: Array.isArray(prop.category) ? prop.category : [],
+                propertyType: prop.propertyType || "Rent",
+                forRent: prop.propertyType === "Rent",
+              };
+            });
+
+          console.log(`✓ API returned ${convertedProperties.length} approved properties`);
+          setApiProperties(convertedProperties);
+        }
+      } catch (error) {
+        console.error("Failed to fetch properties from API:", error);
+        setApiProperties([]);
+      } finally {
+        setIsLoadingApi(false);
+      }
+    };
+
+    fetchProperties();
+  }, []);
 
     useEffect(() => {
-      
-        const refItems = listings.filter((elm) => {
+
+        const refItems = apiProperties.filter((elm) => {
             if (listingStatus == "All") {
               return true;
             } else if (listingStatus == "Buy") {
@@ -222,8 +270,8 @@ export default function ProperteyFiltering() {
         location,
         squirefeet,
         yearBuild,
-        categories
-
+        categories,
+        apiProperties
     ])
 
     useEffect(() => {
@@ -303,7 +351,20 @@ export default function ProperteyFiltering() {
           {/* End TopFilterBar */}
 
           <div className="row">
-            <FeaturedListings  colstyle ={colstyle}  data={pageItems} />
+            {isLoadingApi ? (
+              <div className="col-12 text-center py-5">
+                <div className="spinner-border text-primary" role="status">
+                  <span className="visually-hidden">Loading properties...</span>
+                </div>
+                <p className="mt-3">Loading properties from database...</p>
+              </div>
+            ) : pageItems.length === 0 ? (
+              <div className="col-12 text-center py-5">
+                <p>No properties found. Try adjusting your filters.</p>
+              </div>
+            ) : (
+              <FeaturedListings  colstyle ={colstyle}  data={pageItems} />
+            )}
           </div>
           {/* End .row */}
 
