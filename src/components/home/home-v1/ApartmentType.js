@@ -1,5 +1,4 @@
 "use client";
-import apartmentTypeData from "@/data/apartmentType";
 import { getCategoryCounts } from "@/helpers/propertyApi";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
@@ -7,18 +6,19 @@ import { Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
 const ApartmentType = () => {
-  const [categories, setCategories] = useState(apartmentTypeData);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchCategoryCounts = async () => {
       try {
         const data = await getCategoryCounts();
-        if (data && data.length > 0) {
-          setCategories(data);
-        }
+        setCategories(data || []);
       } catch (error) {
         console.error("Error fetching category counts:", error);
-        // Keep using fallback data on error
+        setCategories([]);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -30,6 +30,14 @@ const ApartmentType = () => {
     const categoryName = categoryTitle.toLowerCase();
     return `/grid-default?category=${encodeURIComponent(categoryName)}`;
   };
+
+  if (loading) {
+    return <div className="text-center">Loading categories...</div>;
+  }
+
+  if (categories.length === 0) {
+    return <div className="text-center">No categories available</div>;
+  }
 
   return (
     <Swiper
