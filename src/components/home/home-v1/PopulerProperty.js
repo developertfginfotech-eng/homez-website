@@ -1,27 +1,41 @@
 
 'use client'
 
+import { getAllProperties } from '@/helpers/propertyApi';
 import Link from 'next/link';
-
 import React, { useEffect, useState } from 'react'
 import PopularListings from './PopularListings'
-import listings from '@/data/listings'
+
 export default function PopulerProperty() {
     const [pageData, setPageData] = useState([])
     const [currentType, setCurrentType] = useState('rent')
+    const [loading, setLoading] = useState(true)
+
     useEffect(() => {
-        if (currentType == 'rent') {
-            const filtered = listings.filter((elm)=>elm.forRent)
-            setPageData(filtered)
-            
-        } else {
-            const filtered = listings.filter((elm)=> !elm.forRent)
-            setPageData(filtered)
-            
+        const fetchProperties = async () => {
+            try {
+                setLoading(true);
+                const data = await getAllProperties();
+                const approved = data.filter(p => p.approvalStatus === 'approved');
+
+                if (currentType === 'rent') {
+                    const filtered = approved.filter((elm) => elm.propertyType === 'Rent')
+                    setPageData(filtered)
+                } else {
+                    const filtered = approved.filter((elm) => elm.propertyType === 'Sale')
+                    setPageData(filtered)
+                }
+            } catch (error) {
+                console.error('Error fetching properties:', error);
+                setPageData([]);
+            } finally {
+                setLoading(false);
+            }
         }
-      
+
+        fetchProperties();
     }, [currentType])
-    
+
   return (
     <section className="bgc-dark">
         <div className="container">
@@ -56,12 +70,18 @@ export default function PopulerProperty() {
 
           <div className="row" data-aos="fade-up" data-aos-delay="300">
             <div className="col-lg-12">
-              <PopularListings data={pageData} />
-              <div className="d-grid d-md-block text-center mt30 mt0-md">
-                <Link href="/grid-full-4-col" className="ud-btn btn-thm">
-                  See All Properties<i className="fal fa-arrow-right-long"></i>
-                </Link>
-              </div>
+              {loading ? (
+                <div className="text-center text-white">Loading properties...</div>
+              ) : (
+                <>
+                  <PopularListings data={pageData} />
+                  <div className="d-grid d-md-block text-center mt30 mt0-md">
+                    <Link href="/grid-full-4-col" className="ud-btn btn-thm">
+                      See All Properties<i className="fal fa-arrow-right-long"></i>
+                    </Link>
+                  </div>
+                </>
+              )}
             </div>
           </div>
           {/* End .row */}
