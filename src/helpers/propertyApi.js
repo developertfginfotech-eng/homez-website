@@ -109,3 +109,14 @@ export const deleteProperty = async (propertyId) => {
     throw error.response?.data || error;
   }
 };
+
+// Get property counts by category
+export const getCategoryCounts = async () => {
+  try {
+    const response = await apiClient.get('/property/categories/counts');
+    return response.data.categories || [];
+  } catch (error) {
+    console.error('Error fetching category counts:', error);
+    throw error;
+  }
+};

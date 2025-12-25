@@ -1,11 +1,30 @@
 "use client";
-import apartmentType from "@/data/apartmentType";
+import apartmentTypeData from "@/data/apartmentType";
+import { getCategoryCounts } from "@/helpers/propertyApi";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
 const ApartmentType = () => {
+  const [categories, setCategories] = useState(apartmentTypeData);
+
+  useEffect(() => {
+    const fetchCategoryCounts = async () => {
+      try {
+        const data = await getCategoryCounts();
+        if (data && data.length > 0) {
+          setCategories(data);
+        }
+      } catch (error) {
+        console.error("Error fetching category counts:", error);
+        // Keep using fallback data on error
+      }
+    };
+
+    fetchCategoryCounts();
+  }, []);
+
   const getCategoryUrl = (categoryTitle) => {
     // Convert category title to lowercase for API filtering
     const categoryName = categoryTitle.toLowerCase();
@@ -52,7 +71,7 @@ const ApartmentType = () => {
         },
       }}
     >
-      {apartmentType.map((type) => (
+      {categories.map((type) => (
         <SwiperSlide key={type.id}>
           <div className="item">
             <Link href={getCategoryUrl(type.title)}>

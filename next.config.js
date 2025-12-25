@@ -11,12 +11,19 @@ const nextConfig = {
     ],
   },
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'http',
         hostname: '16.16.211.219',
         port: '5000',
         pathname: '/uploads/**',
+      },
+      {
+        protocol: 'http',
+        hostname: '16.16.211.219',
+        port: '',
+        pathname: '/**',
       },
       {
         protocol: 'http',
