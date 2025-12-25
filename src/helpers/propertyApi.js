@@ -120,3 +120,14 @@ export const getCategoryCounts = async () => {
     throw error;
   }
 };
+
+// Get property counts by city
+export const getCityCounts = async () => {
+  try {
+    const response = await apiClient.get('/property/cities/counts');
+    return response.data.cities || [];
+  } catch (error) {
+    console.error('Error fetching city counts:', error);
+    throw error;
+  }
+};
