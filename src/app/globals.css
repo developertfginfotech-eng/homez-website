@@ -1,2 +1,34 @@
 /* Import Bootstrap */
 @import "bootstrap/dist/css/bootstrap.min.css";
+
+/* Custom Image Sizing - Ensure all property images display at consistent sizes */
+.listing-style1 .list-thumb {
+  position: relative;
+  width: 100%;
+  height: 248px;
+  overflow: hidden;
+}
+
+.listing-style1 .list-thumb img {
+  object-fit: cover !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.feature-style1 .feature-img {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+}
+
+.feature-style1 .feature-img img {
+  object-fit: cover !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Ensure Next.js Image component respects object-fit */
+img.cover {
+  object-fit: cover !important;
+}
