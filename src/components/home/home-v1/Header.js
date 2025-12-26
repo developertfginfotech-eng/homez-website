@@ -91,13 +91,16 @@ const Header = () => {
                       <span className="d-none d-xl-block">Login / Register</span>
                     </a>
                   )}
-                  <Link
-                    className="ud-btn add-property menu-btn bdrs60 mx-2 mx-xl-4"
-                    href="/dashboard-add-property"
-                  >
-                    Add Property
-                    <i className="fal fa-arrow-right-long" />
-                  </Link>
+                  {/* Only show Add Property button for sellers, brokers, and admins */}
+                  {user && (user.role === 'seller' || user.role === 'broker' || user.role === 'admin') && (
+                    <Link
+                      className="ud-btn add-property menu-btn bdrs60 mx-2 mx-xl-4"
+                      href="/dashboard-add-property"
+                    >
+                      Add Property
+                      <i className="fal fa-arrow-right-long" />
+                    </Link>
+                  )}
                   <a
                     className="sidemenu-btn filter-btn-right"
                     href="#"
