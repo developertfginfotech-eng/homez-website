@@ -117,7 +117,7 @@ const DefaultHeader = () => {
                       </a>
                       <ul className="dropdown-menu" aria-labelledby="userDropdown">
                         <li>
-                          <Link className="dropdown-item" href="/dashboard">
+                          <Link className="dropdown-item" href="/dashboard-home">
                             Dashboard
                           </Link>
                         </li>
