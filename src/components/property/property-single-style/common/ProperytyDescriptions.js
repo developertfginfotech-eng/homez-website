@@ -1,16 +1,14 @@
 import React from "react";
 
-const ProperytyDescriptions = () => {
+const ProperytyDescriptions = ({ property }) => {
+  if (!property) return null;
+
+  const description = property.description || "No description available.";
+
   return (
     <>
       <p className="text mb10">
-        This 3-bed with a loft, 2-bath home in the gated community of The
-        Hideout has it all. From the open floor plan to the abundance of light
-        from the windows, this home is perfect for entertaining. The living room
-        and dining room have vaulted ceilings and a beautiful fireplace. You
-        will love spending time on the deck taking in the beautiful views. In
-        the kitchen, you&apos;ll find stainless steel appliances and a tile
-        backsplash, as well as a breakfast bar.
+        {description}
       </p>
       <div className="agent-single-accordion">
         <div className="accordion accordion-flush" id="accordionFlushExample">
