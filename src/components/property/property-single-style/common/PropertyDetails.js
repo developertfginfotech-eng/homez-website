@@ -1,49 +1,51 @@
 import React from "react";
 
-const PropertyDetails = () => {
+const PropertyDetails = ({ property }) => {
+  if (!property) return null;
+
   const columns = [
     [
       {
         label: "Property ID",
-        value: "RT48",
+        value: property.customId || property._id?.slice(-8) || "N/A",
       },
       {
         label: "Price",
-        value: "$252,000",
+        value: `$${property.price?.toLocaleString() || 0}`,
       },
       {
         label: "Property Size",
-        value: "1500 Sq Ft",
+        value: `${property.sizeInFt || 0} Sq Ft`,
       },
       {
         label: "Bathrooms",
-        value: "3",
+        value: property.bathrooms || 0,
       },
       {
         label: "Bedrooms",
-        value: "2",
+        value: property.bedrooms || 0,
       },
     ],
     [
       {
         label: "Garage",
-        value: "2",
+        value: property.garages || 0,
       },
       {
         label: "Garage Size",
-        value: "200 SqFt",
+        value: `${property.garageSize || 0} SqFt`,
       },
       {
         label: "Year Built",
-        value: "2022",
+        value: property.yearBuilt || "N/A",
       },
       {
         label: "Property Type",
-        value: "Apartment",
+        value: property.structureType || property.category?.[0] || "N/A",
       },
       {
         label: "Property Status",
-        value: "For Sale",
+        value: property.propertyType || "N/A",
       },
     ],
   ];

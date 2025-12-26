@@ -1,24 +1,16 @@
 import React from "react";
 
-const PropertyAddress = () => {
-  const addresses = [
-    {
-      address: "10425 Tabor St",
-      city: "Los Angeles",
-      state: "California",
-      zipCode: "90034",
-      area: "Brookside",
-      country: "United States",
-    },
-    {
-      address: "10 Downing Street",
-      city: "London",
-      state: "Greater London",
-      zipCode: "SW1A 2AA",
-      area: "Westminster",
-      country: "United Kingdom",
-    },
-  ];
+const PropertyAddress = ({ property }) => {
+  if (!property) return null;
+
+  const address = {
+    address: property.address || "N/A",
+    city: property.city || "N/A",
+    state: property.countryState || "N/A",
+    zipCode: property.zipCode || "N/A",
+    area: property.neighborhood || "N/A",
+    country: property.country || "N/A",
+  };
 
   return (
     <>
