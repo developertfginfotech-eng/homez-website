@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { propertyAPI } from "@/services/api";
+import { propertiesAPI } from "@/services/api";
 import OverView from "../common/OverView";
 import PropertyDetails from "../common/PropertyDetails";
 import ProperytyDescriptions from "../common/ProperytyDescriptions";
@@ -16,7 +16,7 @@ const PropertyDetailWrapper = ({ id }) => {
     const fetchProperty = async () => {
       try {
         setLoading(true);
-        const response = await propertyAPI.getById(id);
+        const response = await propertiesAPI.getById(id);
         setProperty(response.property);
       } catch (err) {
         console.error("Error fetching property:", err);
