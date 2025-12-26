@@ -1,15 +1,20 @@
 import React from "react";
 
-const PropertyFeaturesAminites = () => {
-  const featuresAmenitiesData = [
-    ["Air Conditioning", "Barbeque", "Dryer", "Gym"],
-    ["Lawn", "Microwave", "Outdoor Shower", "Refrigerator"],
-    ["Swimming Pool", "TV Cable", "Washer", "WiFi6"],
-  ];
+const PropertyFeaturesAminites = ({ property }) => {
+  if (!property || !property.amenities || property.amenities.length === 0) {
+    return <p className="text">No amenities listed</p>;
+  }
+
+  // Group amenities into chunks of 4 for display
+  const chunkSize = 4;
+  const chunkedAmenities = [];
+  for (let i = 0; i < property.amenities.length; i += chunkSize) {
+    chunkedAmenities.push(property.amenities.slice(i, i + chunkSize));
+  }
 
   return (
     <>
-      {featuresAmenitiesData.map((row, rowIndex) => (
+      {chunkedAmenities.map((row, rowIndex) => (
         <div key={rowIndex} className="col-sm-6 col-md-4">
           <div className="pd-list">
             {row.map((item, index) => (
