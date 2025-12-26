@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { tourAPI } from "@/services/api";
 
@@ -19,6 +19,27 @@ const ScheduleTour = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [user, setUser] = useState(null);
+
+  // Load user data from localStorage on mount
+  useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      try {
+        const parsedUser = JSON.parse(userData);
+        setUser(parsedUser);
+        // Auto-fill user data for logged-in users
+        setFormData(prev => ({
+          ...prev,
+          name: parsedUser.name || "",
+          email: parsedUser.email || "",
+          phone: parsedUser.phone || "",
+        }));
+      } catch (err) {
+        console.error("Failed to parse user data:", err);
+      }
+    }
+  }, []);
 
   const tabs = [
     {
@@ -172,8 +193,12 @@ const ScheduleTour = () => {
                       placeholder="Your Full Name"
                       value={formData.name}
                       onChange={handleChange}
+                      readOnly={!!user}
                       required
                     />
+                    {user && (
+                      <small className="text-muted">Using your account name</small>
+                    )}
                   </div>
                 </div>
                 {/* End .col-12 */}
@@ -190,8 +215,12 @@ const ScheduleTour = () => {
                       placeholder="Your Phone Number"
                       value={formData.phone}
                       onChange={handleChange}
+                      readOnly={!!user}
                       required
                     />
+                    {user && (
+                      <small className="text-muted">Using your account phone</small>
+                    )}
                   </div>
                 </div>
                 {/* End .col-12 */}
@@ -208,8 +237,12 @@ const ScheduleTour = () => {
                       placeholder="Your Email Address"
                       value={formData.email}
                       onChange={handleChange}
+                      readOnly={!!user}
                       required
                     />
+                    {user && (
+                      <small className="text-muted">Using your account email</small>
+                    )}
                   </div>
                 </div>
                 {/* End .col-12 */}
