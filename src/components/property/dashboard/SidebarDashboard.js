@@ -1,10 +1,11 @@
 "use client";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const SidebarDashboard = () => {
   const pathname = usePathname();
+  const router = useRouter();
   const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
@@ -20,6 +21,18 @@ const SidebarDashboard = () => {
     }
   }, []);
 
+  const handleLogout = () => {
+    // Clear all user data from localStorage
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+
+    // Dispatch a custom event to notify other components
+    window.dispatchEvent(new Event("storage"));
+
+    // Redirect to homepage
+    router.push("/");
+  };
+
   const sidebarItems = [
     {
       title: "MAIN",
@@ -33,6 +46,17 @@ const SidebarDashboard = () => {
           href: "/dashboard-message",
           icon: "flaticon-chat-1",
           text: "Message",
+        },
+      ],
+    },
+    {
+      title: "ADMIN PANEL",
+      items: [
+        {
+          href: "/dashboard-admin-kyc",
+          icon: "flaticon-user",
+          text: "KYC Verification",
+          visibleTo: ["admin"],
         },
       ],
     },
@@ -125,15 +149,33 @@ const SidebarDashboard = () => {
               })
               .map((item, itemIndex) => (
                 <div key={itemIndex} className="sidebar_list_item">
-                  <Link
-                    href={item.href}
-                    className={`items-center   ${
-                      pathname == item.href ? "-is-active" : ""
-                    } `}
-                  >
-                    <i className={`${item.icon} mr15`} />
-                    {item.text}
-                  </Link>
+                  {item.text === "Logout" ? (
+                    <button
+                      onClick={handleLogout}
+                      className="items-center"
+                      style={{
+                        background: "none",
+                        border: "none",
+                        padding: 0,
+                        width: "100%",
+                        textAlign: "left",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <i className={`${item.icon} mr15`} />
+                      {item.text}
+                    </button>
+                  ) : (
+                    <Link
+                      href={item.href}
+                      className={`items-center   ${
+                        pathname == item.href ? "-is-active" : ""
+                      } `}
+                    >
+                      <i className={`${item.icon} mr15`} />
+                      {item.text}
+                    </Link>
+                  )}
                 </div>
               ))}
           </div>

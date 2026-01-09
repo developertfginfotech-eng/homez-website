@@ -13,6 +13,60 @@ const KYCStatus = () => {
     const fetchKYCStatus = async () => {
       try {
         setLoading(true);
+
+        // First check localStorage for KYC status
+        const kycStatus = localStorage.getItem("kycStatus");
+        const kycVerified = localStorage.getItem("kycVerified");
+        const kycSubmitted = localStorage.getItem("kycSubmitted");
+        const userStr = localStorage.getItem("user");
+        let user = userStr ? JSON.parse(userStr) : null;
+
+        // Fix for existing users with old data structure
+        // If user has kycVerified true but no explicit verified status, treat as pending
+        if (user && user.kycVerified === true && !user.kycStatus) {
+          // This is old data - convert to pending status for admin verification
+          user.kycVerified = false;
+          user.kycStatus = "pending";
+          user.kycSubmitted = true;
+          localStorage.setItem("user", JSON.stringify(user));
+          localStorage.setItem("kycStatus", "pending");
+          localStorage.setItem("kycSubmitted", "true");
+          localStorage.removeItem("kycVerified");
+        }
+
+        // IMPORTANT: Check pending status FIRST before verified status
+        // This ensures that recently submitted KYC shows as pending even if old verified flag exists
+        if (kycStatus === "pending" || kycSubmitted === "true" || (user && user.kycStatus === "pending")) {
+          setKycData({
+            status: "pending",
+            createdAt: new Date().toISOString(),
+          });
+          setLoading(false);
+          return;
+        }
+
+        // Check if KYC is verified (only if not pending)
+        if ((kycVerified === "true" || (user && user.kycVerified)) && kycStatus !== "pending") {
+          setKycData({
+            status: "verified",
+            createdAt: new Date().toISOString(),
+          });
+          setLoading(false);
+          return;
+        }
+
+        // Check if KYC is rejected
+        if (kycStatus === "rejected" || (user && user.kycStatus === "rejected")) {
+          setKycData({
+            status: "rejected",
+            createdAt: new Date().toISOString(),
+            rejectionReason: user?.kycRejectionReason || "Please check your documents and resubmit",
+          });
+          setLoading(false);
+          return;
+        }
+
+        // If not in localStorage, try API call
         const response = await kycAPI.getKYCStatus();
 
         if (response.success && response.kyc) {

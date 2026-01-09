@@ -67,12 +67,27 @@ export const kycAPI = {
 
     // Append form fields
     Object.keys(kycData).forEach(key => {
-      formData.append(key, kycData[key]);
+      if (typeof kycData[key] === 'object' && kycData[key] !== null) {
+        formData.append(key, JSON.stringify(kycData[key]));
+      } else {
+        formData.append(key, kycData[key]);
+      }
     });
 
     // Append files (use lowercase field names to match backend)
     if (files.frontImage) formData.append('frontimage', files.frontImage);
     if (files.backImage) formData.append('backimage', files.backImage);
+
+    // Append additional property-related documents
+    if (files.aadhaarCard) formData.append('aadhaarcard', files.aadhaarCard);
+    if (files.panCard) formData.append('pancard', files.panCard);
+    if (files.driversLicense) formData.append('driverslicense', files.driversLicense);
+    if (files.passport) formData.append('passport', files.passport);
+    if (files.propertyOwnership) formData.append('propertyownership', files.propertyOwnership);
+    if (files.businessLicense) formData.append('businesslicense', files.businessLicense);
+    if (files.taxDocument) formData.append('taxdocument', files.taxDocument);
+    if (files.bankStatement) formData.append('bankstatement', files.bankStatement);
+    if (files.addressProof) formData.append('addressproof', files.addressProof);
 
     const token = localStorage.getItem('authToken');
     const response = await fetch(`${API_URL}/kyc/upload`, {
@@ -82,7 +97,10 @@ export const kycAPI = {
       },
       body: formData,
     });
-    if (!response.ok) throw new Error('KYC submission failed');
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || 'KYC submission failed');
+    }
     return response.json();
   },
 
@@ -95,6 +113,49 @@ export const kycAPI = {
       },
     });
     if (!response.ok) throw new Error('Failed to fetch KYC status');
+    return response.json();
+  },
+
+  // Admin KYC endpoints
+  getAllKYCSubmissions: async (status = 'all') => {
+    const token = localStorage.getItem('authToken');
+    const url = status === 'all'
+      ? `${API_URL}/kyc/all`
+      : `${API_URL}/kyc/all?status=${status}`;
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw new Error('Failed to fetch KYC submissions');
+    return response.json();
+  },
+
+  verifyKYC: async (kycId, status, rejectionReason = '') => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_URL}/kyc/verify/${kycId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ status, rejectionReason }),
+    });
+    if (!response.ok) throw new Error('Failed to verify KYC');
+    return response.json();
+  },
+
+  getKYCDetails: async (kycId) => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_URL}/kyc/details/${kycId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw new Error('Failed to fetch KYC details');
     return response.json();
   },
 };

@@ -56,23 +56,12 @@ const MainMenu = () => {
   };
   return (
     <ul className="ace-responsive-menu">
-      <li className="visible_list dropitem">
-        <a className="list-item" href="#">
+      <li className="visible_list">
+        <Link className="list-item" href="/">
           <span className={topMenu == "home" ? "title menuActive" : "title"}>
             Home
           </span>
-          <span className="arrow"></span>
-        </a>
-        {/* Level Two*/}
-        <ul className="sub-menu">
-          {homeItems.map((item, index) => (
-            <li key={index}>
-              <Link className={`${handleActive(item.href)}`} href={item.href}>
-                {item.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
+        </Link>
       </li>
       {/* End homeItems */}
 

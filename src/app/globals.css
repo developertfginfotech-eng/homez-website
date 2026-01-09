@@ -32,3 +32,223 @@
 img.cover {
   object-fit: cover !important;
 }
+
+/* Post Property Page Styles */
+.post-property-section {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.post-property-section .title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #2d3748;
+}
+
+.why-post-section {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.why-post-section .title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #2d3748;
+}
+
+.why-post-section .benefit-item h6 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #4a5568;
+}
+
+.testimonial-box {
+  background-color: #fef2f0;
+  border-left: 4px solid #eb6753;
+}
+
+.testimonial-box .title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #2d3748;
+}
+
+.testimonial-box .text {
+  color: #4a5568;
+  line-height: 1.6;
+  font-style: italic;
+}
+
+.post-property-form-wrapper {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Remove any diagonal/skew effects from property form buttons */
+.post-property-form-wrapper button,
+.post-property-form-wrapper .btn {
+  clip-path: none !important;
+  transform: none !important;
+  position: relative;
+}
+
+.post-property-form-wrapper button::before,
+.post-property-form-wrapper button::after,
+.post-property-form-wrapper .btn::before,
+.post-property-form-wrapper .btn::after {
+  display: none !important;
+  content: none !important;
+}
+
+.post-property-form-wrapper button:hover {
+  transform: translateY(-2px) !important;
+}
+
+.btn-thm {
+  background-color: #eb6753 !important;
+  color: white !important;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-thm::before,
+.btn-thm::after {
+  display: none !important;
+}
+
+.btn-thm:hover {
+  background-color: #d94a36 !important;
+  color: white !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(235, 103, 83, 0.3);
+}
+
+.btn-outline-thm {
+  background-color: white;
+  color: #eb6753;
+  border: 2px solid #eb6753;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-thm:hover {
+  background-color: #eb6753;
+  color: white;
+}
+
+.bgc-thm-light {
+  background-color: #fef2f0;
+}
+
+.feature-box {
+  padding: 20px;
+  transition: transform 0.3s ease;
+}
+
+.feature-box:hover {
+  transform: translateY(-5px);
+}
+
+.feature-box .icon-wrapper {
+  color: #eb6753;
+}
+
+.feature-box .title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2d3748;
+  margin-bottom: 10px;
+}
+
+.feature-box .text {
+  color: #718096;
+  font-size: 14px;
+}
+
+/* Custom Switch Styling */
+.form-check-input:checked {
+  background-color: #eb6753;
+  border-color: #eb6753;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .post-property-section .title {
+    font-size: 24px;
+  }
+
+  .post-property-form-wrapper {
+    padding: 20px !important;
+  }
+
+  .why-post-section {
+    margin-bottom: 20px;
+  }
+}
+
+/* NoBroker-Style Homepage Styles */
+.nobroker-search-wrapper {
+  margin-top: 50px;
+}
+
+.property-type-tab:hover {
+  background-color: #d94a36 !important;
+  color: white !important;
+  border-color: #d94a36 !important;
+}
+
+.search-box-nobroker input:focus {
+  outline: none !important;
+}
+
+.property-type-card {
+  background-color: white;
+}
+
+.property-type-card:hover .icon-wrapper {
+  transform: scale(1.1);
+  transition: transform 0.3s ease;
+}
+
+.city-card:hover .city-overlay {
+  background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.8)) !important;
+}
+
+/* Remove any default button styles that might interfere */
+.property-type-tab:focus,
+.property-type-tab:active {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Popular searches buttons hover effect */
+.popular-searches button:hover {
+  background-color: rgba(255,255,255,0.4) !important;
+  transform: translateY(-2px);
+  transition: all 0.3s ease;
+}
+
+/* Smooth hover animations */
+* {
+  transition: all 0.3s ease;
+}
+
+/* Fix for testimonial slider buttons */
+.testimonila_prev__active:hover,
+.testimonila_next__active:hover {
+  background-color: #eb6753 !important;
+  color: white !important;
+  transform: scale(1.1);
+}
+
+/* Full-width banner - no white space */
+.home-banner-style1 {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.home-banner-style1 .container-fluid {
+  max-width: 100% !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}

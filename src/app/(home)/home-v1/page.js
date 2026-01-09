@@ -15,6 +15,9 @@ import Image from "next/image";
 import Blog from "@/components/common/Blog";
 import Link from "next/link";
 import PopulerProperty from "@/components/home/home-v1/PopulerProperty";
+import PropertyTypeCards from "@/components/home/home-v1/PropertyTypeCards";
+import FeaturedCitiesNobroker from "@/components/home/home-v1/FeaturedCitiesNobroker";
+import PostPropertyCTA from "@/components/home/home-v1/PostPropertyCTA";
 
 export const metadata = {
   title: "Home v1 || Homez - Real Estate NextJS Template",
@@ -32,16 +35,21 @@ const Home_V1 = () => {
       {/* End Mobile Nav  */}
 
       {/* Home Banner Style V1 */}
-      <section className="home-banner-style1 p0">
+      <section className="home-banner-style1 p0" style={{
+        backgroundImage: 'url(/images/home/home-1.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}>
         <div className="home-style1">
-          <div className="container">
-            <div className="row">
-              <div className="col-xl-11 mx-auto">
+          <div className="container-fluid px-0">
+            <div className="row g-0">
+              <div className="col-12">
                 <Hero />
               </div>
             </div>
           </div>
-          {/* End .container */}
+          {/* End .container-fluid */}
 
           <a href="#explore-property">
             <div className="mouse_scroll animate-up-4">
@@ -57,112 +65,43 @@ const Home_V1 = () => {
       </section>
       {/* End Home Banner Style V1 */}
 
-      {/* Explore Apartment */}
-      <section id="explore-property" className="pb90 pb30-md">
-        <div className="container">
-          <div className="row  justify-content-between align-items-center">
-            <div className="col-auto">
-              <div
-                className="main-title"
-                data-aos="fade-up"
-                data-aos-delay="300"
-              >
-                <h2 className="title">Explore Apartment Types</h2>
-                <p className="paragraph">
-                  Get some Inspirations from 1800+ skills
-                </p>
-              </div>
-            </div>
-            {/* End header */}
+      {/* Property Type Cards - NoBroker Style */}
+      <PropertyTypeCards />
+      {/* End Property Type Cards */}
 
-            <div className="col-auto mb30">
-              <div className="row align-items-center justify-content-center">
-                <div className="col-auto">
-                  <button className="prev__active swiper_button">
-                    <i className="far fa-arrow-left-long" />
-                  </button>
-                </div>
-                {/* End prev */}
+      {/* Post Property CTA */}
+      <PostPropertyCTA />
+      {/* End Post Property CTA */}
 
-                <div className="col-auto">
-                  <div className="pagination swiper--pagination pagination__active" />
-                </div>
-                {/* End pagination */}
-
-                <div className="col-auto">
-                  <button className="next__active swiper_button">
-                    <i className="far fa-arrow-right-long" />
-                  </button>
-                </div>
-                {/* End Next */}
-              </div>
-            </div>
-            {/* End .col for navigation and pagination */}
-          </div>
-          {/* End .row */}
-
-          <div className="row">
-            <div className="col-lg-12">
-              <div
-                className="explore-apartment-slider"
-                data-aos="fade-up"
-                data-aos-delay="300"
-                style={{
-                  marginRight: "calc(-1 * (100vw - 100%) / 2)",
-                  overflow: "hidden",
-                }}
-              >
-                <ApartmentType />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-      {/* End Explore Apartment */}
-
-      {/* Explore Apartment */}
-      <section className="pt0 pb90 pb10-md">
-        <div className="container">
-          <div className="row">
-            <div
-              className="col-lg-6 m-auto"
-              data-aos="fade-up"
-              data-aos-delay="300"
-            >
-              <div className="main-title text-center">
-                <h2 className="title">See How Realton Can Help</h2>
-                <p className="paragraph">
-                  Aliquam lacinia diam quis lacus euismod
-                </p>
-              </div>
-            </div>
-          </div>
-          {/* End .row */}
-
-          <div className="row">
-            <Explore />
-          </div>
-        </div>
-      </section>
-      {/* End Explore Apartment */}
+      {/* Featured Cities - NoBroker Style */}
+      <FeaturedCitiesNobroker />
+      {/* End Featured Cities */}
 
       {/* Featured Listings */}
-      <section className="bgc-f7">
+      <section className="pt60 pb60">
         <div className="container">
-          <div className="row align-items-center" data-aos="fade-up">
-            <div className="col-lg-9">
-              <div className="main-title2">
-                <h2 className="title">Discover Our Featured Listings</h2>
-                <p className="paragraph">
-                  Aliquam lacinia diam quis lacus euismod
-                </p>
-              </div>
+          <div className="row align-items-center mb40" data-aos="fade-up">
+            <div className="col-lg-8">
+              <h2 className="title" style={{ fontSize: "32px", fontWeight: "700", color: "#2d3748" }}>
+                Featured Properties
+              </h2>
+              <p className="text-muted fz16" style={{ marginTop: "10px" }}>
+                Handpicked properties for you
+              </p>
             </div>
-            <div className="col-lg-3">
-              <div className="text-start text-lg-end mb-3">
-                <Link className="ud-btn2" href="/grid-full-3-col">
+            <div className="col-lg-4">
+              <div className="text-start text-lg-end">
+                <Link className="btn" href="/grid-full-3-col" style={{
+                  backgroundColor: "transparent",
+                  color: "#eb6753",
+                  border: "2px solid #eb6753",
+                  padding: "10px 25px",
+                  fontSize: "15px",
+                  fontWeight: "600",
+                  borderRadius: "8px",
+                }}>
                   See All Properties
-                  <i className="fal fa-arrow-right-long" />
+                  <i className="fas fa-arrow-right ms-2" />
                 </Link>
               </div>
             </div>
@@ -180,103 +119,20 @@ const Home_V1 = () => {
       </section>
       {/* End Featured Listings */}
 
-      {/* Explore property-city */}
-      <section className="pb40-md pb90">
-        <div className="container">
-          <div
-            className="row align-items-center"
-            data-aos="fade-up"
-            data-aos-delay="100"
-          >
-            <div className="col-lg-9">
-              <div className="main-title2">
-                <h2 className="title">Properties by Cities</h2>
-                <p className="paragraph">
-                  Aliquam lacinia diam quis lacus euismod
-                </p>
-              </div>
-            </div>
-            {/* End col-lg-9 */}
-
-            <div className="col-lg-3">
-              <div className="text-start text-lg-end mb-3">
-                <a className="ud-btn2" href="#">
-                  See All Cities
-                  <i className="fal fa-arrow-right-long" />
-                </a>
-              </div>
-            </div>
-            {/* End col-lg-3 */}
-          </div>
-          {/* End .row */}
-
-          <div className="row">
-            <div className="col-lg-12" data-aos="fade-up" data-aos-delay="300">
-              <div className="property-city-slider position-relative">
-                <PropertiesByCities />
-              </div>
-            </div>
-          </div>
-          {/* End .row */}
-        </div>
-      </section>
-      {/* End Explore property-city */}
-
-      {/* <!-- About Us --> */}
-      <section className="pt0 pb40-md">
-        <div className="container">
-          <About />
-        </div>
-      </section>
-      {/*  <!-- End About Us --> */}
-
-      {/* Popular Property */}
-      <PopulerProperty />
-      {/* End  Popular Property */}
-
       {/* Our Testimonials */}
-      <section className="pb100 pb50-md bgc-thm-light">
+      <section className="pt80 pb80" style={{ backgroundColor: "#fef2f0" }}>
         <div className="container">
-          <div className="row  justify-content-between align-items-center">
-            <div className="col-auto">
-              <div
-                className="main-title"
-                data-aos="fade-up"
-                data-aos-delay="300"
-              >
-                <h2 className="title">People Love Living with Realton</h2>
-                <p className="paragraph">
-                  Aliquam lacinia diam quis lacus euismod
-                </p>
-              </div>
+          <div className="row mb40">
+            <div className="col-lg-12 text-center">
+              <h2 className="title" style={{ fontSize: "32px", fontWeight: "700", color: "#2d3748" }}>
+                What Our Customers Say
+              </h2>
+              <p className="text-muted fz16" style={{ marginTop: "10px" }}>
+                Real stories from real people who found their dream homes
+              </p>
             </div>
-            {/* End header */}
-
-            <div className="col-auto mb30">
-              <div className="row align-items-center justify-content-center">
-                <div className="col-auto">
-                  <button className="testimonila_prev__active swiper_button">
-                    <i className="far fa-arrow-left-long" />
-                  </button>
-                </div>
-                {/* End prev */}
-
-                <div className="col-auto">
-                  <div className="pagination swiper--pagination testimonila_pagination__active" />
-                </div>
-                {/* End pagination */}
-
-                <div className="col-auto">
-                  <button className="testimonila_next__active swiper_button">
-                    <i className="far fa-arrow-right-long" />
-                  </button>
-                </div>
-                {/* End Next */}
-              </div>
-            </div>
-            {/* End .col for navigation and pagination */}
           </div>
-          {/* End .row */}
+          {/* End header */}
 
           <div className="row">
             <div className="col-lg-12">
@@ -289,59 +145,42 @@ const Home_V1 = () => {
               </div>
             </div>
           </div>
+
+          <div className="row mt50">
+            <div className="col-lg-12">
+              <div className="d-flex justify-content-center gap-3">
+                <button className="testimonila_prev__active btn" style={{
+                  backgroundColor: "white",
+                  color: "#eb6753",
+                  border: "2px solid #eb6753",
+                  width: "45px",
+                  height: "45px",
+                  borderRadius: "50%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}>
+                  <i className="fas fa-arrow-left" />
+                </button>
+                <button className="testimonila_next__active btn" style={{
+                  backgroundColor: "white",
+                  color: "#eb6753",
+                  border: "2px solid #eb6753",
+                  width: "45px",
+                  height: "45px",
+                  borderRadius: "50%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}>
+                  <i className="fas fa-arrow-right" />
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
       {/* End Our Testimonials */}
-
-      {/* Explore Blog */}
-      <section className="pb90 pb20-md">
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-6 m-auto" data-aos="fade-up">
-              <div className="main-title text-start text-md-center">
-                <h2 className="title">From Our Blog</h2>
-                <p className="paragraph">
-                  Aliquam lacinia diam quis lacus euismod
-                </p>
-              </div>
-            </div>
-          </div>
-          {/* End .row */}
-
-          <div className="row" data-aos="fade-up" data-aos-delay="300">
-            <Blog />
-          </div>
-          {/* End .row */}
-        </div>
-      </section>
-      {/* Explore Blog */}
-
-      {/* Our Partners */}
-      <section className="our-partners pt0">
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-12" data-aos="fade-up">
-              <div className="main-title text-center">
-                <h6>Trusted by the world’s best</h6>
-              </div>
-            </div>
-            <div className="col-lg-12 text-center">
-              <div
-                className="dots_none nav_none"
-                data-aos="fade-up"
-                data-aos-delay="300"
-              >
-                <Partner />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-      {/* End Our Partners */}
-
-      {/* Our CTA */}
-      <CallToActions />
-      {/* Our CTA */}
 
       {/* Start Our Footer */}
       <section className="footer-style1 pt60 pb-0">
