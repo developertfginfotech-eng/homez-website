@@ -52,7 +52,7 @@ const DashboardAddProperty = () => {
           console.log('📋 Token exists:', !!token);
 
           try {
-            const response = await fetch("http://localhost:3001/api/kyc/status", {
+            const response = await fetch("https://homez-q5lh.onrender.com/api/kyc/status", {
               method: "GET",
               headers: {
                 "Authorization": `Bearer ${token}`,
