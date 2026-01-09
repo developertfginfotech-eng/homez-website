@@ -45,7 +45,7 @@ const PropertyGallery = ({id}) => {
       return imagePath;
     }
     // Construct full URL for uploaded images
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://16.16.211.219:5000';
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'https://homez-q5lh.onrender.com';
     return `${backendUrl}${imagePath}`;
   };
 
