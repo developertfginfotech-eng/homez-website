@@ -76,6 +76,11 @@ const DashboardKYCVerification = () => {
     }
   };
 
+  const handleSkip = () => {
+    localStorage.setItem("kycSkipped", "true");
+    router.push("/dashboard-home");
+  };
+
   return (
     <>
       <DashboardHeader />
@@ -329,13 +334,13 @@ const DashboardKYCVerification = () => {
                         </div>
                       </div>
 
-                      <div className="d-flex gap-3 mt30">
+                      <div className="d-flex gap-3 mt30" style={{ flexWrap: "wrap" }}>
                         <button
                           type="submit"
                           className="btn btn-lg"
                           disabled={uploading}
                           style={{
-                            backgroundColor: "#eb6753",
+                            backgroundColor: "#10b981",
                             color: "white",
                             padding: "15px 40px",
                             fontSize: "16px",
@@ -355,6 +360,24 @@ const DashboardKYCVerification = () => {
                               Submit for Verification
                             </>
                           )}
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={handleSkip}
+                          className="btn btn-lg"
+                          style={{
+                            backgroundColor: "#e5e7eb",
+                            color: "#6b7280",
+                            padding: "15px 40px",
+                            fontSize: "16px",
+                            fontWeight: "600",
+                            borderRadius: "8px",
+                            border: "1px solid #d1d5db",
+                          }}
+                        >
+                          <i className="fas fa-times me-2"></i>
+                          Skip for Now
                         </button>
 
                         <button

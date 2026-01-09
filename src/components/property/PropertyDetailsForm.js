@@ -14,6 +14,7 @@ const PropertyDetailsForm = ({ initialData }) => {
     propertyAdType: initialData?.propertyAdType || "rent",
 
     // Property Details
+    propertyName: "",
     propertyType: "",
     buildingType: "",
     propertyAge: "",
@@ -30,6 +31,7 @@ const PropertyDetailsForm = ({ initialData }) => {
     locality: "",
     street: "",
     landmark: "",
+    zipCode: "",
 
     // Resale Details
     expectedPrice: "",
@@ -75,6 +77,9 @@ const PropertyDetailsForm = ({ initialData }) => {
   const validateStep1 = () => {
     const newErrors = {};
 
+    if (!formData.propertyName) {
+      newErrors.propertyName = "Property Name Required";
+    }
     if (!formData.propertyType) {
       newErrors.propertyType = "Property type Required";
     }
@@ -181,7 +186,42 @@ const PropertyDetailsForm = ({ initialData }) => {
       // Final step - submit to backend
       setIsSubmitting(true);
       try {
-        const response = await propertyAPI.createProperty(formData);
+        // Map form data to backend requirements
+        const backendData = {
+          title: formData.propertyType || `${formData.propertyCategory} Property`,
+          description: formData.propertyDescription || `A ${formData.propertyCategory} property in ${formData.city}`,
+          category: formData.propertyCategory,
+          price: parseInt(formData.expectedPrice) || 0,
+          address: `${formData.street || ''} ${formData.locality || ''}`.trim() || formData.city,
+          city: formData.city,
+          country: formData.country,
+          state: formData.state,
+          zipCode: formData.zipCode || '000000',
+          propertyType: formData.propertyType,
+          buildingType: formData.buildingType,
+          propertyAge: formData.propertyAge,
+          floor: formData.floor,
+          totalFloor: formData.totalFloor,
+          superBuiltUpArea: formData.superBuiltUpArea,
+          carpetArea: formData.carpetArea,
+          furnishing: formData.furnishing,
+          bedrooms: formData.bedrooms,
+          bathrooms: formData.bathrooms,
+          balconies: formData.balconies,
+          priceNegotiable: formData.priceNegotiable,
+          amenities: Object.keys(formData).filter(key => formData[key] === true && ['powerBackup', 'lift', 'waterStorage', 'security', 'gym', 'swimmingPool', 'garden', 'clubHouse', 'internetWifi'].includes(key)),
+        };
+
+        // Debug: Log the form data BEFORE mapping
+        console.log('📋 Raw formData before mapping:', formData);
+
+        // Debug: Log the data being sent with actual values
+        console.log('📤 Submitting backend data:', backendData);
+        console.log('❌ CRITICAL FIELDS:');
+        console.log('  state (raw):', formData.state, '| (mapped):', backendData.state);
+        console.log('  superBuiltUpArea (raw):', formData.superBuiltUpArea, '| (mapped):', backendData.superBuiltUpArea);
+
+        const response = await propertyAPI.createProperty(backendData);
 
         if (response.success) {
           alert("Property submitted successfully! It will be reviewed by our team.");
@@ -272,6 +312,24 @@ const PropertyDetailsForm = ({ initialData }) => {
           {currentStep === 1 && (
             <div className="property-details-step">
               <div className="row">
+                {/* Property Name */}
+                <div className="col-md-6 mb25">
+                  <label className="form-label fw600">
+                    Property Name<span className="text-danger">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="propertyName"
+                    className={`form-control ${errors.propertyName ? "border-danger" : ""}`}
+                    placeholder="e.g., Luxury Waterfront Villa"
+                    value={formData.propertyName}
+                    onChange={handleChange}
+                  />
+                  {errors.propertyName && (
+                    <span className="text-danger fz12">{errors.propertyName}</span>
+                  )}
+                </div>
+
                 {/* Property Type */}
                 <div className="col-md-6 mb25">
                   <label className="form-label fw600">
@@ -564,7 +622,7 @@ const PropertyDetailsForm = ({ initialData }) => {
                 </div>
 
                 {/* Landmark */}
-                <div className="col-md-12 mb25">
+                <div className="col-md-6 mb25">
                   <label className="form-label fw600">Landmark (Optional)</label>
                   <input
                     type="text"
@@ -572,6 +630,19 @@ const PropertyDetailsForm = ({ initialData }) => {
                     className="form-control"
                     placeholder="Enter Nearby Landmark"
                     value={formData.landmark}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                {/* Zip Code */}
+                <div className="col-md-6 mb25">
+                  <label className="form-label fw600">Zip Code</label>
+                  <input
+                    type="text"
+                    name="zipCode"
+                    className="form-control"
+                    placeholder="Enter Zip Code"
+                    value={formData.zipCode}
                     onChange={handleChange}
                   />
                 </div>

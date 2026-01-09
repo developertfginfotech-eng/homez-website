@@ -169,6 +169,11 @@ const PropertyKYCVerification = () => {
     if (step > 1) setStep(step - 1);
   };
 
+  const handleSkip = () => {
+    localStorage.setItem("kycSkipped", "true");
+    router.push("/dashboard-home");
+  };
+
   if (checking) {
     return (
       <div className="our-login">
@@ -1027,32 +1032,52 @@ const PropertyKYCVerification = () => {
                 )}
 
                 {/* Navigation Buttons */}
-                <div className="d-flex justify-content-between mt40">
-                  {step > 1 && (
+                <div className="d-flex justify-content-between align-items-center mt40" style={{ gap: "15px", flexWrap: "wrap" }}>
+                  <div className="d-flex" style={{ gap: "10px" }}>
+                    {step > 1 && (
+                      <button
+                        type="button"
+                        onClick={prevStep}
+                        className="btn"
+                        style={{
+                          backgroundColor: "#f3f4f6",
+                          color: "#374151",
+                          padding: "12px 30px",
+                          fontSize: "15px",
+                          fontWeight: "600",
+                          borderRadius: "8px",
+                          border: "none"
+                        }}
+                      >
+                        <i className="fas fa-arrow-left me-2"></i>
+                        Previous
+                      </button>
+                    )}
+
                     <button
                       type="button"
-                      onClick={prevStep}
+                      onClick={handleSkip}
                       className="btn"
                       style={{
-                        backgroundColor: "#f3f4f6",
-                        color: "#374151",
+                        backgroundColor: "#e5e7eb",
+                        color: "#6b7280",
                         padding: "12px 30px",
                         fontSize: "15px",
                         fontWeight: "600",
                         borderRadius: "8px",
-                        border: "none"
+                        border: "1px solid #d1d5db"
                       }}
                     >
-                      <i className="fas fa-arrow-left me-2"></i>
-                      Previous
+                      <i className="fas fa-times me-2"></i>
+                      Skip for Now
                     </button>
-                  )}
+                  </div>
 
                   {step < 4 ? (
                     <button
                       type="button"
                       onClick={nextStep}
-                      className="btn ms-auto"
+                      className="btn"
                       style={{
                         backgroundColor: "#eb6753",
                         color: "white",
@@ -1070,7 +1095,7 @@ const PropertyKYCVerification = () => {
                     <button
                       type="submit"
                       disabled={loading}
-                      className="btn ms-auto"
+                      className="btn"
                       style={{
                         backgroundColor: "#10b981",
                         color: "white",

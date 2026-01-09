@@ -193,7 +193,7 @@ const AddPropertyTabContent = () => {
                kycStatus === "rejected" ? "Rejected" : kycStatus}
             </span>
           </p>
-          <a href="/kyc-verification" className="btn btn-warning btn-sm">
+          <a href="/kyc-property-verification" className="btn btn-warning btn-sm">
             <i className="fas fa-id-card me-2"></i>
             {kycStatus === "not_submitted" ? "Submit KYC Now" : "View KYC Status"}
           </a>

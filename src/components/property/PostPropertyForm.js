@@ -8,7 +8,6 @@ const PostPropertyForm = () => {
   const router = useRouter();
   const [selectedCountry, setSelectedCountry] = useState("India");
   const [selectedState, setSelectedState] = useState("");
-  const [whatsappUpdates, setWhatsappUpdates] = useState(false);
   const [propertyCategory, setPropertyCategory] = useState("residential");
   const [propertyAdType, setPropertyAdType] = useState("rent");
   const [userPropertiesCount, setUserPropertiesCount] = useState(0);
@@ -139,7 +138,7 @@ const PostPropertyForm = () => {
   useEffect(() => {
     const fetchPropertyCount = async () => {
       try {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem("authToken");
         if (!token) {
           setUserPropertiesCount(0);
           return;
@@ -210,7 +209,6 @@ const PostPropertyForm = () => {
     const initialData = {
       country: selectedCountry,
       state: selectedState,
-      whatsappUpdates,
       propertyCategory,
       propertyAdType,
     };
@@ -293,29 +291,6 @@ const PostPropertyForm = () => {
               </option>
             ))}
           </select>
-        </div>
-
-        {/* WhatsApp Updates Toggle */}
-        <div className="mb25 d-flex align-items-center justify-content-between p20 bgc-thm-light bdrs8">
-          <div className="d-flex align-items-center">
-            <span className="me-2 fz14">Get updates on</span>
-            <i className="fab fa-whatsapp text-success fz18 me-2"></i>
-            <span className="fw600 fz14">WhatsApp</span>
-          </div>
-          <div className="form-check form-switch mb-0">
-            <input
-              className="form-check-input"
-              type="checkbox"
-              id="whatsappSwitch"
-              checked={whatsappUpdates}
-              onChange={(e) => setWhatsappUpdates(e.target.checked)}
-              style={{
-                width: "44px",
-                height: "22px",
-                cursor: "pointer",
-              }}
-            />
-          </div>
         </div>
 
         {/* Property Type Tabs */}

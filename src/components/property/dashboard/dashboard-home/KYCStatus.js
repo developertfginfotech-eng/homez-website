@@ -132,7 +132,7 @@ const KYCStatus = () => {
             </p>
           </div>
           <Link
-            href="/kyc-verification"
+            href="/kyc-property-verification"
             className="ud-btn btn-thm"
             style={{ whiteSpace: "nowrap" }}
           >
@@ -190,7 +190,7 @@ const KYCStatus = () => {
                 </div>
               )}
               <Link
-                href="/kyc-verification"
+                href="/kyc-property-verification"
                 className="ud-btn btn-thm-border fz14"
               >
                 Resubmit KYC
