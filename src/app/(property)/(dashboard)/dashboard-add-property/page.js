@@ -19,8 +19,9 @@ const DashboardAddProperty = () => {
   const [userCountry, setUserCountry] = useState("India");
 
   useEffect(() => {
-    // Check KYC status
+    // Check KYC status - always fetch fresh from API
     const checkKYCStatus = async () => {
+      console.log('🔍 Checking KYC status...');
       setKycChecking(true);
       try {
         // Get user data from localStorage
@@ -46,23 +47,47 @@ const DashboardAddProperty = () => {
             return;
           }
 
-          // Check KYC status for sellers and brokers
-          const kycStatusLS = localStorage.getItem("kycStatus");
-          const kycVerifiedLS = localStorage.getItem("kycVerified");
-          const kycSubmittedLS = localStorage.getItem("kycSubmitted");
+          // Fetch KYC status from API
+          const token = localStorage.getItem("authToken");
+          console.log('📋 Token exists:', !!token);
 
-          // Check if verified
-          if (kycVerifiedLS === "true" || user.kycVerified === true) {
-            setKycVerified(true);
-            setKycPending(false);
-          }
-          // Check if pending
-          else if (kycStatusLS === "pending" || kycSubmittedLS === "true" || user.kycStatus === "pending") {
-            setKycVerified(false);
-            setKycPending(true);
-          }
-          // Not submitted yet
-          else {
+          try {
+            const response = await fetch("http://localhost:3001/api/kyc/status", {
+              method: "GET",
+              headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+              }
+            });
+
+            console.log('API Response Status:', response.status);
+            const data = await response.json();
+            console.log('API Response Data:', data);
+
+            if (response.ok && data.success && data.kyc) {
+              const kycStatus = data.kyc.status;
+              console.log('✓ KYC Status from API:', kycStatus);
+              localStorage.setItem("kycStatus", kycStatus);
+              
+              if (kycStatus === "verified") {
+                console.log('✅ KYC Verified - showing add property form');
+                setKycVerified(true);
+                setKycPending(false);
+              } else if (kycStatus === "pending") {
+                console.log('⏳ KYC Pending - showing pending message');
+                setKycVerified(false);
+                setKycPending(true);
+              } else {
+                console.log('❌ KYC Not Submitted');
+                setKycVerified(false);
+                setKycPending(false);
+              }
+            } else {
+              throw new Error(data.message || "Invalid API response");
+            }
+          } catch (error) {
+            console.error('❌ API Error:', error.message);
+            // Fallback to simple check
             setKycVerified(false);
             setKycPending(false);
           }

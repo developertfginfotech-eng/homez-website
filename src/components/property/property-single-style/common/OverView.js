@@ -1,6 +1,40 @@
-import React from "react";
+"use client";
 
-const OverView = ({ property }) => {
+import React, { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
+import { propertiesAPI } from "@/services/api";
+
+const OverView = ({ property: propProperty }) => {
+  const [property, setProperty] = useState(propProperty || null);
+  const [loading, setLoading] = useState(!propProperty);
+  const params = useParams();
+
+  useEffect(() => {
+    if (propProperty) {
+      setProperty(propProperty);
+      return;
+    }
+
+    const fetchProperty = async () => {
+      try {
+        setLoading(true);
+        const response = await propertiesAPI.getById(params.id);
+        if (response.property) {
+          setProperty(response.property);
+        }
+      } catch (error) {
+        console.error("Failed to fetch property:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (params.id) {
+      fetchProperty();
+    }
+  }, [params.id, propProperty]);
+
+  if (loading) return null;
   if (!property) return null;
 
   const overviewData = [

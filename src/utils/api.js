@@ -3,7 +3,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 // Get auth token from localStorage
 const getAuthToken = () => {
   if (typeof window !== 'undefined') {
-    return localStorage.getItem('token');
+    return localStorage.getItem('authToken');
   }
   return null;
 };
@@ -14,7 +14,7 @@ export const propertyAPI = {
   createProperty: async (propertyData) => {
     try {
       const token = getAuthToken();
-      const response = await fetch(`${API_URL}/properties`, {
+      const response = await fetch(`${API_URL}/property/add`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -40,7 +40,7 @@ export const propertyAPI = {
   getAllProperties: async (filters = {}) => {
     try {
       const queryParams = new URLSearchParams(filters).toString();
-      const url = `${API_URL}/properties${queryParams ? `?${queryParams}` : ''}`;
+      const url = `${API_URL}/property/all${queryParams ? `?${queryParams}` : ''}`;
 
       const response = await fetch(url, {
         method: 'GET',
@@ -66,7 +66,7 @@ export const propertyAPI = {
   getMyProperties: async () => {
     try {
       const token = getAuthToken();
-      const response = await fetch(`${API_URL}/properties/my-properties`, {
+      const response = await fetch(`${API_URL}/property/agent/properties`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -90,7 +90,7 @@ export const propertyAPI = {
   // Get property by ID
   getPropertyById: async (id) => {
     try {
-      const response = await fetch(`${API_URL}/properties/${id}`, {
+      const response = await fetch(`${API_URL}/property/${id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -114,7 +114,7 @@ export const propertyAPI = {
   updateProperty: async (id, propertyData) => {
     try {
       const token = getAuthToken();
-      const response = await fetch(`${API_URL}/properties/${id}`, {
+      const response = await fetch(`${API_URL}/property/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -140,7 +140,7 @@ export const propertyAPI = {
   deleteProperty: async (id) => {
     try {
       const token = getAuthToken();
-      const response = await fetch(`${API_URL}/properties/${id}`, {
+      const response = await fetch(`${API_URL}/property/${id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -183,7 +183,7 @@ export const authAPI = {
 
       // Store token
       if (data.token && typeof window !== 'undefined') {
-        localStorage.setItem('token', data.token);
+        localStorage.setItem('authToken', data.token);
       }
 
       return data;
@@ -212,7 +212,7 @@ export const authAPI = {
 
       // Store token
       if (data.token && typeof window !== 'undefined') {
-        localStorage.setItem('token', data.token);
+        localStorage.setItem('authToken', data.token);
       }
 
       return data;
@@ -225,7 +225,7 @@ export const authAPI = {
   // Logout
   logout: () => {
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('token');
+      localStorage.removeItem('authToken');
     }
   },
 
