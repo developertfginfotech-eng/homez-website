@@ -43,47 +43,10 @@ const SignIn = () => {
           modalElement.click();
         }
 
-        // Buyers go to home page (no KYC needed)
-        if (response.user.role === "buyer") {
-          setTimeout(() => {
-            window.location.href = "/";
-          }, 1500);
-          return;
-        }
-
-        // Admins go to dashboard (no KYC needed)
-        if (response.user.role === "admin") {
-          setTimeout(() => {
-            window.location.href = "/dashboard-home";
-          }, 1500);
-          return;
-        }
-
-        // Only sellers and brokers need KYC verification
-        if (response.user.role === "seller" || response.user.role === "broker") {
-          try {
-            const kycStatus = await kycAPI.getKYCStatus();
-
-            // If KYC is not verified and not submitted, redirect to KYC page
-            if (!kycStatus.verified && !kycStatus.submitted) {
-              setTimeout(() => {
-                window.location.href = "/kyc-verification";
-              }, 1500);
-              return;
-            }
-          } catch (kycErr) {
-            // If error checking KYC, redirect to KYC page
-            console.error("KYC check error:", kycErr);
-            setTimeout(() => {
-              window.location.href = "/kyc-verification";
-            }, 1500);
-            return;
-          }
-        }
-
-        // If KYC is done, redirect to dashboard
+        // Redirect everyone to home page after successful login
+        // KYC will be checked when they click "Add Property"
         setTimeout(() => {
-          window.location.href = "/dashboard-home";
+          window.location.href = "/";
         }, 1500);
       }
     } catch (err) {

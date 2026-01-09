@@ -5,10 +5,38 @@ import SidebarPanel from "@/components/common/sidebar-panel";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const DashboardHeader = () => {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    // Clear all user data from localStorage
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+
+    // Dispatch a custom event to notify other components
+    window.dispatchEvent(new Event("storage"));
+
+    // Redirect to homepage
+    router.push("/");
+  };
+
+  const [userRole, setUserRole] = useState(null);
+
+  useEffect(() => {
+    // Get user role from localStorage
+    const userStr = localStorage.getItem("user");
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        setUserRole(user.role);
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+      }
+    }
+  }, []);
 
   const menuItems = [
     {
@@ -26,6 +54,20 @@ const DashboardHeader = () => {
         },
       ],
     },
+    ...(userRole === "admin"
+      ? [
+          {
+            title: "ADMIN PANEL",
+            items: [
+              {
+                icon: "flaticon-user",
+                text: "KYC Verification",
+                href: "/dashboard-admin-kyc",
+              },
+            ],
+          },
+        ]
+      : []),
     {
       title: "MANAGE LISTINGS",
       items: [
@@ -153,18 +195,37 @@ const DashboardHeader = () => {
                                 >
                                   {section.title}
                                 </p>
-                                {section.items.map((item, itemIndex) => (
-                                  <Link
-                                    key={itemIndex}
-                                    className={`dropdown-item ${
-                                      pathname == item.href ? "-is-active" : ""
-                                    } `}
-                                    href={item.href}
-                                  >
-                                    <i className={`${item.icon} mr10`} />
-                                    {item.text}
-                                  </Link>
-                                ))}
+                                {section.items.map((item, itemIndex) =>
+                                  item.text === "Logout" ? (
+                                    <button
+                                      key={itemIndex}
+                                      onClick={handleLogout}
+                                      className="dropdown-item"
+                                      style={{
+                                        background: "none",
+                                        border: "none",
+                                        width: "100%",
+                                        textAlign: "left",
+                                        cursor: "pointer",
+                                        padding: "10px 20px",
+                                      }}
+                                    >
+                                      <i className={`${item.icon} mr10`} />
+                                      {item.text}
+                                    </button>
+                                  ) : (
+                                    <Link
+                                      key={itemIndex}
+                                      className={`dropdown-item ${
+                                        pathname == item.href ? "-is-active" : ""
+                                      } `}
+                                      href={item.href}
+                                    >
+                                      <i className={`${item.icon} mr10`} />
+                                      {item.text}
+                                    </Link>
+                                  )
+                                )}
                               </div>
                             ))}
                           </div>

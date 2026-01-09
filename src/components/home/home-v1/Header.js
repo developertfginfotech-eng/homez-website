@@ -21,13 +21,29 @@ const Header = () => {
 
   useEffect(() => {
     window.addEventListener("scroll", changeBackground);
+
     // Check if user is logged in
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
+    const checkUser = () => {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      } else {
+        setUser(null);
+      }
+    };
+
+    checkUser();
+
+    // Listen for storage changes (logout from other tabs/components)
+    const handleStorageChange = () => {
+      checkUser();
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
     return () => {
       window.removeEventListener("scroll", changeBackground);
+      window.removeEventListener("storage", handleStorageChange);
     };
   }, []);
 

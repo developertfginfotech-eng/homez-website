@@ -1,15 +1,113 @@
+"use client";
+
 import DashboardHeader from "@/components/common/DashboardHeader";
 import MobileMenu from "@/components/common/mobile-menu";
 import DboardMobileNavigation from "@/components/property/dashboard/DboardMobileNavigation";
 import Footer from "@/components/property/dashboard/Footer";
 import SidebarDashboard from "@/components/property/dashboard/SidebarDashboard";
-import AddPropertyTabContent from "@/components/property/dashboard/dashboard-add-property";
-
-export const metadata = {
-  title: "Dashboard Add Property || Homez - Real Estate NextJS Template",
-};
+import PostPropertyForm from "@/components/property/PostPropertyForm";
+import PropertyDetailsForm from "@/components/property/PropertyDetailsForm";
+import KYCVerificationPrompt from "@/components/property/KYCVerificationPrompt";
+import { useState, useEffect } from "react";
 
 const DashboardAddProperty = () => {
+  const [showDetailsForm, setShowDetailsForm] = useState(false);
+  const [initialData, setInitialData] = useState(null);
+  const [kycVerified, setKycVerified] = useState(false);
+  const [kycPending, setKycPending] = useState(false);
+  const [kycChecking, setKycChecking] = useState(true);
+  const [userCountry, setUserCountry] = useState("India");
+
+  useEffect(() => {
+    // Check KYC status
+    const checkKYCStatus = async () => {
+      setKycChecking(true);
+      try {
+        // Get user data from localStorage
+        const userStr = localStorage.getItem("user");
+        if (userStr) {
+          const user = JSON.parse(userStr);
+
+          // Admin users bypass KYC verification completely
+          if (user.role === 'admin') {
+            console.log('Admin user detected - bypassing KYC check');
+            setKycVerified(true);
+            setKycPending(false);
+            setKycChecking(false);
+            return;
+          }
+
+          // Buyers cannot add properties
+          if (user.role === 'buyer') {
+            console.log('Buyer user detected - cannot add properties');
+            setKycVerified(false);
+            setKycPending(false);
+            setKycChecking(false);
+            return;
+          }
+
+          // Check KYC status for sellers and brokers
+          const kycStatusLS = localStorage.getItem("kycStatus");
+          const kycVerifiedLS = localStorage.getItem("kycVerified");
+          const kycSubmittedLS = localStorage.getItem("kycSubmitted");
+
+          // Check if verified
+          if (kycVerifiedLS === "true" || user.kycVerified === true) {
+            setKycVerified(true);
+            setKycPending(false);
+          }
+          // Check if pending
+          else if (kycStatusLS === "pending" || kycSubmittedLS === "true" || user.kycStatus === "pending") {
+            setKycVerified(false);
+            setKycPending(true);
+          }
+          // Not submitted yet
+          else {
+            setKycVerified(false);
+            setKycPending(false);
+          }
+
+          // Set user country
+          if (user.country) {
+            setUserCountry(user.country);
+          }
+        }
+      } catch (error) {
+        console.error("Error checking KYC status:", error);
+        setKycVerified(false);
+        setKycPending(false);
+      } finally {
+        setKycChecking(false);
+      }
+    };
+
+    checkKYCStatus();
+
+    // Set up global handler for form submission
+    window.onPropertyFormSubmit = (data) => {
+      if (kycVerified) {
+        setInitialData(data);
+        setShowDetailsForm(true);
+      }
+    };
+
+    // Check if there's existing data in sessionStorage
+    const savedData = sessionStorage.getItem("propertyFormData");
+    if (savedData && kycVerified) {
+      setInitialData(JSON.parse(savedData));
+      setShowDetailsForm(true);
+    }
+
+    return () => {
+      delete window.onPropertyFormSubmit;
+    };
+  }, [kycVerified]);
+
+  const handleBackToSelection = () => {
+    setShowDetailsForm(false);
+    sessionStorage.removeItem("propertyFormData");
+  };
+
   return (
     <>
       {/* Main Header Nav */}
@@ -36,26 +134,196 @@ const DashboardAddProperty = () => {
               </div>
               {/* End .row */}
 
-              <div className="row align-items-center pb40">
-                <div className="col-lg-12">
-                  <div className="dashboard_title_area">
-                    <h2>Add New Property</h2>
-                    <p className="text">We are glad to see you again!</p>
+              {kycChecking ? (
+                <div className="text-center py-5">
+                  <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Loading...</span>
                   </div>
+                  <p className="mt-3">Checking KYC status...</p>
                 </div>
-              </div>
-              {/* End .row */}
-
-              <div className="row">
-                <div className="col-xl-12">
-                  <div className="ps-widget bgc-white bdrs12 default-box-shadow2 pt30 mb30 overflow-hidden position-relative">
-                    <div className="navtab-style1">
-                      <AddPropertyTabContent />
+              ) : kycPending ? (
+                <>
+                  <div className="row align-items-center pb30">
+                    <div className="col-lg-12">
+                      <div className="dashboard_title_area">
+                        <h2>Sell or Rent your Property For Free</h2>
+                        <p className="text">Post your property and connect with verified buyers/tenants</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-              {/* End .row */}
+                  <div className="row">
+                    <div className="col-lg-12">
+                      <div
+                        className="alert"
+                        style={{
+                          backgroundColor: "#fef3c7",
+                          border: "2px solid #f59e0b",
+                          borderRadius: "12px",
+                          padding: "30px",
+                          maxWidth: "800px",
+                          margin: "0 auto",
+                        }}
+                      >
+                        <div className="d-flex align-items-start">
+                          <div
+                            className="icon-wrapper me-3"
+                            style={{
+                              backgroundColor: "#f59e0b",
+                              borderRadius: "50%",
+                              width: "50px",
+                              height: "50px",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              flexShrink: 0,
+                            }}
+                          >
+                            <i className="fas fa-clock" style={{ color: "white", fontSize: "24px" }}></i>
+                          </div>
+                          <div style={{ flex: 1 }}>
+                            <h4 style={{ fontSize: "20px", fontWeight: "700", color: "#92400e", marginBottom: "10px" }}>
+                              KYC Verification Pending
+                            </h4>
+                            <p style={{ fontSize: "15px", color: "#92400e", marginBottom: "15px", lineHeight: "1.6" }}>
+                              Your KYC documents have been submitted and are currently under review by our admin team.
+                              You'll be able to post properties once your verification is approved.
+                            </p>
+                            <div
+                              className="info-box mt-3 p-3"
+                              style={{
+                                backgroundColor: "rgba(255,255,255,0.7)",
+                                borderRadius: "8px",
+                                border: "1px solid #f59e0b",
+                              }}
+                            >
+                              <p className="mb-2" style={{ fontSize: "14px", color: "#78350f", fontWeight: "600" }}>
+                                <i className="fas fa-info-circle me-2"></i>
+                                What's Next?
+                              </p>
+                              <ul style={{ fontSize: "14px", color: "#78350f", marginBottom: 0, paddingLeft: "20px" }}>
+                                <li>Our admin team will review your documents within 24-48 hours</li>
+                                <li>You'll receive a notification once your KYC is verified</li>
+                                <li>After verification, you can start posting properties immediately</li>
+                              </ul>
+                            </div>
+                            <div className="mt-3">
+                              <span style={{ fontSize: "13px", color: "#92400e" }}>
+                                <i className="fas fa-clock me-2"></i>
+                                Average verification time: <strong>8-12 hours</strong>
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              ) : !kycVerified ? (
+                <>
+                  <div className="row align-items-center pb30">
+                    <div className="col-lg-12">
+                      <div className="dashboard_title_area">
+                        <h2>Sell or Rent your Property For Free</h2>
+                        <p className="text">Post your property and connect with verified buyers/tenants</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col-lg-12">
+                      <KYCVerificationPrompt userCountry={userCountry} />
+                    </div>
+                  </div>
+                </>
+              ) : !showDetailsForm ? (
+                <>
+                  <div className="row align-items-center pb30">
+                    <div className="col-lg-12">
+                      <div className="dashboard_title_area">
+                        <h2>Sell or Rent your Property For Free</h2>
+                        <p className="text">Post your property and connect with verified buyers/tenants</p>
+                      </div>
+                    </div>
+                  </div>
+                  {/* End .row */}
+
+                  <div className="row">
+                    {/* Left Side - Why Post Section */}
+                    <div className="col-lg-4 col-xl-3 mb30">
+                      <div className="why-post-section bgc-white p30 bdrs12">
+                        <h4 className="title mb25">Why Post through us?</h4>
+
+                        <div className="benefit-item d-flex mb20">
+                          <div className="icon-wrapper me-3">
+                            <i className="flaticon-home-1 text-thm fz24"></i>
+                          </div>
+                          <div>
+                            <h6 className="mb5">Zero Brokerage</h6>
+                          </div>
+                        </div>
+
+                        <div className="benefit-item d-flex mb20">
+                          <div className="icon-wrapper me-3">
+                            <i className="flaticon-user text-thm fz24"></i>
+                          </div>
+                          <div>
+                            <h6 className="mb5">Faster Tenants</h6>
+                          </div>
+                        </div>
+
+                        <div className="benefit-item d-flex mb30">
+                          <div className="icon-wrapper me-3">
+                            <i className="flaticon-discovery text-thm fz24"></i>
+                          </div>
+                          <div>
+                            <h6 className="mb5">10 lac tenants/buyers connections</h6>
+                          </div>
+                        </div>
+
+                        {/* Testimonial */}
+                        <div className="testimonial-box bgc-thm-light p20 bdrs8">
+                          <h6 className="title mb15">30 Lac+ Home Owners Trust Us</h6>
+                          <p className="text fz14 mb15">
+                            "After posting my property ads on Homez they provided me with an easy way to rent
+                            out my apartment, it was otherwise very difficult for me to do. Homez found the
+                            right people whom I can trust for my rental property."
+                          </p>
+                          <div className="testimonial-author">
+                            <p className="mb0 fz14 fw600">Anil | Mumbai</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Right Side - Form */}
+                    <div className="col-lg-8 col-xl-9">
+                      <PostPropertyForm />
+                    </div>
+                  </div>
+                  {/* End .row */}
+                </>
+              ) : (
+                <>
+                  <div className="row align-items-center pb30">
+                    <div className="col-lg-12">
+                      <div className="d-flex align-items-center">
+                        <button
+                          onClick={handleBackToSelection}
+                          className="btn btn-link p-0 me-3"
+                          style={{ textDecoration: "none" }}
+                        >
+                          <i className="fas fa-arrow-left"></i>
+                        </button>
+                        <div className="dashboard_title_area mb-0">
+                          <h2>Add New Property</h2>
+                          <p className="text mb-0">We are glad to see you again!</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <PropertyDetailsForm initialData={initialData} />
+                </>
+              )}
             </div>
             {/* End dashboard__content */}
 
