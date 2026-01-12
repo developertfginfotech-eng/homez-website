@@ -52,7 +52,7 @@ const DashboardAddProperty = () => {
           console.log('📋 Token exists:', !!token);
 
           try {
-            const response = await fetch("https://homez-q5lh.onrender.com/api/kyc/status", {
+            const response = await fetch("https://globperty-q5lh.onrender.com/api/kyc/status", {
               method: "GET",
               headers: {
                 "Authorization": `Bearer ${token}`,
@@ -308,8 +308,8 @@ const DashboardAddProperty = () => {
                         <div className="testimonial-box bgc-thm-light p20 bdrs8">
                           <h6 className="title mb15">30 Lac+ Home Owners Trust Us</h6>
                           <p className="text fz14 mb15">
-                            "After posting my property ads on Homez they provided me with an easy way to rent
-                            out my apartment, it was otherwise very difficult for me to do. Homez found the
+                            "After posting my property ads on Globperty they provided me with an easy way to rent
+                            out my apartment, it was otherwise very difficult for me to do. Globperty found the
                             right people whom I can trust for my rental property."
                           </p>
                           <div className="testimonial-author">

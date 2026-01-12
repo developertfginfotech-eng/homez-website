@@ -14,7 +14,7 @@ import Link from "next/link";
 import React from "react";
 
 export const metadata = {
-  title: "Agency Single || Homez - Real Estate NextJS Template",
+  title: "Agency Single || Globperty - Real Estate NextJS Template",
 };
 
 const AgencySingle = async props => {

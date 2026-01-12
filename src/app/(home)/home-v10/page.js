@@ -16,7 +16,7 @@ import Agents from "@/components/home/home-v10/Agents";
 import BannerSlider from "@/components/home/home-v10/BannerSlider";
 
 export const metadata = {
-  title: "Home v10 || Homez - Real Estate NextJS Template",
+  title: "Home v10 || Globperty - Real Estate NextJS Template",
 };
 
 const Home_V10 = () => {
