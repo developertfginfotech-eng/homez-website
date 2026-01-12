@@ -38,7 +38,7 @@ const PropertyHeader = ({ id }) => {
     <>
       <div className="col-lg-8">
         <div className="single-property-content mb30-md">
-          <h2 className="sp-lg-title">{data.title}</h2>
+          <h2 className="sp-lg-title">{data.propertyName || data.title}</h2>
           <div className="pd-meta mb15 d-md-flex align-items-center">
             <p className="text fz15 mb-0 bdrr1 pr10 bdrrn-sm">
               {data.city}, {data.country}

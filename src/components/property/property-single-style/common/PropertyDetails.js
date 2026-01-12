@@ -40,6 +40,10 @@ const PropertyDetails = ({ property: propProperty }) => {
   const columns = [
     [
       {
+        label: "Property Name",
+        value: property.propertyName || "N/A",
+      },
+      {
         label: "Property ID",
         value: property.customId || property._id?.slice(-8) || "N/A",
       },
