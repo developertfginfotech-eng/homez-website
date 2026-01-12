@@ -133,7 +133,7 @@ const PropertyDataTable = () => {
                         ? `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '')}${property.images[0]}`
                         : "/images/listings/list-1.jpg"
                     }
-                    alt={property.title}
+                    alt={property.propertyName || property.title}
                     onError={(e) => {
                       e.currentTarget.src = "/images/listings/list-1.jpg";
                     }}
@@ -141,7 +141,7 @@ const PropertyDataTable = () => {
                 </div>
                 <div className="list-content py-0 p-0 mt-2 mt-xxl-0 ps-xxl-4">
                   <div className="h6 list-title">
-                    <Link href={`/single-v1/${property._id}`}>{property.title}</Link>
+                    <Link href={`/single-v1/${property._id}`}>{property.propertyName || property.title}</Link>
                   </div>
                   <p className="list-text mb-0">
                     {property.address}, {property.city}, {property.country}
@@ -440,7 +440,7 @@ const PropertyDataTable = () => {
           >
             <h4 style={{ marginBottom: "15px", color: "#d32f2f" }}>Delete Property?</h4>
             <p style={{ marginBottom: "20px", color: "#666" }}>
-              Are you sure you want to delete <strong>"{deletingProperty.title}"</strong>? This action cannot be undone.
+              Are you sure you want to delete <strong>"{deletingProperty.propertyName || deletingProperty.title}"</strong>? This action cannot be undone.
             </p>
             <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
               <button
@@ -528,7 +528,7 @@ const PropertyDataTable = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-              <h4 style={{ margin: 0 }}>{selectedProperty.title}</h4>
+              <h4 style={{ margin: 0 }}>{selectedProperty.propertyName || selectedProperty.title}</h4>
               <button
                 onClick={() => setShowDetailsModal(false)}
                 style={{
@@ -546,6 +546,7 @@ const PropertyDataTable = () => {
             {/* Basic Information */}
             <div style={{ marginBottom: "20px" }}>
               <h6 style={{ fontWeight: "bold", marginBottom: "10px" }}>Basic Information</h6>
+              <p><strong>Property Name:</strong> {selectedProperty.propertyName || "N/A"}</p>
               <p><strong>Title:</strong> {selectedProperty.title}</p>
               <p><strong>Description:</strong> {selectedProperty.description || "N/A"}</p>
               <p><strong>Category:</strong> {selectedProperty.structureType || selectedProperty.category || "N/A"}</p>
