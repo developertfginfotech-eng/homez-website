@@ -188,6 +188,7 @@ const PropertyDetailsForm = ({ initialData }) => {
       try {
         // Map form data to backend requirements
         const backendData = {
+          propertyName: formData.propertyName,
           title: formData.propertyType || `${formData.propertyCategory} Property`,
           description: formData.propertyDescription || `A ${formData.propertyCategory} property in ${formData.city}`,
           category: formData.propertyCategory,
@@ -1134,28 +1135,6 @@ const PropertyDetailsForm = ({ initialData }) => {
                     <p className="text-muted fz12 mt15">
                       Supported formats: MP4, MOV, AVI (Max 50MB)
                     </p>
-                  </div>
-                </div>
-
-                {/* WhatsApp Upload Option */}
-                <div className="col-md-12 mb25">
-                  <div className="bgc-thm-light p20 bdrs8">
-                    <div className="d-flex align-items-center">
-                      <i className="fab fa-whatsapp fz30 text-success me-3"></i>
-                      <div>
-                        <h6 className="mb5">Upload via WhatsApp</h6>
-                        <p className="text-muted fz14 mb-0">
-                          Send photos directly from your phone
-                        </p>
-                      </div>
-                      <button
-                        type="button"
-                        className="ud-btn btn-success ms-auto"
-                        style={{ padding: "8px 20px" }}
-                      >
-                        Send on WhatsApp
-                      </button>
-                    </div>
                   </div>
                 </div>
               </div>
