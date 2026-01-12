@@ -9,16 +9,30 @@ const SignUp = () => {
     name: "",
     email: "",
     password: "",
+    confirmPassword: "",
     phone: "",
-    role: "buyer",
-    userType: "individual",
-    country: "India",
+    countryCode: "+971",
+    role: "broker",
+    country: "UAE",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
-  const countries = ["India", "USA", "UK", "Canada", "Australia"];
+  const countries = [
+    { code: "+971", name: "UAE" },
+    { code: "+1", name: "USA" },
+    { code: "+351", name: "Portugal" },
+    { code: "+1", name: "Canada" },
+    { code: "+61", name: "Australia" },
+    { code: "+90", name: "Turkey" },
+    { code: "+357", name: "Cyprus" },
+    { code: "+356", name: "Malta" },
+    { code: "+36", name: "Hungary" },
+    { code: "+371", name: "Latvia" },
+    { code: "+63", name: "Philippines" },
+    { code: "+60", name: "Malaysia" },
+  ];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -34,9 +48,19 @@ const SignUp = () => {
     setLoading(true);
     setError("");
 
+    // Validate password match
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match!");
+      setLoading(false);
+      return;
+    }
+
     try {
+      // Remove confirmPassword before sending to backend
+      const { confirmPassword, ...submitData } = formData;
+
       // Create user account
-      const response = await authAPI.register(formData);
+      const response = await authAPI.register(submitData);
       setSuccess(true);
 
       if (response.token) {
@@ -109,15 +133,31 @@ const SignUp = () => {
 
       <div className="mb25">
         <label className="form-label fw600 dark-color">Phone</label>
-        <input
-          type="tel"
-          name="phone"
-          className="form-control"
-          placeholder="Enter Phone Number"
-          value={formData.phone}
-          onChange={handleChange}
-          required
-        />
+        <div className="input-group">
+          <select
+            name="countryCode"
+            className="form-control"
+            value={formData.countryCode}
+            onChange={handleChange}
+            required
+            style={{ maxWidth: "100px" }}
+          >
+            {countries.map((country) => (
+              <option key={country.code} value={country.code}>
+                {country.code}
+              </option>
+            ))}
+          </select>
+          <input
+            type="tel"
+            name="phone"
+            className="form-control"
+            placeholder="Enter Phone Number"
+            value={formData.phone}
+            onChange={handleChange}
+            required
+          />
+        </div>
       </div>
       {/* End Phone */}
 
@@ -131,8 +171,8 @@ const SignUp = () => {
           required
         >
           {countries.map((country) => (
-            <option key={country} value={country}>
-              {country}
+            <option key={country.name} value={country.name}>
+              {country.name}
             </option>
           ))}
         </select>
@@ -148,27 +188,11 @@ const SignUp = () => {
           onChange={handleChange}
           required
         >
-          <option value="buyer">Buyer</option>
-          <option value="seller">Seller</option>
-          <option value="broker">Broker / Agent</option>
+          <option value="broker">Broker</option>
+          <option value="agent">Agent</option>
         </select>
       </div>
       {/* End Role */}
-
-      <div className="mb25">
-        <label className="form-label fw600 dark-color">Account Type</label>
-        <select
-          name="userType"
-          className="form-control"
-          value={formData.userType}
-          onChange={handleChange}
-          required
-        >
-          <option value="individual">Individual</option>
-          <option value="organization">Organization / Company</option>
-        </select>
-      </div>
-      {/* End Account Type */}
 
       <div className="mb20">
         <label className="form-label fw600 dark-color">Password</label>
@@ -183,6 +207,20 @@ const SignUp = () => {
         />
       </div>
       {/* End Password */}
+
+      <div className="mb20">
+        <label className="form-label fw600 dark-color">Confirm Password</label>
+        <input
+          type="password"
+          name="confirmPassword"
+          className="form-control"
+          placeholder="Confirm Password"
+          value={formData.confirmPassword}
+          onChange={handleChange}
+          required
+        />
+      </div>
+      {/* End Confirm Password */}
 
       <div className="d-grid mb20">
         <button
