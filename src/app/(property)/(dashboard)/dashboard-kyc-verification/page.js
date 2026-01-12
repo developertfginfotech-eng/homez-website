@@ -10,23 +10,51 @@ import { useRouter } from "next/navigation";
 
 const DashboardKYCVerification = () => {
   const router = useRouter();
-  const [userCountry, setUserCountry] = useState("India");
+  const [userData, setUserData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    countryCode: "",
+    country: "UAE",
+  });
   const [formData, setFormData] = useState({});
   const [uploading, setUploading] = useState(false);
 
-  const countries = ["India", "USA", "UK", "Canada", "Australia"];
+  const countries = [
+    { code: "+971", name: "UAE" },
+    { code: "+1", name: "USA" },
+    { code: "+351", name: "Portugal" },
+    { code: "+1", name: "Canada" },
+    { code: "+61", name: "Australia" },
+    { code: "+90", name: "Turkey" },
+    { code: "+357", name: "Cyprus" },
+    { code: "+356", name: "Malta" },
+    { code: "+36", name: "Hungary" },
+    { code: "+371", name: "Latvia" },
+    { code: "+63", name: "Philippines" },
+    { code: "+60", name: "Malaysia" },
+  ];
 
   useEffect(() => {
-    // Get user data
+    // Get user data from localStorage
     const userStr = localStorage.getItem("user");
     if (userStr) {
       const user = JSON.parse(userStr);
-      setUserCountry(user.country || "India");
+      setUserData({
+        name: user.name || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        countryCode: user.countryCode || "+971",
+        country: user.country || "UAE",
+      });
     }
   }, []);
 
   const handleCountryChange = (e) => {
-    setUserCountry(e.target.value);
+    setUserData({
+      ...userData,
+      country: e.target.value,
+    });
     // Update user country in localStorage
     const userStr = localStorage.getItem("user");
     if (userStr) {
@@ -111,6 +139,83 @@ const DashboardKYCVerification = () => {
                 <div className="col-lg-12">
                   <div className="bgc-white p30 bdrs12" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
                     <form onSubmit={handleSubmit}>
+                      {/* User Information Section */}
+                      <div className="mb30 p20" style={{ backgroundColor: "#f0f9ff", border: "1px solid #cffafe", borderRadius: "8px" }}>
+                        <h5 className="mb20" style={{ fontSize: "18px", fontWeight: "700", color: "#0c4a6e" }}>
+                          <i className="fas fa-user-circle me-2"></i>
+                          Your Information
+                        </h5>
+                        <div className="row">
+                          <div className="col-md-6">
+                            <label className="form-label fw600">Name</label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              value={userData.name}
+                              disabled
+                              style={{
+                                padding: "12px",
+                                fontSize: "15px",
+                                backgroundColor: "#e0f2fe",
+                                border: "1px solid #bae6fd",
+                                borderRadius: "8px",
+                              }}
+                            />
+                          </div>
+                          <div className="col-md-6">
+                            <label className="form-label fw600">Email</label>
+                            <input
+                              type="email"
+                              className="form-control"
+                              value={userData.email}
+                              disabled
+                              style={{
+                                padding: "12px",
+                                fontSize: "15px",
+                                backgroundColor: "#e0f2fe",
+                                border: "1px solid #bae6fd",
+                                borderRadius: "8px",
+                              }}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="row mt3">
+                          <div className="col-md-4">
+                            <label className="form-label fw600">Country Code</label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              value={userData.countryCode}
+                              disabled
+                              style={{
+                                padding: "12px",
+                                fontSize: "15px",
+                                backgroundColor: "#e0f2fe",
+                                border: "1px solid #bae6fd",
+                                borderRadius: "8px",
+                              }}
+                            />
+                          </div>
+                          <div className="col-md-8">
+                            <label className="form-label fw600">Phone</label>
+                            <input
+                              type="tel"
+                              className="form-control"
+                              value={userData.phone}
+                              disabled
+                              style={{
+                                padding: "12px",
+                                fontSize: "15px",
+                                backgroundColor: "#e0f2fe",
+                                border: "1px solid #bae6fd",
+                                borderRadius: "8px",
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
                       <div className="mb30">
                         <h4 className="mb20" style={{ fontSize: "20px", fontWeight: "700" }}>
                           <i className="fas fa-shield-check me-2" style={{ color: "#eb6753" }}></i>
@@ -121,7 +226,7 @@ const DashboardKYCVerification = () => {
                             <label className="form-label fw600">Select Your Country</label>
                             <select
                               className="form-control"
-                              value={userCountry}
+                              value={userData.country}
                               onChange={handleCountryChange}
                               style={{
                                 padding: "12px",
@@ -131,8 +236,8 @@ const DashboardKYCVerification = () => {
                               }}
                             >
                               {countries.map((country) => (
-                                <option key={country} value={country}>
-                                  {country}
+                                <option key={country.name} value={country.name}>
+                                  {country.name}
                                 </option>
                               ))}
                             </select>
@@ -152,7 +257,7 @@ const DashboardKYCVerification = () => {
                       >
                         <h6 style={{ color: "#eb6753", fontSize: "15px", fontWeight: "700", marginBottom: "8px" }}>
                           <i className="fas fa-info-circle me-2"></i>
-                          Documents Required for {userCountry}
+                          Documents Required for {userData.country}
                         </h6>
                         <p className="mb-0" style={{ fontSize: "14px", color: "#4a5568" }}>
                           Please upload clear, valid documents. All information will be kept confidential and secure.
@@ -160,7 +265,7 @@ const DashboardKYCVerification = () => {
                       </div>
 
                       {/* India Documents */}
-                      {userCountry === "India" && (
+                      {userData.country === "India" && (
                         <>
                           <div className="mb25">
                             <label className="form-label fw600">Aadhaar Card *</label>
@@ -189,7 +294,7 @@ const DashboardKYCVerification = () => {
                       )}
 
                       {/* USA Documents */}
-                      {userCountry === "USA" && (
+                      {userData.country === "USA" && (
                         <>
                           <div className="mb25">
                             <label className="form-label fw600">Driver's License *</label>
@@ -216,7 +321,7 @@ const DashboardKYCVerification = () => {
                       )}
 
                       {/* UK Documents */}
-                      {userCountry === "UK" && (
+                      {userData.country === "UK" && (
                         <>
                           <div className="mb25">
                             <label className="form-label fw600">Passport *</label>
@@ -237,7 +342,7 @@ const DashboardKYCVerification = () => {
                       )}
 
                       {/* Canada Documents */}
-                      {userCountry === "Canada" && (
+                      {userData.country === "Canada" && (
                         <>
                           <div className="mb25">
                             <label className="form-label fw600">Driver's License *</label>
@@ -264,7 +369,7 @@ const DashboardKYCVerification = () => {
                       )}
 
                       {/* Australia Documents */}
-                      {userCountry === "Australia" && (
+                      {userData.country === "Australia" && (
                         <>
                           <div className="mb25">
                             <label className="form-label fw600">Driver's License *</label>
