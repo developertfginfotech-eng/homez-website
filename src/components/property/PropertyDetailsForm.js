@@ -219,6 +219,7 @@ const PropertyDetailsForm = ({ initialData }) => {
         // Debug: Log the data being sent with actual values
         console.log('📤 Submitting backend data:', backendData);
         console.log('❌ CRITICAL FIELDS:');
+        console.log('  propertyName (raw):', formData.propertyName, '| (mapped):', backendData.propertyName, '| length:', backendData.propertyName?.length);
         console.log('  state (raw):', formData.state, '| (mapped):', backendData.state);
         console.log('  superBuiltUpArea (raw):', formData.superBuiltUpArea, '| (mapped):', backendData.superBuiltUpArea);
 
