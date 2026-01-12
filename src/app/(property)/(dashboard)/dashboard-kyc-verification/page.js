@@ -403,32 +403,324 @@ const DashboardKYCVerification = () => {
         { field: "auProofOfBusinessAddress", label: "Proof of Business Address (Utility Bill / Lease / Bank Statement) *", type: "file", accept: "image/*,.pdf" },
       ],
       Turkey: [
-        { field: "companyLicense", label: "Company License *", type: "file", accept: "image/*,.pdf" },
-        { field: "brokerCertificate", label: "Broker Certificate *", type: "file", accept: "image/*,.pdf" },
+        // Business Details Section
+        { field: "trLegalBusinessName", label: "Legal Business Name *", type: "text", placeholder: "Enter legal business name" },
+        { field: "trTradingName", label: "Trading Name (if different)", type: "text", placeholder: "Enter trading name" },
+        { field: "trBusinessStructure", label: "Business Structure *", type: "select", options: ["Anonim Şirket (A.Ş.)", "Limited Şirket (Ltd. Şti.)", "Şahıs Şirketi"] },
+        { field: "trTaxId", label: "Tax ID (Vergi Numarası) *", type: "text", placeholder: "Enter 10-digit tax ID" },
+        { field: "trCommercialRegistration", label: "Commercial Registration Number *", type: "text", placeholder: "Enter registration number" },
+        { field: "trDateOfEstablishment", label: "Date of Establishment *", type: "date" },
+        { field: "trBusinessPhone", label: "Business Phone Number *", type: "tel", placeholder: "Enter business phone" },
+        { field: "trBusinessEmail", label: "Business Email Address *", type: "email", placeholder: "Enter business email" },
+        { field: "trWebsite", label: "Website", type: "url", placeholder: "Enter website (optional)" },
+
+        // Business Address Section
+        { field: "trRegisteredAddress", label: "Registered Business Address *", type: "text", placeholder: "Enter street address" },
+        { field: "trCity", label: "City *", type: "text", placeholder: "Enter city" },
+        { field: "trProvince", label: "Province *", type: "text", placeholder: "Enter province" },
+        { field: "trPostalCode", label: "Postal Code *", type: "text", placeholder: "Enter postal code" },
+
+        // Real Estate License Details Section
+        { field: "trBrokerLicense", label: "Real Estate Brokerage License Number *", type: "text", placeholder: "Enter license number" },
+        { field: "trRegulatoryBody", label: "Regulatory Authority *", type: "text", placeholder: "Enter authority" },
+        { field: "trLicenseIssueDate", label: "License Issue Date *", type: "date" },
+        { field: "trLicenseExpiryDate", label: "License Expiry Date *", type: "date" },
+
+        // Owner / Partners Section
+        { field: "trOwnerName", label: "Full Name of Owner / Partner *", type: "text", placeholder: "Enter full name" },
+        { field: "trOwnerRole", label: "Role / Position *", type: "text", placeholder: "Enter role/position" },
+        { field: "trOwnerDob", label: "Date of Birth *", type: "date" },
+        { field: "trOwnerResidentialAddress", label: "Residential Address *", type: "text", placeholder: "Enter residential address" },
+        { field: "trOwnerNationality", label: "Nationality *", type: "text", placeholder: "Enter nationality" },
+
+        // Authorized Representative Section
+        { field: "trManagerName", label: "Authorized Representative - Full Name *", type: "text", placeholder: "Enter full name" },
+        { field: "trManagerTitle", label: "Job Title *", type: "text", placeholder: "Enter job title" },
+        { field: "trManagerContact", label: "Contact Number *", type: "tel", placeholder: "Enter contact number" },
+        { field: "trManagerEmail", label: "Email Address *", type: "email", placeholder: "Enter email" },
+        { field: "trManagerIdType", label: "Government-issued ID Type *", type: "select", options: ["T.C. Kimlik Kartı", "Passport", "Driver's License"] },
+        { field: "trManagerIdNumber", label: "Government-issued ID Number *", type: "text", placeholder: "Enter ID number" },
+
+        // Documents Upload Section
+        { field: "trCertificateOfRegistration", label: "Certificate of Registration (Ticaret Sicili) *", type: "file", accept: "image/*,.pdf" },
+        { field: "trTaxIdConfirmation", label: "Tax ID Confirmation *", type: "file", accept: "image/*,.pdf" },
+        { field: "trBrokerLicenseDoc", label: "Real Estate Brokerage License Certificate *", type: "file", accept: "image/*,.pdf" },
+        { field: "trGovernmentId", label: "Government-issued ID (Owner / Authorized Representative) *", type: "file", accept: "image/*,.pdf" },
+        { field: "trProofOfAddress", label: "Proof of Business Address (Utility Bill / Lease / Bank Statement) *", type: "file", accept: "image/*,.pdf" },
       ],
       Cyprus: [
-        { field: "companyLicense", label: "Company License *", type: "file", accept: "image/*,.pdf" },
-        { field: "licenseToOperate", label: "License to Operate *", type: "file", accept: "image/*,.pdf" },
+        // Business Details Section
+        { field: "cyLegalBusinessName", label: "Legal Business Name *", type: "text", placeholder: "Enter legal business name" },
+        { field: "cyTradingName", label: "Trading Name (if different)", type: "text", placeholder: "Enter trading name" },
+        { field: "cyBusinessStructure", label: "Business Structure *", type: "select", options: ["Public Company", "Private Company", "Partnership", "Sole Proprietorship"] },
+        { field: "cyCompanyNumber", label: "Company Registration Number (Registrar) *", type: "text", placeholder: "Enter registration number" },
+        { field: "cyVatNumber", label: "VAT Registration Number *", type: "text", placeholder: "Enter VAT number" },
+        { field: "cyDateOfIncorporation", label: "Date of Incorporation *", type: "date" },
+        { field: "cyBusinessPhone", label: "Business Phone Number *", type: "tel", placeholder: "Enter business phone" },
+        { field: "cyBusinessEmail", label: "Business Email Address *", type: "email", placeholder: "Enter business email" },
+        { field: "cyWebsite", label: "Website", type: "url", placeholder: "Enter website (optional)" },
+
+        // Business Address Section
+        { field: "cyRegisteredAddress", label: "Registered Business Address *", type: "text", placeholder: "Enter street address" },
+        { field: "cyCity", label: "City *", type: "text", placeholder: "Enter city" },
+        { field: "cyPostalCode", label: "Postal Code *", type: "text", placeholder: "Enter postal code" },
+
+        // Real Estate License Section
+        { field: "cyLicenseNumber", label: "Real Estate Agent License Number *", type: "text", placeholder: "Enter license number" },
+        { field: "cyLicensedBy", label: "Licensed By *", type: "text", placeholder: "Regulatory authority" },
+        { field: "cyLicenseIssueDate", label: "License Issue Date *", type: "date" },
+        { field: "cyLicenseExpiryDate", label: "License Expiry Date *", type: "date" },
+
+        // Directors Section
+        { field: "cyDirectorName", label: "Full Name of Director / Owner *", type: "text", placeholder: "Enter full name" },
+        { field: "cyDirectorRole", label: "Role / Position *", type: "text", placeholder: "Enter role/position" },
+        { field: "cyDirectorDob", label: "Date of Birth *", type: "date" },
+        { field: "cyDirectorResidentialAddress", label: "Residential Address *", type: "text", placeholder: "Enter residential address" },
+        { field: "cyDirectorNationality", label: "Nationality *", type: "text", placeholder: "Enter nationality" },
+
+        // Authorized Manager Section
+        { field: "cyManagerName", label: "Authorized Manager - Full Name *", type: "text", placeholder: "Enter full name" },
+        { field: "cyManagerTitle", label: "Job Title *", type: "text", placeholder: "Enter job title" },
+        { field: "cyManagerContact", label: "Contact Number *", type: "tel", placeholder: "Enter contact number" },
+        { field: "cyManagerEmail", label: "Email Address *", type: "email", placeholder: "Enter email" },
+        { field: "cyManagerIdType", label: "Government-issued ID Type *", type: "select", options: ["ID Card", "Passport", "Driver's License"] },
+        { field: "cyManagerIdNumber", label: "Government-issued ID Number *", type: "text", placeholder: "Enter ID number" },
+
+        // Documents Upload Section
+        { field: "cyCertificateOfIncorporation", label: "Certificate of Incorporation / Registration *", type: "file", accept: "image/*,.pdf" },
+        { field: "cyVatCertificate", label: "VAT Registration Certificate *", type: "file", accept: "image/*,.pdf" },
+        { field: "cyRealEstateLicense", label: "Real Estate License Certificate *", type: "file", accept: "image/*,.pdf" },
+        { field: "cyGovernmentId", label: "Government-issued ID (Director / Authorized Manager) *", type: "file", accept: "image/*,.pdf" },
+        { field: "cyProofOfAddress", label: "Proof of Business Address (Utility Bill / Lease / Bank Statement) *", type: "file", accept: "image/*,.pdf" },
       ],
       Malta: [
-        { field: "companyLicense", label: "Company License *", type: "file", accept: "image/*,.pdf" },
-        { field: "licenseToOperate", label: "License to Operate *", type: "file", accept: "image/*,.pdf" },
+        // Business Details Section
+        { field: "mtLegalBusinessName", label: "Legal Business Name *", type: "text", placeholder: "Enter legal business name" },
+        { field: "mtTradingName", label: "Trading Name (if different)", type: "text", placeholder: "Enter trading name" },
+        { field: "mtBusinessStructure", label: "Business Structure *", type: "select", options: ["Public Company", "Private Company", "Partnership", "Sole Trader"] },
+        { field: "mtCompanyNumber", label: "Company Registration Number *", type: "text", placeholder: "Enter registration number" },
+        { field: "mtVatNumber", label: "VAT Number *", type: "text", placeholder: "Enter VAT number" },
+        { field: "mtDateOfIncorporation", label: "Date of Incorporation *", type: "date" },
+        { field: "mtBusinessPhone", label: "Business Phone Number *", type: "tel", placeholder: "Enter business phone" },
+        { field: "mtBusinessEmail", label: "Business Email Address *", type: "email", placeholder: "Enter business email" },
+        { field: "mtWebsite", label: "Website", type: "url", placeholder: "Enter website (optional)" },
+
+        // Business Address Section
+        { field: "mtRegisteredAddress", label: "Registered Business Address *", type: "text", placeholder: "Enter street address" },
+        { field: "mtCity", label: "City / Locality *", type: "text", placeholder: "Enter city" },
+        { field: "mtPostalCode", label: "Postal Code *", type: "text", placeholder: "Enter postal code" },
+
+        // Real Estate License Section
+        { field: "mtLicenseNumber", label: "Real Estate Agency License Number *", type: "text", placeholder: "Enter license number" },
+        { field: "mtRegulatoryAuthority", label: "Regulatory Authority *", type: "text", placeholder: "Enter authority" },
+        { field: "mtLicenseIssueDate", label: "License Issue Date *", type: "date" },
+        { field: "mtLicenseExpiryDate", label: "License Expiry Date *", type: "date" },
+
+        // Directors Section
+        { field: "mtDirectorName", label: "Full Name of Director / Owner *", type: "text", placeholder: "Enter full name" },
+        { field: "mtDirectorRole", label: "Role / Position *", type: "text", placeholder: "Enter role/position" },
+        { field: "mtDirectorDob", label: "Date of Birth *", type: "date" },
+        { field: "mtDirectorResidentialAddress", label: "Residential Address *", type: "text", placeholder: "Enter residential address" },
+        { field: "mtDirectorNationality", label: "Nationality *", type: "text", placeholder: "Enter nationality" },
+
+        // Authorized Manager Section
+        { field: "mtManagerName", label: "Authorized Manager - Full Name *", type: "text", placeholder: "Enter full name" },
+        { field: "mtManagerTitle", label: "Job Title *", type: "text", placeholder: "Enter job title" },
+        { field: "mtManagerContact", label: "Contact Number *", type: "tel", placeholder: "Enter contact number" },
+        { field: "mtManagerEmail", label: "Email Address *", type: "email", placeholder: "Enter email" },
+        { field: "mtManagerIdType", label: "Government-issued ID Type *", type: "select", options: ["ID Card", "Passport", "Driver's License"] },
+        { field: "mtManagerIdNumber", label: "Government-issued ID Number *", type: "text", placeholder: "Enter ID number" },
+
+        // Documents Upload Section
+        { field: "mtCertificateOfIncorporation", label: "Certificate of Incorporation / Registration *", type: "file", accept: "image/*,.pdf" },
+        { field: "mtVatCertificate", label: "VAT Registration Certificate *", type: "file", accept: "image/*,.pdf" },
+        { field: "mtRealEstateLicense", label: "Real Estate Agency License Certificate *", type: "file", accept: "image/*,.pdf" },
+        { field: "mtGovernmentId", label: "Government-issued ID (Director / Authorized Manager) *", type: "file", accept: "image/*,.pdf" },
+        { field: "mtProofOfAddress", label: "Proof of Business Address (Utility Bill / Lease / Bank Statement) *", type: "file", accept: "image/*,.pdf" },
       ],
       Hungary: [
-        { field: "companyLicense", label: "Company License *", type: "file", accept: "image/*,.pdf" },
-        { field: "licenseToOperate", label: "License to Operate *", type: "file", accept: "image/*,.pdf" },
+        // Business Details Section
+        { field: "huLegalBusinessName", label: "Legal Business Name *", type: "text", placeholder: "Enter legal business name" },
+        { field: "huTradingName", label: "Trading Name (if different)", type: "text", placeholder: "Enter trading name" },
+        { field: "huBusinessStructure", label: "Business Structure *", type: "select", options: ["Korlátolt Felelősségű Társaság (Kft.)", "Részvénytársaság (Rt.)", "Egyéni Vállalkozó"] },
+        { field: "huTaxNumber", label: "Tax Number (Adószám) *", type: "text", placeholder: "Enter tax number" },
+        { field: "huCompanyRegistration", label: "Company Registration Number *", type: "text", placeholder: "Enter registration number" },
+        { field: "huDateOfRegistration", label: "Date of Registration *", type: "date" },
+        { field: "huBusinessPhone", label: "Business Phone Number *", type: "tel", placeholder: "Enter business phone" },
+        { field: "huBusinessEmail", label: "Business Email Address *", type: "email", placeholder: "Enter business email" },
+        { field: "huWebsite", label: "Website", type: "url", placeholder: "Enter website (optional)" },
+
+        // Business Address Section
+        { field: "huRegisteredAddress", label: "Registered Business Address *", type: "text", placeholder: "Enter street address" },
+        { field: "huCity", label: "City *", type: "text", placeholder: "Enter city" },
+        { field: "huPostalCode", label: "Postal Code *", type: "text", placeholder: "Enter postal code" },
+
+        // Real Estate License Section
+        { field: "huLicenseNumber", label: "Real Estate Agent License Number *", type: "text", placeholder: "Enter license number" },
+        { field: "huRegulatoryBody", label: "Regulatory Authority *", type: "text", placeholder: "Enter authority" },
+        { field: "huLicenseIssueDate", label: "License Issue Date *", type: "date" },
+        { field: "huLicenseExpiryDate", label: "License Expiry Date *", type: "date" },
+
+        // Directors Section
+        { field: "huDirectorName", label: "Full Name of Director / Owner *", type: "text", placeholder: "Enter full name" },
+        { field: "huDirectorRole", label: "Role / Position *", type: "text", placeholder: "Enter role/position" },
+        { field: "huDirectorDob", label: "Date of Birth *", type: "date" },
+        { field: "huDirectorResidentialAddress", label: "Residential Address *", type: "text", placeholder: "Enter residential address" },
+        { field: "huDirectorNationality", label: "Nationality *", type: "text", placeholder: "Enter nationality" },
+
+        // Authorized Manager Section
+        { field: "huManagerName", label: "Authorized Manager - Full Name *", type: "text", placeholder: "Enter full name" },
+        { field: "huManagerTitle", label: "Job Title *", type: "text", placeholder: "Enter job title" },
+        { field: "huManagerContact", label: "Contact Number *", type: "tel", placeholder: "Enter contact number" },
+        { field: "huManagerEmail", label: "Email Address *", type: "email", placeholder: "Enter email" },
+        { field: "huManagerIdType", label: "Government-issued ID Type *", type: "select", options: ["ID Card", "Passport", "Driver's License"] },
+        { field: "huManagerIdNumber", label: "Government-issued ID Number *", type: "text", placeholder: "Enter ID number" },
+
+        // Documents Upload Section
+        { field: "huCertificateOfRegistration", label: "Certificate of Registration (Cégbírósági Kivonat) *", type: "file", accept: "image/*,.pdf" },
+        { field: "huTaxIdConfirmation", label: "Tax ID Confirmation *", type: "file", accept: "image/*,.pdf" },
+        { field: "huRealEstateLicense", label: "Real Estate License Certificate *", type: "file", accept: "image/*,.pdf" },
+        { field: "huGovernmentId", label: "Government-issued ID (Director / Authorized Manager) *", type: "file", accept: "image/*,.pdf" },
+        { field: "huProofOfAddress", label: "Proof of Business Address (Utility Bill / Lease / Bank Statement) *", type: "file", accept: "image/*,.pdf" },
       ],
       Latvia: [
-        { field: "companyLicense", label: "Company License *", type: "file", accept: "image/*,.pdf" },
-        { field: "licenseToOperate", label: "License to Operate *", type: "file", accept: "image/*,.pdf" },
+        // Business Details Section
+        { field: "lvLegalBusinessName", label: "Legal Business Name *", type: "text", placeholder: "Enter legal business name" },
+        { field: "lvTradingName", label: "Trading Name (if different)", type: "text", placeholder: "Enter trading name" },
+        { field: "lvBusinessStructure", label: "Business Structure *", type: "select", options: ["Akcionārtiesība (AS)", "Sabiedrība ar ierobežotu atbildību (SIA)", "Partnerība"] },
+        { field: "lvRegistrationNumber", label: "Registration Number (Reģistrācijas numurs) *", type: "text", placeholder: "Enter registration number" },
+        { field: "lvVatNumber", label: "VAT Number *", type: "text", placeholder: "Enter VAT number" },
+        { field: "lvDateOfRegistration", label: "Date of Registration *", type: "date" },
+        { field: "lvBusinessPhone", label: "Business Phone Number *", type: "tel", placeholder: "Enter business phone" },
+        { field: "lvBusinessEmail", label: "Business Email Address *", type: "email", placeholder: "Enter business email" },
+        { field: "lvWebsite", label: "Website", type: "url", placeholder: "Enter website (optional)" },
+
+        // Business Address Section
+        { field: "lvRegisteredAddress", label: "Registered Business Address *", type: "text", placeholder: "Enter street address" },
+        { field: "lvCity", label: "City *", type: "text", placeholder: "Enter city" },
+        { field: "lvPostalCode", label: "Postal Code *", type: "text", placeholder: "Enter postal code" },
+
+        // Real Estate License Section
+        { field: "lvLicenseNumber", label: "Real Estate Agent License Number *", type: "text", placeholder: "Enter license number" },
+        { field: "lvRegulatoryAuthority", label: "Regulatory Authority *", type: "text", placeholder: "Enter authority" },
+        { field: "lvLicenseIssueDate", label: "License Issue Date *", type: "date" },
+        { field: "lvLicenseExpiryDate", label: "License Expiry Date *", type: "date" },
+
+        // Directors Section
+        { field: "lvDirectorName", label: "Full Name of Director / Owner *", type: "text", placeholder: "Enter full name" },
+        { field: "lvDirectorRole", label: "Role / Position *", type: "text", placeholder: "Enter role/position" },
+        { field: "lvDirectorDob", label: "Date of Birth *", type: "date" },
+        { field: "lvDirectorResidentialAddress", label: "Residential Address *", type: "text", placeholder: "Enter residential address" },
+        { field: "lvDirectorNationality", label: "Nationality *", type: "text", placeholder: "Enter nationality" },
+
+        // Authorized Manager Section
+        { field: "lvManagerName", label: "Authorized Manager - Full Name *", type: "text", placeholder: "Enter full name" },
+        { field: "lvManagerTitle", label: "Job Title *", type: "text", placeholder: "Enter job title" },
+        { field: "lvManagerContact", label: "Contact Number *", type: "tel", placeholder: "Enter contact number" },
+        { field: "lvManagerEmail", label: "Email Address *", type: "email", placeholder: "Enter email" },
+        { field: "lvManagerIdType", label: "Government-issued ID Type *", type: "select", options: ["ID Card", "Passport", "Driver's License"] },
+        { field: "lvManagerIdNumber", label: "Government-issued ID Number *", type: "text", placeholder: "Enter ID number" },
+
+        // Documents Upload Section
+        { field: "lvCertificateOfRegistration", label: "Certificate of Registration (Uzņēmuma Reģistra Ieguva) *", type: "file", accept: "image/*,.pdf" },
+        { field: "lvVatCertificate", label: "VAT Registration Certificate *", type: "file", accept: "image/*,.pdf" },
+        { field: "lvRealEstateLicense", label: "Real Estate License Certificate *", type: "file", accept: "image/*,.pdf" },
+        { field: "lvGovernmentId", label: "Government-issued ID (Director / Authorized Manager) *", type: "file", accept: "image/*,.pdf" },
+        { field: "lvProofOfAddress", label: "Proof of Business Address (Utility Bill / Lease / Bank Statement) *", type: "file", accept: "image/*,.pdf" },
       ],
       Philippines: [
-        { field: "businessLicense", label: "Business License *", type: "file", accept: "image/*,.pdf" },
-        { field: "brokerLicense", label: "Broker License *", type: "file", accept: "image/*,.pdf" },
+        // Business Details Section
+        { field: "phLegalBusinessName", label: "Legal Business Name *", type: "text", placeholder: "Enter legal business name" },
+        { field: "phTradingName", label: "Trading Name (if different)", type: "text", placeholder: "Enter trading name" },
+        { field: "phBusinessStructure", label: "Business Structure *", type: "select", options: ["Corporation", "Partnership", "Sole Proprietorship"] },
+        { field: "phSecNumber", label: "SEC Registration Number *", type: "text", placeholder: "Enter SEC number" },
+        { field: "phBirNumber", label: "BIR Registration Number (TIN) *", type: "text", placeholder: "Enter BIR/TIN number" },
+        { field: "phDateOfIncorporation", label: "Date of Incorporation *", type: "date" },
+        { field: "phBusinessPhone", label: "Business Phone Number *", type: "tel", placeholder: "Enter business phone" },
+        { field: "phBusinessEmail", label: "Business Email Address *", type: "email", placeholder: "Enter business email" },
+        { field: "phWebsite", label: "Website", type: "url", placeholder: "Enter website (optional)" },
+
+        // Business Address Section
+        { field: "phRegisteredAddress", label: "Registered Business Address *", type: "text", placeholder: "Enter street address" },
+        { field: "phCity", label: "City *", type: "text", placeholder: "Enter city" },
+        { field: "phProvince", label: "Province *", type: "text", placeholder: "Enter province" },
+        { field: "phPostalCode", label: "Postal Code *", type: "text", placeholder: "Enter postal code" },
+
+        // Real Estate License Section
+        { field: "phRealEstateLicense", label: "Real Estate Broker License Number *", type: "text", placeholder: "Enter license number" },
+        { field: "phPrc", label: "PRC License Number *", type: "text", placeholder: "Enter PRC license" },
+        { field: "phLicenseIssueDate", label: "License Issue Date *", type: "date" },
+        { field: "phLicenseExpiryDate", label: "License Expiry Date *", type: "date" },
+
+        // Directors / Owners Section
+        { field: "phDirectorName", label: "Full Name of Director / Owner *", type: "text", placeholder: "Enter full name" },
+        { field: "phDirectorRole", label: "Role / Position *", type: "text", placeholder: "Enter role/position" },
+        { field: "phDirectorDob", label: "Date of Birth *", type: "date" },
+        { field: "phDirectorResidentialAddress", label: "Residential Address *", type: "text", placeholder: "Enter residential address" },
+        { field: "phDirectorNationality", label: "Nationality *", type: "text", placeholder: "Enter nationality" },
+
+        // Authorized Manager Section
+        { field: "phManagerName", label: "Authorized Manager - Full Name *", type: "text", placeholder: "Enter full name" },
+        { field: "phManagerTitle", label: "Job Title *", type: "text", placeholder: "Enter job title" },
+        { field: "phManagerContact", label: "Contact Number *", type: "tel", placeholder: "Enter contact number" },
+        { field: "phManagerEmail", label: "Email Address *", type: "email", placeholder: "Enter email" },
+        { field: "phManagerIdType", label: "Government-issued ID Type *", type: "select", options: ["PRC License", "Passport", "Driver's License"] },
+        { field: "phManagerIdNumber", label: "Government-issued ID Number *", type: "text", placeholder: "Enter ID number" },
+
+        // Documents Upload Section
+        { field: "phArticlesOfIncorporation", label: "Articles of Incorporation / Registration *", type: "file", accept: "image/*,.pdf" },
+        { field: "phSecCertificate", label: "SEC Registration Certificate *", type: "file", accept: "image/*,.pdf" },
+        { field: "phBirCertificate", label: "BIR Registration Certificate (TIN) *", type: "file", accept: "image/*,.pdf" },
+        { field: "phRealEstateLicenseDoc", label: "Real Estate Broker License Certificate *", type: "file", accept: "image/*,.pdf" },
+        { field: "phPrcLicense", label: "PRC License Certificate *", type: "file", accept: "image/*,.pdf" },
+        { field: "phGovernmentId", label: "Government-issued ID (Director / Authorized Manager) *", type: "file", accept: "image/*,.pdf" },
+        { field: "phProofOfAddress", label: "Proof of Business Address (Utility Bill / Lease / Bank Statement) *", type: "file", accept: "image/*,.pdf" },
       ],
       Malaysia: [
-        { field: "businessLicense", label: "Business License *", type: "file", accept: "image/*,.pdf" },
-        { field: "brokerLicense", label: "Broker License *", type: "file", accept: "image/*,.pdf" },
+        // Business Details Section
+        { field: "myLegalBusinessName", label: "Legal Business Name *", type: "text", placeholder: "Enter legal business name" },
+        { field: "myTradingName", label: "Trading Name (if different)", type: "text", placeholder: "Enter trading name" },
+        { field: "myBusinessStructure", label: "Business Structure *", type: "select", options: ["Sdn. Bhd. (Private Company)", "Berhad (Public Company)", "Partnership", "Sole Proprietorship"] },
+        { field: "myCompanyNumber", label: "Company Registration Number *", type: "text", placeholder: "Enter registration number" },
+        { field: "myRegistrationNumber", label: "Business Registration Number (SSM) *", type: "text", placeholder: "Enter SSM number" },
+        { field: "myDateOfRegistration", label: "Date of Registration *", type: "date" },
+        { field: "myBusinessPhone", label: "Business Phone Number *", type: "tel", placeholder: "Enter business phone" },
+        { field: "myBusinessEmail", label: "Business Email Address *", type: "email", placeholder: "Enter business email" },
+        { field: "myWebsite", label: "Website", type: "url", placeholder: "Enter website (optional)" },
+
+        // Business Address Section
+        { field: "myRegisteredAddress", label: "Registered Business Address *", type: "text", placeholder: "Enter street address" },
+        { field: "myCity", label: "City *", type: "text", placeholder: "Enter city" },
+        { field: "myState", label: "State / Federal Territory *", type: "text", placeholder: "Enter state" },
+        { field: "myPostalCode", label: "Postal Code *", type: "text", placeholder: "Enter postal code" },
+
+        // Real Estate License Section
+        { field: "myRealEstateLicense", label: "Real Estate Broker License Number *", type: "text", placeholder: "Enter license number" },
+        { field: "myLicensingState", label: "Licensing State *", type: "text", placeholder: "Enter state" },
+        { field: "myLicenseIssueDate", label: "License Issue Date *", type: "date" },
+        { field: "myLicenseExpiryDate", label: "License Expiry Date *", type: "date" },
+
+        // Directors / Owners Section
+        { field: "myDirectorName", label: "Full Name of Director / Owner *", type: "text", placeholder: "Enter full name" },
+        { field: "myDirectorRole", label: "Role / Position *", type: "text", placeholder: "Enter role/position" },
+        { field: "myDirectorDob", label: "Date of Birth *", type: "date" },
+        { field: "myDirectorResidentialAddress", label: "Residential Address *", type: "text", placeholder: "Enter residential address" },
+        { field: "myDirectorNationality", label: "Nationality *", type: "text", placeholder: "Enter nationality" },
+
+        // Authorized Manager Section
+        { field: "myManagerName", label: "Authorized Manager - Full Name *", type: "text", placeholder: "Enter full name" },
+        { field: "myManagerTitle", label: "Job Title *", type: "text", placeholder: "Enter job title" },
+        { field: "myManagerContact", label: "Contact Number *", type: "tel", placeholder: "Enter contact number" },
+        { field: "myManagerEmail", label: "Email Address *", type: "email", placeholder: "Enter email" },
+        { field: "myManagerIdType", label: "Government-issued ID Type *", type: "select", options: ["MyKad (ID Card)", "Passport", "Driver's License"] },
+        { field: "myManagerIdNumber", label: "Government-issued ID Number *", type: "text", placeholder: "Enter ID number" },
+
+        // Documents Upload Section
+        { field: "myCertificateOfIncorporation", label: "Certificate of Incorporation / Registration *", type: "file", accept: "image/*,.pdf" },
+        { field: "mySSMCertificate", label: "SSM Registration Certificate *", type: "file", accept: "image/*,.pdf" },
+        { field: "myRealEstateLicenseDoc", label: "Real Estate Broker License Certificate *", type: "file", accept: "image/*,.pdf" },
+        { field: "myGovernmentId", label: "Government-issued ID (Director / Authorized Manager) *", type: "file", accept: "image/*,.pdf" },
+        { field: "myProofOfAddress", label: "Proof of Business Address (Utility Bill / Lease / Bank Statement) *", type: "file", accept: "image/*,.pdf" },
       ],
     },
     "property-developer": {
