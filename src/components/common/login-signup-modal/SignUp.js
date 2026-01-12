@@ -36,10 +36,21 @@ const SignUp = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+
+    // If country changes, automatically update country code
+    if (name === "country") {
+      const selectedCountry = countries.find((c) => c.name === value);
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+        countryCode: selectedCountry ? selectedCountry.code : prev.countryCode,
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
     setError("");
   };
 
