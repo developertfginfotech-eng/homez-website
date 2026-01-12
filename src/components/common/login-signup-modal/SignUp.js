@@ -12,7 +12,7 @@ const SignUp = () => {
     confirmPassword: "",
     phone: "",
     countryCode: "+971",
-    role: "broker",
+    role: "buyer",
     country: "UAE",
   });
   const [loading, setLoading] = useState(false);
@@ -188,8 +188,8 @@ const SignUp = () => {
           onChange={handleChange}
           required
         >
-          <option value="broker">Broker</option>
-          <option value="agent">Agent</option>
+          <option value="buyer">Buyer</option>
+          <option value="seller">Seller</option>
         </select>
       </div>
       {/* End Role */}
