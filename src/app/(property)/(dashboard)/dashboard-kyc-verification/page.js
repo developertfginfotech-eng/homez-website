@@ -17,8 +17,18 @@ const DashboardKYCVerification = () => {
     countryCode: "",
     country: "UAE",
   });
+  const [accountType, setAccountType] = useState("individual");
   const [formData, setFormData] = useState({});
   const [uploading, setUploading] = useState(false);
+
+  const accountTypes = [
+    { value: "property-owner", label: "Property Owner" },
+    { value: "real-estate-agent", label: "Real Estate Agent / Broker" },
+    { value: "brokerage-company", label: "Real Estate Brokerage Company" },
+    { value: "property-developer", label: "Property Developer / Builder" },
+    { value: "property-management", label: "Property Management Company" },
+    { value: "others", label: "Others" },
+  ];
 
   const countries = [
     { code: "+971", name: "UAE" },
@@ -34,6 +44,370 @@ const DashboardKYCVerification = () => {
     { code: "+63", name: "Philippines" },
     { code: "+60", name: "Malaysia" },
   ];
+
+  // Document requirements mapping by account type and country
+  const documentRequirements = {
+    "property-owner": {
+      UAE: [
+        { field: "emiratesID", label: "Emirates ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "propertyDeed", label: "Property Deed/Title *", type: "file", accept: "image/*,.pdf" },
+        { field: "bankStatement", label: "Bank Statement (Recent) *", type: "file", accept: "image/*,.pdf" },
+      ],
+      USA: [
+        { field: "driversLicense", label: "Driver's License *", type: "file", accept: "image/*,.pdf" },
+        { field: "propertyDeed", label: "Property Deed *", type: "file", accept: "image/*,.pdf" },
+        { field: "ssn", label: "SSN (Last 4 digits) *", type: "text", placeholder: "Enter last 4 digits", maxLength: "4" },
+      ],
+      Portugal: [
+        { field: "nif", label: "NIF (Tax ID) *", type: "text", placeholder: "Enter NIF number" },
+        { field: "propertyDeed", label: "Property Deed *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Canada: [
+        { field: "driversLicense", label: "Driver's License *", type: "file", accept: "image/*,.pdf" },
+        { field: "propertyDeed", label: "Property Deed *", type: "file", accept: "image/*,.pdf" },
+        { field: "sin", label: "SIN (Last 3 digits) *", type: "text", placeholder: "Enter last 3 digits", maxLength: "3" },
+      ],
+      Australia: [
+        { field: "driversLicense", label: "Driver's License *", type: "file", accept: "image/*,.pdf" },
+        { field: "propertyTitle", label: "Property Title *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Turkey: [
+        { field: "nationalID", label: "National ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "propertyDeed", label: "Property Deed (Tapu) *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Cyprus: [
+        { field: "nationalID", label: "National ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "propertyDeed", label: "Property Deed *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Malta: [
+        { field: "nationalID", label: "National ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "propertyDeed", label: "Property Deed *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Hungary: [
+        { field: "nationalID", label: "National ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "propertyDeed", label: "Property Deed *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Latvia: [
+        { field: "nationalID", label: "National ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "propertyDeed", label: "Property Deed *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Philippines: [
+        { field: "nationalID", label: "National ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "propertyDeed", label: "Certificate of Title *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Malaysia: [
+        { field: "nationalID", label: "National ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "propertyTitle", label: "Property Title *", type: "file", accept: "image/*,.pdf" },
+      ],
+    },
+    "real-estate-agent": {
+      UAE: [
+        { field: "emiratesID", label: "Emirates ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "brokerLicense", label: "Real Estate Broker License *", type: "file", accept: "image/*,.pdf" },
+        { field: "agentCertificate", label: "Agent Certificate *", type: "file", accept: "image/*,.pdf" },
+      ],
+      USA: [
+        { field: "driversLicense", label: "Driver's License *", type: "file", accept: "image/*,.pdf" },
+        { field: "realEstateLicense", label: "Real Estate License *", type: "file", accept: "image/*,.pdf" },
+        { field: "ssn", label: "SSN (Last 4 digits) *", type: "text", placeholder: "Enter last 4 digits", maxLength: "4" },
+      ],
+      Portugal: [
+        { field: "nif", label: "NIF (Tax ID) *", type: "text", placeholder: "Enter NIF number" },
+        { field: "agentLicense", label: "Agent License *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Canada: [
+        { field: "driversLicense", label: "Driver's License *", type: "file", accept: "image/*,.pdf" },
+        { field: "realEstateLicense", label: "Real Estate License *", type: "file", accept: "image/*,.pdf" },
+        { field: "sin", label: "SIN (Last 3 digits) *", type: "text", placeholder: "Enter last 3 digits", maxLength: "3" },
+      ],
+      Australia: [
+        { field: "driversLicense", label: "Driver's License *", type: "file", accept: "image/*,.pdf" },
+        { field: "realEstateLicense", label: "Real Estate License *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Turkey: [
+        { field: "nationalID", label: "National ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "brokerCertificate", label: "Broker Certificate *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Cyprus: [
+        { field: "nationalID", label: "National ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "agentLicense", label: "Agent License *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Malta: [
+        { field: "nationalID", label: "National ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "agentLicense", label: "Agent License *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Hungary: [
+        { field: "nationalID", label: "National ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "agentLicense", label: "Agent License *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Latvia: [
+        { field: "nationalID", label: "National ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "agentLicense", label: "Agent License *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Philippines: [
+        { field: "nationalID", label: "National ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "realEstateLicense", label: "Real Estate License *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Malaysia: [
+        { field: "nationalID", label: "National ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "realEstateLicense", label: "Real Estate License *", type: "file", accept: "image/*,.pdf" },
+      ],
+    },
+    "brokerage-company": {
+      UAE: [
+        { field: "companyLicense", label: "Company License *", type: "file", accept: "image/*,.pdf" },
+        { field: "brokerLicense", label: "Broker License *", type: "file", accept: "image/*,.pdf" },
+        { field: "authorizedSignatory", label: "Authorized Signatory ID *", type: "file", accept: "image/*,.pdf" },
+      ],
+      USA: [
+        // Business Details Section
+        { field: "legalBusinessName", label: "Legal Business Name *", type: "text", placeholder: "Enter legal business name" },
+        { field: "dbaName", label: "DBA / Trade Name", type: "text", placeholder: "Enter DBA or trade name" },
+        { field: "businessEntityType", label: "Business Entity Type *", type: "select", options: ["LLC", "Corporation", "Partnership", "Sole Proprietorship"] },
+        { field: "dateOfFormation", label: "Date of Formation *", type: "date" },
+        { field: "stateOfIncorporation", label: "State of Incorporation *", type: "text", placeholder: "Enter state name" },
+        { field: "businessRegistrationNumber", label: "Business Registration Number *", type: "text", placeholder: "Enter registration number" },
+        { field: "ein", label: "EIN (Tax ID) *", type: "text", placeholder: "Enter EIN (XX-XXXXXXX)" },
+        { field: "businessPhone", label: "Business Phone Number *", type: "tel", placeholder: "Enter business phone" },
+        { field: "businessEmail", label: "Business Email Address *", type: "email", placeholder: "Enter business email" },
+        { field: "website", label: "Website", type: "url", placeholder: "Enter business website (optional)" },
+
+        // Business Address Section
+        { field: "registeredAddress", label: "Registered Office Address *", type: "text", placeholder: "Enter street address" },
+        { field: "operatingAddress", label: "Operating / Branch Address *", type: "text", placeholder: "Enter operating address" },
+        { field: "city", label: "City *", type: "text", placeholder: "Enter city" },
+        { field: "state", label: "State *", type: "text", placeholder: "Enter state" },
+        { field: "zipCode", label: "ZIP Code *", type: "text", placeholder: "Enter ZIP code" },
+
+        // Real Estate License Details Section
+        { field: "brokerageLicenseNumber", label: "Brokerage License Number *", type: "text", placeholder: "Enter license number" },
+        { field: "licensingState", label: "Licensing State *", type: "text", placeholder: "Enter state" },
+        { field: "licenseIssueDate", label: "License Issue Date *", type: "date" },
+        { field: "licenseExpiryDate", label: "License Expiry Date *", type: "date" },
+        { field: "regulatingAuthority", label: "Regulating Authority *", type: "text", placeholder: "State Real Estate Commission" },
+
+        // Ownership & Control Section
+        { field: "ownerName", label: "Legal Name of Owners / Members / Partners *", type: "text", placeholder: "Enter owner/member name" },
+        { field: "ownershipPercentage", label: "Ownership Percentage *", type: "number", placeholder: "Enter percentage", min: "0", max: "100" },
+        { field: "role", label: "Role / Title *", type: "text", placeholder: "Enter role/title" },
+        { field: "ownerDob", label: "Date of Birth *", type: "date" },
+        { field: "ownerSsn", label: "SSN (Last 4 digits) *", type: "text", placeholder: "Enter last 4 digits", maxLength: "4" },
+        { field: "residentialAddress", label: "Residential Address *", type: "text", placeholder: "Enter residential address" },
+
+        // Authorized Signatory Section
+        { field: "signatoryName", label: "Authorized Signatory - Full Name *", type: "text", placeholder: "Enter full name" },
+        { field: "signatoryTitle", label: "Job Title *", type: "text", placeholder: "Enter job title" },
+        { field: "signatoryDob", label: "Date of Birth *", type: "date" },
+        { field: "signatorySsn", label: "SSN (Last 4 digits) *", type: "text", placeholder: "Enter last 4 digits", maxLength: "4" },
+        { field: "signatoryPhone", label: "Phone Number *", type: "tel", placeholder: "Enter phone number" },
+        { field: "signatoryEmail", label: "Email Address *", type: "email", placeholder: "Enter email" },
+        { field: "govIdType", label: "Government-issued ID Type *", type: "select", options: ["Driver's License", "Passport", "State ID"] },
+        { field: "govIdNumber", label: "Government-issued ID Number *", type: "text", placeholder: "Enter ID number" },
+
+        // Documents Upload Section
+        { field: "articlesOfIncorporation", label: "Articles of Incorporation / Organization *", type: "file", accept: "image/*,.pdf" },
+        { field: "operatingAgreement", label: "Operating Agreement / Partnership Agreement *", type: "file", accept: "image/*,.pdf" },
+        { field: "brokerageLicense", label: "Brokerage License Certificate *", type: "file", accept: "image/*,.pdf" },
+        { field: "einConfirmation", label: "EIN Confirmation Letter (IRS CP 575) *", type: "file", accept: "image/*,.pdf" },
+        { field: "govId", label: "Government-issued ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "proofOfAddress", label: "Proof of Business Address (Utility Bill / Lease / Bank Statement) *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Portugal: [
+        { field: "companyLicense", label: "Company License *", type: "file", accept: "image/*,.pdf" },
+        { field: "taxRegistration", label: "Tax Registration *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Canada: [
+        { field: "businessLicense", label: "Business License *", type: "file", accept: "image/*,.pdf" },
+        { field: "brokerLicense", label: "Broker License *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Australia: [
+        { field: "businessLicense", label: "Business License *", type: "file", accept: "image/*,.pdf" },
+        { field: "realEstateAustraliaLicense", label: "Real Estate License *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Turkey: [
+        { field: "companyLicense", label: "Company License *", type: "file", accept: "image/*,.pdf" },
+        { field: "brokerCertificate", label: "Broker Certificate *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Cyprus: [
+        { field: "companyLicense", label: "Company License *", type: "file", accept: "image/*,.pdf" },
+        { field: "licenseToOperate", label: "License to Operate *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Malta: [
+        { field: "companyLicense", label: "Company License *", type: "file", accept: "image/*,.pdf" },
+        { field: "licenseToOperate", label: "License to Operate *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Hungary: [
+        { field: "companyLicense", label: "Company License *", type: "file", accept: "image/*,.pdf" },
+        { field: "licenseToOperate", label: "License to Operate *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Latvia: [
+        { field: "companyLicense", label: "Company License *", type: "file", accept: "image/*,.pdf" },
+        { field: "licenseToOperate", label: "License to Operate *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Philippines: [
+        { field: "businessLicense", label: "Business License *", type: "file", accept: "image/*,.pdf" },
+        { field: "brokerLicense", label: "Broker License *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Malaysia: [
+        { field: "businessLicense", label: "Business License *", type: "file", accept: "image/*,.pdf" },
+        { field: "brokerLicense", label: "Broker License *", type: "file", accept: "image/*,.pdf" },
+      ],
+    },
+    "property-developer": {
+      UAE: [
+        { field: "emiratesID", label: "Emirates ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "developerLicense", label: "Developer License *", type: "file", accept: "image/*,.pdf" },
+        { field: "projectProof", label: "Project Development Proof *", type: "file", accept: "image/*,.pdf" },
+      ],
+      USA: [
+        { field: "driversLicense", label: "Driver's License *", type: "file", accept: "image/*,.pdf" },
+        { field: "developerLicense", label: "Developer License *", type: "file", accept: "image/*,.pdf" },
+        { field: "ssn", label: "SSN (Last 4 digits) *", type: "text", placeholder: "Enter last 4 digits", maxLength: "4" },
+      ],
+      Portugal: [
+        { field: "nif", label: "NIF (Tax ID) *", type: "text", placeholder: "Enter NIF number" },
+        { field: "developerRegistration", label: "Developer Registration *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Canada: [
+        { field: "driversLicense", label: "Driver's License *", type: "file", accept: "image/*,.pdf" },
+        { field: "developerLicense", label: "Developer License *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Australia: [
+        { field: "driversLicense", label: "Driver's License *", type: "file", accept: "image/*,.pdf" },
+        { field: "developerRegistration", label: "Developer Registration *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Turkey: [
+        { field: "nationalID", label: "National ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "developerLicense", label: "Developer License *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Cyprus: [
+        { field: "nationalID", label: "National ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "developerLicense", label: "Developer License *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Malta: [
+        { field: "nationalID", label: "National ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "developerLicense", label: "Developer License *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Hungary: [
+        { field: "nationalID", label: "National ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "developerLicense", label: "Developer License *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Latvia: [
+        { field: "nationalID", label: "National ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "developerLicense", label: "Developer License *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Philippines: [
+        { field: "nationalID", label: "National ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "developerLicense", label: "Developer License *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Malaysia: [
+        { field: "nationalID", label: "National ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "developerLicense", label: "Developer License *", type: "file", accept: "image/*,.pdf" },
+      ],
+    },
+    "property-management": {
+      UAE: [
+        { field: "emiratesID", label: "Emirates ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "pmLicense", label: "Property Management License *", type: "file", accept: "image/*,.pdf" },
+        { field: "companyRegistration", label: "Company Registration *", type: "file", accept: "image/*,.pdf" },
+      ],
+      USA: [
+        { field: "driversLicense", label: "Driver's License *", type: "file", accept: "image/*,.pdf" },
+        { field: "pmLicense", label: "Property Management License *", type: "file", accept: "image/*,.pdf" },
+        { field: "ssn", label: "SSN (Last 4 digits) *", type: "text", placeholder: "Enter last 4 digits", maxLength: "4" },
+      ],
+      Portugal: [
+        { field: "nif", label: "NIF (Tax ID) *", type: "text", placeholder: "Enter NIF number" },
+        { field: "pmRegistration", label: "PM Registration *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Canada: [
+        { field: "driversLicense", label: "Driver's License *", type: "file", accept: "image/*,.pdf" },
+        { field: "pmLicense", label: "Property Management License *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Australia: [
+        { field: "driversLicense", label: "Driver's License *", type: "file", accept: "image/*,.pdf" },
+        { field: "pmLicense", label: "Property Management License *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Turkey: [
+        { field: "nationalID", label: "National ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "pmLicense", label: "Property Management License *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Cyprus: [
+        { field: "nationalID", label: "National ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "pmLicense", label: "Property Management License *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Malta: [
+        { field: "nationalID", label: "National ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "pmLicense", label: "Property Management License *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Hungary: [
+        { field: "nationalID", label: "National ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "pmLicense", label: "Property Management License *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Latvia: [
+        { field: "nationalID", label: "National ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "pmLicense", label: "Property Management License *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Philippines: [
+        { field: "nationalID", label: "National ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "pmLicense", label: "Property Management License *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Malaysia: [
+        { field: "nationalID", label: "National ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "pmLicense", label: "Property Management License *", type: "file", accept: "image/*,.pdf" },
+      ],
+    },
+    others: {
+      UAE: [
+        { field: "emiratesID", label: "Emirates ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "passportCopy", label: "Passport Copy *", type: "file", accept: "image/*,.pdf" },
+      ],
+      USA: [
+        { field: "driversLicense", label: "Driver's License *", type: "file", accept: "image/*,.pdf" },
+        { field: "ssn", label: "SSN (Last 4 digits) *", type: "text", placeholder: "Enter last 4 digits", maxLength: "4" },
+      ],
+      Portugal: [
+        { field: "nif", label: "NIF (Tax ID) *", type: "text", placeholder: "Enter NIF number" },
+        { field: "passportCopy", label: "Passport Copy *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Canada: [
+        { field: "driversLicense", label: "Driver's License *", type: "file", accept: "image/*,.pdf" },
+        { field: "sin", label: "SIN (Last 3 digits) *", type: "text", placeholder: "Enter last 3 digits", maxLength: "3" },
+      ],
+      Australia: [
+        { field: "driversLicense", label: "Driver's License *", type: "file", accept: "image/*,.pdf" },
+        { field: "passportCopy", label: "Passport Copy *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Turkey: [
+        { field: "nationalID", label: "National ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "passportCopy", label: "Passport Copy *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Cyprus: [
+        { field: "nationalID", label: "National ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "passportCopy", label: "Passport Copy *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Malta: [
+        { field: "nationalID", label: "National ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "passportCopy", label: "Passport Copy *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Hungary: [
+        { field: "nationalID", label: "National ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "passportCopy", label: "Passport Copy *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Latvia: [
+        { field: "nationalID", label: "National ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "passportCopy", label: "Passport Copy *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Philippines: [
+        { field: "nationalID", label: "National ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "passportCopy", label: "Passport Copy *", type: "file", accept: "image/*,.pdf" },
+      ],
+      Malaysia: [
+        { field: "nationalID", label: "National ID *", type: "file", accept: "image/*,.pdf" },
+        { field: "passportCopy", label: "Passport Copy *", type: "file", accept: "image/*,.pdf" },
+      ],
+    },
+  };
 
   useEffect(() => {
     // Get user data from localStorage
@@ -216,6 +590,35 @@ const DashboardKYCVerification = () => {
                         </div>
                       </div>
 
+                      <div className="mb30 p20" style={{ backgroundColor: "#f5f3ff", border: "1px solid #e9d5ff", borderRadius: "8px" }}>
+                        <h5 className="mb20" style={{ fontSize: "18px", fontWeight: "700", color: "#6b21a8" }}>
+                          <i className="fas fa-briefcase me-2"></i>
+                          Account Type
+                        </h5>
+                        <div className="row">
+                          <div className="col-md-6">
+                            <label className="form-label fw600">Select Your Account Type</label>
+                            <select
+                              className="form-control"
+                              value={accountType}
+                              onChange={(e) => setAccountType(e.target.value)}
+                              style={{
+                                padding: "12px",
+                                fontSize: "15px",
+                                border: "2px solid #e9d5ff",
+                                borderRadius: "8px",
+                              }}
+                            >
+                              {accountTypes.map((type) => (
+                                <option key={type.value} value={type.value}>
+                                  {type.label}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+
                       <div className="mb30">
                         <h4 className="mb20" style={{ fontSize: "20px", fontWeight: "700" }}>
                           <i className="fas fa-shield-check me-2" style={{ color: "#eb6753" }}></i>
@@ -257,157 +660,91 @@ const DashboardKYCVerification = () => {
                       >
                         <h6 style={{ color: "#eb6753", fontSize: "15px", fontWeight: "700", marginBottom: "8px" }}>
                           <i className="fas fa-info-circle me-2"></i>
-                          Documents Required for {userData.country}
+                          Documents Required for {userData.country} ({accountTypes.find(t => t.value === accountType)?.label})
                         </h6>
                         <p className="mb-0" style={{ fontSize: "14px", color: "#4a5568" }}>
                           Please upload clear, valid documents. All information will be kept confidential and secure.
                         </p>
                       </div>
 
-                      {/* India Documents */}
-                      {userData.country === "India" && (
+                      {/* Dynamic Document Rendering Based on Account Type and Country */}
+                      {documentRequirements[accountType] && documentRequirements[accountType][userData.country] ? (
                         <>
-                          <div className="mb25">
-                            <label className="form-label fw600">Aadhaar Card *</label>
-                            <input
-                              type="file"
-                              className="form-control"
-                              accept="image/*,.pdf"
-                              onChange={(e) => handleFileChange(e, "aadhaarCard")}
-                              required
-                            />
-                            <small className="text-muted">Upload front and back side (PDF or Image)</small>
-                          </div>
-
-                          <div className="mb25">
-                            <label className="form-label fw600">PAN Card *</label>
-                            <input
-                              type="file"
-                              className="form-control"
-                              accept="image/*,.pdf"
-                              onChange={(e) => handleFileChange(e, "panCard")}
-                              required
-                            />
-                            <small className="text-muted">Upload PAN card (PDF or Image)</small>
-                          </div>
+                          {documentRequirements[accountType][userData.country].map((doc) => (
+                            <div key={doc.field} className="mb25">
+                              <label className="form-label fw600">{doc.label}</label>
+                              {doc.type === "file" ? (
+                                <>
+                                  <input
+                                    type="file"
+                                    className="form-control"
+                                    accept={doc.accept}
+                                    onChange={(e) => handleFileChange(e, doc.field)}
+                                    required
+                                  />
+                                  {doc.field.includes("Deed") || doc.field.includes("Title") || doc.field.includes("Certificate") ? (
+                                    <small className="text-muted">Upload property documents (PDF or Image)</small>
+                                  ) : doc.field.includes("License") || doc.field.includes("Certificate") ? (
+                                    <small className="text-muted">Upload valid license or certificate (PDF or Image)</small>
+                                  ) : (
+                                    <small className="text-muted">Upload document (PDF or Image)</small>
+                                  )}
+                                </>
+                              ) : doc.type === "select" ? (
+                                <select
+                                  className="form-control"
+                                  required
+                                  style={{
+                                    padding: "12px",
+                                    fontSize: "15px",
+                                    border: "1px solid #e5e7eb",
+                                    borderRadius: "8px",
+                                  }}
+                                >
+                                  <option value="">-- Select {doc.label} --</option>
+                                  {doc.options?.map((option) => (
+                                    <option key={option} value={option}>
+                                      {option}
+                                    </option>
+                                  ))}
+                                </select>
+                              ) : (
+                                <input
+                                  type={doc.type}
+                                  className="form-control"
+                                  placeholder={doc.placeholder}
+                                  maxLength={doc.maxLength}
+                                  min={doc.min}
+                                  max={doc.max}
+                                  required
+                                  style={{
+                                    padding: "12px",
+                                    fontSize: "15px",
+                                    border: "1px solid #e5e7eb",
+                                    borderRadius: "8px",
+                                  }}
+                                />
+                              )}
+                            </div>
+                          ))}
                         </>
+                      ) : (
+                        <div
+                          className="alert"
+                          style={{
+                            backgroundColor: "#fef3c7",
+                            border: "1px solid #f59e0b",
+                            borderRadius: "8px",
+                            padding: "15px",
+                            marginBottom: "25px",
+                          }}
+                        >
+                          <p className="mb-0" style={{ fontSize: "14px", color: "#92400e" }}>
+                            <i className="fas fa-warning me-2"></i>
+                            No documents found for this combination. Please verify your account type and country.
+                          </p>
+                        </div>
                       )}
-
-                      {/* USA Documents */}
-                      {userData.country === "USA" && (
-                        <>
-                          <div className="mb25">
-                            <label className="form-label fw600">Driver's License *</label>
-                            <input
-                              type="file"
-                              className="form-control"
-                              accept="image/*,.pdf"
-                              onChange={(e) => handleFileChange(e, "driversLicense")}
-                              required
-                            />
-                          </div>
-
-                          <div className="mb25">
-                            <label className="form-label fw600">SSN (Last 4 digits) *</label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="Enter last 4 digits of SSN"
-                              maxLength="4"
-                              required
-                            />
-                          </div>
-                        </>
-                      )}
-
-                      {/* UK Documents */}
-                      {userData.country === "UK" && (
-                        <>
-                          <div className="mb25">
-                            <label className="form-label fw600">Passport *</label>
-                            <input
-                              type="file"
-                              className="form-control"
-                              accept="image/*,.pdf"
-                              onChange={(e) => handleFileChange(e, "passport")}
-                              required
-                            />
-                          </div>
-
-                          <div className="mb25">
-                            <label className="form-label fw600">National Insurance Number *</label>
-                            <input type="text" className="form-control" placeholder="Enter NI Number" required />
-                          </div>
-                        </>
-                      )}
-
-                      {/* Canada Documents */}
-                      {userData.country === "Canada" && (
-                        <>
-                          <div className="mb25">
-                            <label className="form-label fw600">Driver's License *</label>
-                            <input
-                              type="file"
-                              className="form-control"
-                              accept="image/*,.pdf"
-                              onChange={(e) => handleFileChange(e, "driversLicense")}
-                              required
-                            />
-                          </div>
-
-                          <div className="mb25">
-                            <label className="form-label fw600">SIN (Last 3 digits) *</label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="Enter last 3 digits of SIN"
-                              maxLength="3"
-                              required
-                            />
-                          </div>
-                        </>
-                      )}
-
-                      {/* Australia Documents */}
-                      {userData.country === "Australia" && (
-                        <>
-                          <div className="mb25">
-                            <label className="form-label fw600">Driver's License *</label>
-                            <input
-                              type="file"
-                              className="form-control"
-                              accept="image/*,.pdf"
-                              onChange={(e) => handleFileChange(e, "driversLicense")}
-                              required
-                            />
-                          </div>
-
-                          <div className="mb25">
-                            <label className="form-label fw600">TFN (Last 3 digits) *</label>
-                            <input
-                              type="text"
-                              className="form-control"
-                              placeholder="Enter last 3 digits of TFN"
-                              maxLength="3"
-                              required
-                            />
-                          </div>
-                        </>
-                      )}
-
-                      {/* Property Ownership Proof (Optional for all countries) */}
-                      <div className="mb25">
-                        <label className="form-label fw600">Property Ownership Proof (Optional)</label>
-                        <input
-                          type="file"
-                          className="form-control"
-                          accept="image/*,.pdf"
-                          onChange={(e) => handleFileChange(e, "propertyOwnership")}
-                        />
-                        <small className="text-muted">
-                          Upload property documents like sale deed, registry, etc.
-                        </small>
-                      </div>
 
                       <div
                         className="alert mt30"
