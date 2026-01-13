@@ -43,12 +43,38 @@ const PropertyKYCVerification = () => {
       try {
         const token = localStorage.getItem('authToken');
         if (!token) { router.push('/auth/sign-in'); return; }
+        
+        // Prefill country from user signup data
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+          const user = JSON.parse(userStr);
+          if (user.country) {
+            setCountry(user.country);
+            setFormData(prev => ({
+              ...prev,
+              personalInfo: {
+                ...prev.personalInfo,
+                phone: user.phone || '',
+                email: user.email || '',
+                address: {
+                  ...prev.personalInfo.address,
+                  city: user.city || '',
+                  line1: user.address || ''
+                }
+              }
+            }));
+            // Skip to step 2 (Account Type) since country is already selected
+            setStep(2);
+          }
+        }
+        
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/kyc/status`, { headers: { 'Authorization': `Bearer ${token}` } });
         if (response.ok) router.push('/dashboard-home');
       } catch (err) { console.log('No existing KYC'); } finally { setChecking(false); }
     };
     checkKYCStatus();
   }, [router]);
+
 
   const handlePersonalInfoChange = (e) => {
     const { name, value } = e.target;
@@ -167,6 +193,10 @@ const PropertyKYCVerification = () => {
 
                 {step === 2 && (
                   <div className="step-content">
+                    <div className="alert alert-info mb20" style={{ backgroundColor: "#e0f2fe", border: "1px solid #0284c7", borderRadius: "8px", padding: "15px" }}>
+                      <i className="fas fa-globe me-2" style={{ color: "#0c4a6e" }}></i>
+                      <strong>Registered Country:</strong> <span style={{ fontSize: "16px", fontWeight: "600" }}>{country}</span>
+                    </div>
                     <h4 className="mb30" style={{ fontSize: "22px", fontWeight: "700", color: "#1f2937" }}>
                       <i className="fas fa-briefcase me-2" style={{ color: "#eb6753" }}></i>Select Your Account Type
                     </h4>
@@ -257,7 +287,7 @@ const PropertyKYCVerification = () => {
                 )}
 
                 <div className="d-flex justify-content-between align-items-center mt40">
-                  {step > 1 && <button type="button" className="btn btn-border-light-2 btn-lg" onClick={() => setStep(step - 1)}><i className="fas fa-arrow-left me-2"></i> Previous</button>}
+                  {step > 2 && <button type="button" className="btn btn-border-light-2 btn-lg" onClick={() => setStep(step - 1)}><i className="fas fa-arrow-left me-2"></i> Previous</button>}
                   {step < 4 ? (
                     <button type="button" className="btn btn-danger btn-lg ms-auto" onClick={() => setStep(step + 1)} disabled={!canProceedToNextStep()} style={{ opacity: !canProceedToNextStep() ? 0.5 : 1 }}>Next <i className="fas fa-arrow-right ms-2"></i></button>
                   ) : (

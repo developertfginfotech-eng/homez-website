@@ -45,7 +45,7 @@ const PropertyGallery = ({id}) => {
       return imagePath;
     }
     // Construct full URL for uploaded images
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'https://globperty-q5lh.onrender.com';
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'https://homez-q5lh.onrender.com';
     return `${backendUrl}${imagePath}`;
   };
 

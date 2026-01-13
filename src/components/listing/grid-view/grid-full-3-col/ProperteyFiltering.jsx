@@ -149,7 +149,7 @@ export default function ProperteyFiltering() {
           const convertedProperties = data
             .filter(p => p.approvalStatus === 'approved')
             .map((prop) => {
-              const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://globperty-q5lh.onrender.com/api';
+              const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://homez-q5lh.onrender.com/api';
               const backendUrl = API_URL.replace('/api', '');
 
               let imageUrl = "/images/listings/list-1.jpg";
