@@ -54,6 +54,7 @@ const PropertyKYCVerification = () => {
               ...prev,
               personalInfo: {
                 ...prev.personalInfo,
+                fullName: user.name || '',
                 phone: user.phone || '',
                 email: user.email || '',
                 address: {
@@ -217,14 +218,18 @@ const PropertyKYCVerification = () => {
                     {reqLoading ? <div className="text-center p-5"><p>Loading requirements...</p></div> : !requirements ? <div className="text-center p-5"><p className="text-danger">Unable to load requirements</p></div> : (
                       <>
                         <h4 className="mb30"><i className="fas fa-file-upload me-2" style={{ color: "#eb6753" }}></i>Submit Required Documents</h4>
+                        <div className="alert alert-info mb20" style={{ backgroundColor: "#e0f2fe", border: "1px solid #0284c7", borderRadius: "8px", padding: "12px" }}>
+                          <i className="fas fa-info-circle me-2" style={{ color: "#0c4a6e" }}></i>
+                          <small style={{ color: "#0c4a6e" }}>The following information is from your signup and cannot be changed.</small>
+                        </div>
                         <h6 className="mb20" style={{ fontSize: "16px", fontWeight: "700" }}>Personal Information</h6>
                         <div className="row mb30">
-                          <div className="col-md-6 mb20"><label className="form-label fw600">Full Name *</label><input type="text" name="fullName" className="form-control" value={formData.personalInfo.fullName} onChange={handlePersonalInfoChange} required /></div>
+                          <div className="col-md-6 mb20"><label className="form-label fw600">Full Name *</label><input type="text" name="fullName" className="form-control" value={formData.personalInfo.fullName} onChange={handlePersonalInfoChange} disabled style={{backgroundColor: "#e0f2fe", borderColor: "#bae6fd", cursor: "not-allowed"}} required /></div>
                           <div className="col-md-6 mb20"><label className="form-label fw600">Date of Birth *</label><input type="date" name="dateOfBirth" className="form-control" value={formData.personalInfo.dateOfBirth} onChange={handlePersonalInfoChange} required /></div>
-                          <div className="col-md-6 mb20"><label className="form-label fw600">Email *</label><input type="email" name="email" className="form-control" value={formData.personalInfo.email} onChange={handlePersonalInfoChange} required /></div>
-                          <div className="col-md-6 mb20"><label className="form-label fw600">Phone *</label><input type="tel" name="phone" className="form-control" value={formData.personalInfo.phone} onChange={handlePersonalInfoChange} required /></div>
-                          <div className="col-md-6 mb20"><label className="form-label fw600">Address Line 1 *</label><input type="text" name="address.line1" className="form-control" value={formData.personalInfo.address.line1} onChange={handlePersonalInfoChange} required /></div>
-                          <div className="col-md-6 mb20"><label className="form-label fw600">City *</label><input type="text" name="address.city" className="form-control" value={formData.personalInfo.address.city} onChange={handlePersonalInfoChange} required /></div>
+                          <div className="col-md-6 mb20"><label className="form-label fw600">Email *</label><input type="email" name="email" className="form-control" value={formData.personalInfo.email} onChange={handlePersonalInfoChange} disabled style={{backgroundColor: "#e0f2fe", borderColor: "#bae6fd", cursor: "not-allowed"}} required /></div>
+                          <div className="col-md-6 mb20"><label className="form-label fw600">Phone *</label><input type="tel" name="phone" className="form-control" value={formData.personalInfo.phone} onChange={handlePersonalInfoChange} disabled style={{backgroundColor: "#e0f2fe", borderColor: "#bae6fd", cursor: "not-allowed"}} required /></div>
+                          <div className="col-md-6 mb20"><label className="form-label fw600">Address Line 1 *</label><input type="text" name="address.line1" className="form-control" value={formData.personalInfo.address.line1} onChange={handlePersonalInfoChange} disabled style={{backgroundColor: "#e0f2fe", borderColor: "#bae6fd", cursor: "not-allowed"}} required /></div>
+                          <div className="col-md-6 mb20"><label className="form-label fw600">City *</label><input type="text" name="address.city" className="form-control" value={formData.personalInfo.address.city} onChange={handlePersonalInfoChange} disabled style={{backgroundColor: "#e0f2fe", borderColor: "#bae6fd", cursor: "not-allowed"}} required /></div>
                         </div>
                         <h6 className="mb20 mt40" style={{ fontSize: "16px", fontWeight: "700" }}>Required Documents</h6>
                         <div className="row mb30">
