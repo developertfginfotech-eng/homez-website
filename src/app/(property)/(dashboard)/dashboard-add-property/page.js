@@ -282,3 +282,21 @@ const DashboardAddProperty = () => {
                             <i className="flaticon-home-1 text-thm fz24"></i>
                           </div>
                           <div>
+                            <h5 className="mb10">Wide Exposure</h5>
+                            <p className="text-gray-dark">Reach thousands of potential buyers and renters</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default DashboardAddProperty;
