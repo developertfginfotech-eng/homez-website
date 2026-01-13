@@ -289,13 +289,19 @@ const DashboardAddProperty = () => {
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            </section>
+                </>
+              ) : (
+                <PropertyDetailsForm userCountry={userCountry} />
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+
+      {/* Footer */}
+      <Footer />
+      {/* End Footer */}
+    </>
   );
 };
 
