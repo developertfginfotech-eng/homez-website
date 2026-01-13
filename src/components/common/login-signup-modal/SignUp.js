@@ -81,8 +81,16 @@ const SignUp = () => {
         localStorage.setItem("token", response.token);
 
         if (response.user) {
-          response.user.country = formData.country;
-          localStorage.setItem("user", JSON.stringify(response.user));
+          // Store all signup data along with user response
+          const userData = {
+            ...response.user,
+            country: formData.country,
+            city: formData.city,
+            address: formData.address,
+            phone: formData.phone,
+            countryCode: formData.countryCode
+          };
+          localStorage.setItem("user", JSON.stringify(userData));
         }
 
         // Close registration modal
