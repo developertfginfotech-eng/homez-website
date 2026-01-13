@@ -23,6 +23,7 @@ const PropertyKYCVerification = () => {
   const [step, setStep] = useState(1);
   const [country, setCountry] = useState('');
   const [accountType, setAccountType] = useState('');
+  const [hasCountry, setHasCountry] = useState(false); // Track if country was pre-filled from signup
   const { requirements, loading: reqLoading } = useKYCRequirements(country, accountType);
 
   const [formData, setFormData] = useState({
@@ -38,6 +39,19 @@ const PropertyKYCVerification = () => {
   const [success, setSuccess] = useState(false);
   const [checking, setChecking] = useState(true);
 
+  // Determine actual step numbers based on whether country was pre-filled
+  const getDisplayStep = () => {
+    if (hasCountry) {
+      return step; // If country pre-filled, steps are 1, 2, 3
+    } else {
+      return step; // If no country, steps are 1, 2, 3, 4
+    }
+  };
+
+  const getTotalSteps = () => {
+    return hasCountry ? 3 : 4; // 3 steps if country pre-filled, 4 otherwise
+  };
+
   useEffect(() => {
     const checkKYCStatus = async () => {
       try {
@@ -49,9 +63,6 @@ const PropertyKYCVerification = () => {
         if (userStr) {
           const user = JSON.parse(userStr);
           console.log('User data from signup:', user);
-
-          // Pre-fill form with user data
-          const shouldSkipToStep2 = !!user.country;
 
           setFormData(prev => ({
             ...prev,
@@ -71,11 +82,11 @@ const PropertyKYCVerification = () => {
             }
           }));
 
-          // Set country if provided during signup
+          // Set country if provided during signup - skip Step 1 entirely
           if (user.country) {
             setCountry(user.country);
-            // Skip to step 2 (Account Type) since country is already captured
-            setStep(2);
+            setHasCountry(true);
+            setStep(1); // Start at step 1 (which is actually Account Type when hasCountry=true)
           }
         }
 
@@ -122,9 +133,16 @@ const PropertyKYCVerification = () => {
   };
 
   const canProceedToNextStep = () => {
-    if (step === 1) return country;
-    if (step === 2) return accountType;
-    if (step === 4) return formData.agreeToTerms;
+    if (hasCountry) {
+      // When country is pre-filled (3 steps total)
+      if (step === 1) return accountType;
+      if (step === 3) return formData.agreeToTerms;
+    } else {
+      // When country needs to be selected (4 steps total)
+      if (step === 1) return country;
+      if (step === 2) return accountType;
+      if (step === 4) return formData.agreeToTerms;
+    }
     return true;
   };
 
@@ -163,18 +181,33 @@ const PropertyKYCVerification = () => {
         <div className="row mb40">
           <div className="col-lg-10 mx-auto">
             <div className="d-flex justify-content-between align-items-center" style={{ position: "relative" }}>
-              {[1, 2, 3, 4].map((s) => (
-                <div key={s} className="text-center" style={{ flex: 1, zIndex: 1 }}>
-                  <div style={{ width: "50px", height: "50px", borderRadius: "50%", backgroundColor: step >= s ? "#eb6753" : "#e5e7eb", color: "white", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "20px", fontWeight: "700", margin: "0 auto 10px" }}>
-                    {s}
+              {hasCountry ? (
+                // 3 steps when country is pre-filled
+                [1, 2, 3].map((s) => (
+                  <div key={s} className="text-center" style={{ flex: 1, zIndex: 1 }}>
+                    <div style={{ width: "50px", height: "50px", borderRadius: "50%", backgroundColor: step >= s ? "#eb6753" : "#e5e7eb", color: "white", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "20px", fontWeight: "700", margin: "0 auto 10px" }}>
+                      {s}
+                    </div>
+                    <small style={{ fontSize: "13px", fontWeight: "600", color: step >= s ? "#eb6753" : "#9ca3af" }}>
+                      {s === 1 && "Account Type"} {s === 2 && "Documents"} {s === 3 && "Review"}
+                    </small>
                   </div>
-                  <small style={{ fontSize: "13px", fontWeight: "600", color: step >= s ? "#eb6753" : "#9ca3af" }}>
-                    {s === 1 && "Country"} {s === 2 && "Account Type"} {s === 3 && "Documents"} {s === 4 && "Review"}
-                  </small>
-                </div>
-              ))}
+                ))
+              ) : (
+                // 4 steps when country needs to be selected
+                [1, 2, 3, 4].map((s) => (
+                  <div key={s} className="text-center" style={{ flex: 1, zIndex: 1 }}>
+                    <div style={{ width: "50px", height: "50px", borderRadius: "50%", backgroundColor: step >= s ? "#eb6753" : "#e5e7eb", color: "white", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "20px", fontWeight: "700", margin: "0 auto 10px" }}>
+                      {s}
+                    </div>
+                    <small style={{ fontSize: "13px", fontWeight: "600", color: step >= s ? "#eb6753" : "#9ca3af" }}>
+                      {s === 1 && "Country"} {s === 2 && "Account Type"} {s === 3 && "Documents"} {s === 4 && "Review"}
+                    </small>
+                  </div>
+                ))
+              )}
               <div style={{ position: "absolute", top: "25px", left: "10%", right: "10%", height: "2px", backgroundColor: "#e5e7eb", zIndex: 0 }}>
-                <div style={{ height: "100%", backgroundColor: "#eb6753", width: `${((step - 1) / 3) * 100}%`, transition: "width 0.3s ease" }} />
+                <div style={{ height: "100%", backgroundColor: "#eb6753", width: `${((step - 1) / (getTotalSteps() - 1)) * 100}%`, transition: "width 0.3s ease" }} />
               </div>
             </div>
           </div>
@@ -191,7 +224,7 @@ const PropertyKYCVerification = () => {
               {success && <div className="alert alert-success mb20"><i className="fas fa-check-circle me-2"></i>KYC submitted successfully! Redirecting...</div>}
 
               <form onSubmit={handleSubmit}>
-                {step === 1 && (
+                {!hasCountry && step === 1 && (
                   <div className="step-content">
                     <h4 className="mb30" style={{ fontSize: "22px", fontWeight: "700", color: "#1f2937" }}>
                       <i className="fas fa-globe me-2" style={{ color: "#eb6753" }}></i>Select Your Country
@@ -208,7 +241,7 @@ const PropertyKYCVerification = () => {
                   </div>
                 )}
 
-                {step === 2 && (
+                {((hasCountry && step === 1) || (!hasCountry && step === 2)) && (
                   <div className="step-content">
                     <div className="alert alert-info mb20" style={{ backgroundColor: "#e0f2fe", border: "1px solid #0284c7", borderRadius: "8px", padding: "15px" }}>
                       <i className="fas fa-globe me-2" style={{ color: "#0c4a6e" }}></i>
@@ -229,7 +262,7 @@ const PropertyKYCVerification = () => {
                   </div>
                 )}
 
-                {step === 3 && (
+                {((hasCountry && step === 2) || (!hasCountry && step === 3)) && (
                   <div className="step-content">
                     {reqLoading ? <div className="text-center p-5"><p>Loading requirements...</p></div> : !requirements ? <div className="text-center p-5"><p className="text-danger">Unable to load requirements</p></div> : (
                       <>
@@ -278,7 +311,7 @@ const PropertyKYCVerification = () => {
                   </div>
                 )}
 
-                {step === 4 && (
+                {((hasCountry && step === 3) || (!hasCountry && step === 4)) && (
                   <div className="step-content">
                     <h4 className="mb30"><i className="fas fa-check-circle me-2" style={{ color: "#eb6753" }}></i>Review Your Submission</h4>
                     <div className="mb30">
@@ -308,8 +341,8 @@ const PropertyKYCVerification = () => {
                 )}
 
                 <div className="d-flex justify-content-between align-items-center mt40">
-                  {step > 2 && <button type="button" className="btn btn-border-light-2 btn-lg" onClick={() => setStep(step - 1)}><i className="fas fa-arrow-left me-2"></i> Previous</button>}
-                  {step < 4 ? (
+                  {step > 1 && <button type="button" className="btn btn-border-light-2 btn-lg" onClick={() => setStep(step - 1)}><i className="fas fa-arrow-left me-2"></i> Previous</button>}
+                  {step < getTotalSteps() ? (
                     <button type="button" className="btn btn-danger btn-lg ms-auto" onClick={() => setStep(step + 1)} disabled={!canProceedToNextStep()} style={{ opacity: !canProceedToNextStep() ? 0.5 : 1 }}>Next <i className="fas fa-arrow-right ms-2"></i></button>
                   ) : (
                     <button type="submit" className="btn btn-danger btn-lg ms-auto" disabled={loading || !formData.agreeToTerms} style={{ opacity: (loading || !formData.agreeToTerms) ? 0.5 : 1 }}>
