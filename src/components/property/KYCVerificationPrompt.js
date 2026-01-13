@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 
-const KYCVerificationPrompt = ({ userCountry = "India" }) => {
+const KYCVerificationPrompt = ({ userCountry = "UAE" }) => {
   return (
     <div className="kyc-verification-prompt" style={{ maxWidth: "800px", margin: "0 auto" }}>
       <div
@@ -71,23 +71,6 @@ const KYCVerificationPrompt = ({ userCountry = "India" }) => {
           Documents Required for {userCountry}
         </h5>
 
-        {userCountry === "India" && (
-          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-            <li className="d-flex align-items-center mb15">
-              <i className="fas fa-check-circle text-success me-3 fz18"></i>
-              <span style={{ fontSize: "15px", color: "#4a5568" }}>Aadhaar Card</span>
-            </li>
-            <li className="d-flex align-items-center mb15">
-              <i className="fas fa-check-circle text-success me-3 fz18"></i>
-              <span style={{ fontSize: "15px", color: "#4a5568" }}>PAN Card</span>
-            </li>
-            <li className="d-flex align-items-center mb15">
-              <i className="fas fa-check-circle text-success me-3 fz18"></i>
-              <span style={{ fontSize: "15px", color: "#4a5568" }}>Property Ownership Proof (Optional)</span>
-            </li>
-          </ul>
-        )}
-
         {userCountry === "USA" && (
           <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
             <li className="d-flex align-items-center mb15">
@@ -97,23 +80,6 @@ const KYCVerificationPrompt = ({ userCountry = "India" }) => {
             <li className="d-flex align-items-center mb15">
               <i className="fas fa-check-circle text-success me-3 fz18"></i>
               <span style={{ fontSize: "15px", color: "#4a5568" }}>Social Security Number (SSN)</span>
-            </li>
-            <li className="d-flex align-items-center mb15">
-              <i className="fas fa-check-circle text-success me-3 fz18"></i>
-              <span style={{ fontSize: "15px", color: "#4a5568" }}>Property Ownership Proof (Optional)</span>
-            </li>
-          </ul>
-        )}
-
-        {userCountry === "UK" && (
-          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-            <li className="d-flex align-items-center mb15">
-              <i className="fas fa-check-circle text-success me-3 fz18"></i>
-              <span style={{ fontSize: "15px", color: "#4a5568" }}>Passport</span>
-            </li>
-            <li className="d-flex align-items-center mb15">
-              <i className="fas fa-check-circle text-success me-3 fz18"></i>
-              <span style={{ fontSize: "15px", color: "#4a5568" }}>National Insurance Number</span>
             </li>
             <li className="d-flex align-items-center mb15">
               <i className="fas fa-check-circle text-success me-3 fz18"></i>

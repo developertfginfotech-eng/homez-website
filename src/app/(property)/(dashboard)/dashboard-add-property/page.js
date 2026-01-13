@@ -16,7 +16,7 @@ const DashboardAddProperty = () => {
   const [kycVerified, setKycVerified] = useState(false);
   const [kycPending, setKycPending] = useState(false);
   const [kycChecking, setKycChecking] = useState(true);
-  const [userCountry, setUserCountry] = useState("India");
+  const [userCountry, setUserCountry] = useState("UAE");
 
   useEffect(() => {
     // Check KYC status - always fetch fresh from API

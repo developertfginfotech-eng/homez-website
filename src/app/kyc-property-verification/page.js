@@ -43,34 +43,50 @@ const PropertyKYCVerification = () => {
       try {
         const token = localStorage.getItem('authToken');
         if (!token) { router.push('/auth/sign-in'); return; }
-        
-        // Prefill country from user signup data
+
+        // Prefill all user data from signup
         const userStr = localStorage.getItem('user');
         if (userStr) {
           const user = JSON.parse(userStr);
+          console.log('User data from signup:', user);
+
+          // Pre-fill form with user data
+          const shouldSkipToStep2 = !!user.country;
+
+          setFormData(prev => ({
+            ...prev,
+            personalInfo: {
+              fullName: user.name || '',
+              dateOfBirth: user.dateOfBirth || '',
+              nationality: user.nationality || user.country || '',
+              phone: user.phone || '',
+              email: user.email || '',
+              address: {
+                line1: user.address || '',
+                line2: user.addressLine2 || '',
+                city: user.city || '',
+                state: user.state || '',
+                zipCode: user.zipCode || ''
+              }
+            }
+          }));
+
+          // Set country if provided during signup
           if (user.country) {
             setCountry(user.country);
-            setFormData(prev => ({
-              ...prev,
-              personalInfo: {
-                ...prev.personalInfo,
-                fullName: user.name || '',
-                phone: user.phone || '',
-                email: user.email || '',
-                address: {
-                  ...prev.personalInfo.address,
-                  city: user.city || '',
-                  line1: user.address || ''
-                }
-              }
-            }));
-            // Skip to step 2 (Account Type) since country is already selected
+            // Skip to step 2 (Account Type) since country is already captured
             setStep(2);
           }
         }
-        
+
+        // Check if KYC is already verified
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/kyc/status`, { headers: { 'Authorization': `Bearer ${token}` } });
-        if (response.ok) router.push('/dashboard-home');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.kyc && data.kyc.status === 'verified') {
+            router.push('/dashboard-home');
+          }
+        }
       } catch (err) { console.log('No existing KYC'); } finally { setChecking(false); }
     };
     checkKYCStatus();
