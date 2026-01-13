@@ -16,6 +16,8 @@ const DashboardKYCVerification = () => {
     phone: "",
     countryCode: "",
     country: "UAE",
+    city: "",
+    address: "",
   });
   const [accountType, setAccountType] = useState("individual");
   const [formData, setFormData] = useState({});
@@ -890,6 +892,8 @@ const DashboardKYCVerification = () => {
         phone: user.phone || "",
         countryCode: user.countryCode || "+971",
         country: user.country || "UAE",
+        city: user.city || "",
+        address: user.address || "",
       });
     }
   }, []);
@@ -1047,6 +1051,41 @@ const DashboardKYCVerification = () => {
                               type="tel"
                               className="form-control"
                               value={userData.phone}
+                              disabled
+                              style={{
+                                padding: "12px",
+                                fontSize: "15px",
+                                backgroundColor: "#e0f2fe",
+                                border: "1px solid #bae6fd",
+                                borderRadius: "8px",
+                              }}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="row mt3">
+                          <div className="col-md-6">
+                            <label className="form-label fw600">City</label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              value={userData.city}
+                              disabled
+                              style={{
+                                padding: "12px",
+                                fontSize: "15px",
+                                backgroundColor: "#e0f2fe",
+                                border: "1px solid #bae6fd",
+                                borderRadius: "8px",
+                              }}
+                            />
+                          </div>
+                          <div className="col-md-6">
+                            <label className="form-label fw600">Address</label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              value={userData.address}
                               disabled
                               style={{
                                 padding: "12px",
