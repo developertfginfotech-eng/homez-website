@@ -14,6 +14,8 @@ const SignUp = () => {
     countryCode: "+971",
     role: "buyer",
     country: "UAE",
+    city: "",
+    address: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -204,6 +206,34 @@ const SignUp = () => {
         </select>
       </div>
       {/* End Role */}
+
+      <div className="mb25">
+        <label className="form-label fw600 dark-color">City</label>
+        <input
+          type="text"
+          name="city"
+          className="form-control"
+          placeholder="Enter City"
+          value={formData.city}
+          onChange={handleChange}
+          required
+        />
+      </div>
+      {/* End City */}
+
+      <div className="mb25">
+        <label className="form-label fw600 dark-color">Address</label>
+        <input
+          type="text"
+          name="address"
+          className="form-control"
+          placeholder="Enter Address"
+          value={formData.address}
+          onChange={handleChange}
+          required
+        />
+      </div>
+      {/* End Address */}
 
       <div className="mb20">
         <label className="form-label fw600 dark-color">Password</label>

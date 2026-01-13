@@ -65,7 +65,7 @@ export const kycAPI = {
   submitKYC: async (kycData, files) => {
     const formData = new FormData();
 
-    // Append form fields
+    // Append form fields - handles both v1.0 and v2.0
     Object.keys(kycData).forEach(key => {
       if (typeof kycData[key] === 'object' && kycData[key] !== null) {
         formData.append(key, JSON.stringify(kycData[key]));
@@ -74,20 +74,45 @@ export const kycAPI = {
       }
     });
 
-    // Append files (use lowercase field names to match backend)
-    if (files.frontImage) formData.append('frontimage', files.frontImage);
-    if (files.backImage) formData.append('backimage', files.backImage);
+    // Append files - supports both v1.0 (flat) and v2.0 (dynamic keys) formats
+    // V1.0 files (legacy field names)
+    const v1Files = {
+      frontImage: 'frontimage',
+      backImage: 'backimage',
+      aadhaarCard: 'aadhaarcard',
+      panCard: 'pancard',
+      driversLicense: 'driverslicense',
+      passport: 'passport',
+      propertyOwnership: 'propertyownership',
+      businessLicense: 'businesslicense',
+      taxDocument: 'taxdocument',
+      bankStatement: 'bankstatement',
+      addressProof: 'addressproof'
+    };
 
-    // Append additional property-related documents
-    if (files.aadhaarCard) formData.append('aadhaarcard', files.aadhaarCard);
-    if (files.panCard) formData.append('pancard', files.panCard);
-    if (files.driversLicense) formData.append('driverslicense', files.driversLicense);
-    if (files.passport) formData.append('passport', files.passport);
-    if (files.propertyOwnership) formData.append('propertyownership', files.propertyOwnership);
-    if (files.businessLicense) formData.append('businesslicense', files.businessLicense);
-    if (files.taxDocument) formData.append('taxdocument', files.taxDocument);
-    if (files.bankStatement) formData.append('bankstatement', files.bankStatement);
-    if (files.addressProof) formData.append('addressproof', files.addressProof);
+    // Append v1.0 files
+    Object.keys(v1Files).forEach(key => {
+      if (files[key]) {
+        formData.append(v1Files[key], files[key]);
+      }
+    });
+
+    // Append v2.0 files (dynamic keys from requirements)
+    // All keys that don't match v1.0 format are treated as v2.0
+    Object.keys(files).forEach(key => {
+      if (!v1Files[key]) {
+        const fileData = files[key];
+        if (Array.isArray(fileData)) {
+          // Multiple files (e.g., title deeds)
+          fileData.forEach((file, index) => {
+            formData.append(key, file);
+          });
+        } else if (fileData) {
+          // Single file
+          formData.append(key, fileData);
+        }
+      }
+    });
 
     const token = localStorage.getItem('authToken');
     const response = await fetch(`${API_URL}/kyc/upload`, {
