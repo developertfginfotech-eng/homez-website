@@ -227,7 +227,7 @@ const PostPropertyForm = () => {
         <div className="mb25 text-center">
           <p className="fz14 mb-0" style={{ color: "#6B7280" }}>
             You have already posted{" "}
-            <span className="fw600" style={{ color: "#1F2937" }}>{userPropertiesCount} properties</span> on Globperty{" "}
+            <span className="fw600" style={{ color: "#1F2937" }}>{userPropertiesCount} properties</span> on Lahomez{" "}
             <Link href="/dashboard-my-properties" className="text-thm">
               view all
             </Link>

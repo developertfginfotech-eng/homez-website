@@ -6,7 +6,7 @@ import FilteringAgent from "@/components/property/FilteringAgent";
 import React from "react";
 
 export const metadata = {
-  title: "Agents || Globperty - Real Estate NextJS Template",
+  title: "Agents || Lahomez - Real Estate NextJS Template",
 };
 
 const Agents = () => {

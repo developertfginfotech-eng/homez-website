@@ -4,7 +4,7 @@ import Link from "next/link";
 import React from "react";
 
 export const metadata = {
-  title: "Post Your Property || Globperty - Real Estate NextJS Template",
+  title: "Post Your Property || Lahomez - Real Estate NextJS Template",
 };
 
 const PostProperty = () => {
@@ -63,8 +63,8 @@ const PostProperty = () => {
                 <div className="testimonial-box bgc-thm-light p20 bdrs8">
                   <h6 className="title mb15">30 Lac+ Home Owners Trust Us</h6>
                   <p className="text fz14 mb15">
-                    "After posting my property ads on Globperty they provided me with an easy way to rent
-                    out my apartment, it was otherwise very difficult for me to do. Globperty found the
+                    "After posting my property ads on Lahomez they provided me with an easy way to rent
+                    out my apartment, it was otherwise very difficult for me to do. Lahomez found the
                     right people whom I can trust for my rental property."
                   </p>
                   <div className="testimonial-author">

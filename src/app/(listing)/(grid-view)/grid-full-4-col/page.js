@@ -9,7 +9,7 @@ import ProperteyFiltering from "@/components/listing/grid-view/grid-full-4-col/P
 import React from "react";
 
 export const metadata = {
-  title: "Gird Full 4 Column || Globperty - Real Estate NextJS Template",
+  title: "Gird Full 4 Column || Lahomez - Real Estate NextJS Template",
 };
 
 const GridFull4Col = () => {

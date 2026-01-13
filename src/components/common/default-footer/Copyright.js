@@ -26,7 +26,7 @@ const Footer = () => {
         <div className="col-sm-6">
           <div className="text-center text-lg-start">
             <p className="copyright-text text-gray ff-heading">
-              © Globperty {getCurrentYear()}{" "}
+              © Lahomez {getCurrentYear()}{" "}
               <a
                 href="https://themeforest.net/user/ib-themes"
                 target="_blank"

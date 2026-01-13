@@ -6,7 +6,7 @@ import Link from "next/link";
 import React from "react";
 
 export const metadata = {
-  title: "Not-Found  || Globperty - Real Estate NextJS Template",
+  title: "Not-Found  || Lahomez - Real Estate NextJS Template",
 };
 
 const NotFound = () => {

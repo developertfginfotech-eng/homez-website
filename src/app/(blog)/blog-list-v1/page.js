@@ -6,7 +6,7 @@ import Footer from "@/components/common/default-footer";
 import MobileMenu from "@/components/common/mobile-menu";
 
 export const metadata = {
-  title: "Blog List v1  || Globperty - Real Estate NextJS Template",
+  title: "Blog List v1  || Lahomez - Real Estate NextJS Template",
 };
 
 const BlogV1 = () => {

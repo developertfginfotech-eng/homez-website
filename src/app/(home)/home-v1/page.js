@@ -20,7 +20,7 @@ import FeaturedCitiesNobroker from "@/components/home/home-v1/FeaturedCitiesNobr
 import PostPropertyCTA from "@/components/home/home-v1/PostPropertyCTA";
 
 export const metadata = {
-  title: "Home v1 || Globperty - Real Estate NextJS Template",
+  title: "Home v1 || Lahomez - Real Estate NextJS Template",
 };
 
 const Home_V1 = () => {

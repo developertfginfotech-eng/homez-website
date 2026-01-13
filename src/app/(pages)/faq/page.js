@@ -6,7 +6,7 @@ import Faq1 from "@/components/pages/faq/Faq1";
 import Faq2 from "@/components/pages/faq/Faq2";
 
 export const metadata = {
-  title: "Faq  || Globperty - Real Estate NextJS Template",
+  title: "Faq  || Lahomez - Real Estate NextJS Template",
 };
 
 const Faq = () => {

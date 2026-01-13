@@ -4,7 +4,7 @@ import Link from "next/link";
 import React from "react";
 
 export const metadata = {
-  title: "Login  || Globperty - Real Estate NextJS Template",
+  title: "Login  || Lahomez - Real Estate NextJS Template",
 };
 
 const Login = () => {

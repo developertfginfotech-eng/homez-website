@@ -6,7 +6,7 @@ import Form from "@/components/pages/contact/Form";
 import Office from "@/components/pages/contact/Office";
 
 export const metadata = {
-  title: "Contact  || Globperty - Real Estate NextJS Template",
+  title: "Contact  || Lahomez - Real Estate NextJS Template",
 };
 
 const Contact = () => {

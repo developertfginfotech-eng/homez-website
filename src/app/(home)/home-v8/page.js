@@ -16,7 +16,7 @@ import SidebarStickyBar from "@/components/home/home-v8/SidebarStickyBar";
 import Link from "next/link";
 
 export const metadata = {
-  title: "Home v8 || Globperty - Real Estate NextJS Template",
+  title: "Home v8 || Lahomez - Real Estate NextJS Template",
 };
 
 const Home_V8 = () => {

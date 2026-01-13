@@ -13,7 +13,7 @@ import MobileMenu from "@/components/common/mobile-menu";
 import Image from "next/image";
 
 export const metadata = {
-  title: "Blog Single  || Globperty - Real Estate NextJS Template",
+  title: "Blog Single  || Lahomez - Real Estate NextJS Template",
 };
 
 const BlogSingle = async props => {

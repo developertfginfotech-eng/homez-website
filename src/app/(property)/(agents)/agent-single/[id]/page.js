@@ -14,7 +14,7 @@ import Image from "next/image";
 import React from "react";
 
 export const metadata = {
-  title: "Agent Single || Globperty - Real Estate NextJS Template",
+  title: "Agent Single || Lahomez - Real Estate NextJS Template",
 };
 
 const AgentSingle = async props => {

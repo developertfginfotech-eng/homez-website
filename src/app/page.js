@@ -2,7 +2,7 @@ import Home_V1 from "./(home)/home-v1/page";
 import Wrapper from "./layout-wrapper/wrapper";
 
 export const metadata = {
-  title: "Home v1 || Globperty - Real Estate NextJS Template",
+  title: "Home v1 || Lahomez - Real Estate NextJS Template",
 };
 
 export default function MainRoot() {

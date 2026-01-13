@@ -6,7 +6,7 @@ import React, { Suspense } from "react";
 import PropertyFiltering from "@/components/listing/grid-view/grid-default/PropertyFiltering";
 
 export const metadata = {
-  title: "Gird Default || Globperty - Real Estate NextJS Template",
+  title: "Gird Default || Lahomez - Real Estate NextJS Template",
 };
 
 const GridDefault = () => {
