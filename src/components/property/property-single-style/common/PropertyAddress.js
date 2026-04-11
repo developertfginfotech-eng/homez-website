@@ -2,9 +2,11 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import { propertiesAPI } from "@/services/api";
 
 const PropertyAddress = ({ property: propProperty }) => {
+  const { t } = useTranslation();
   const [property, setProperty] = useState(propProperty || null);
   const [loading, setLoading] = useState(!propProperty);
   const params = useParams();
@@ -51,9 +53,9 @@ const PropertyAddress = ({ property: propProperty }) => {
       <div className="col-md-6 col-xl-4">
         <div className="d-flex justify-content-between">
           <div className="pd-list">
-            <p className="fw600 mb10 ff-heading dark-color">Address</p>
-            <p className="fw600 mb10 ff-heading dark-color">City</p>
-            <p className="fw600 mb-0 ff-heading dark-color">State/county</p>
+            <p className="fw600 mb10 ff-heading dark-color">{t('propertyDetails.address')}</p>
+            <p className="fw600 mb10 ff-heading dark-color">{t('propertyDetails.city')}</p>
+            <p className="fw600 mb-0 ff-heading dark-color">{t('propertyDetails.stateCounty')}</p>
           </div>
           <div className="pd-list">
             <p className="text mb10">{address.address}</p>
@@ -66,9 +68,9 @@ const PropertyAddress = ({ property: propProperty }) => {
       <div className="col-md-6 col-xl-4 offset-xl-2">
         <div className="d-flex justify-content-between">
           <div className="pd-list">
-            <p className="fw600 mb10 ff-heading dark-color">Zip/Postal Code</p>
-            <p className="fw600 mb10 ff-heading dark-color">Area</p>
-            <p className="fw600 mb-0 ff-heading dark-color">Country</p>
+            <p className="fw600 mb10 ff-heading dark-color">{t('propertyDetails.zipPostalCode')}</p>
+            <p className="fw600 mb10 ff-heading dark-color">{t('propertyDetails.area')}</p>
+            <p className="fw600 mb-0 ff-heading dark-color">{t('propertyDetails.country')}</p>
           </div>
           <div className="pd-list">
             <p className="text mb10">{address.zipCode}</p>

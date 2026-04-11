@@ -1,23 +1,25 @@
+"use client";
+import { useTranslate } from "@/hooks/useTranslate";
+
 const Features = () => {
+  const { t } = useTranslate();
+
   // Define an array of feature objects
   const features = [
     {
       icon: "flaticon-security",
-      title: "Property Management",
-      description:
-        "Nullam sollicitudin blandit eros eu pretium. Nullam maximus ultricies auctor.",
+      title: t('features.propertyManagement'),
+      description: t('features.propertyManagementDesc'),
     },
     {
       icon: "flaticon-keywording",
-      title: "Mortgage Services",
-      description:
-        "Nullam sollicitudin blandit eros eu pretium. Nullam maximus ultricies auctor.",
+      title: t('features.mortgageServices'),
+      description: t('features.mortgageServicesDesc'),
     },
     {
       icon: "flaticon-investment",
-      title: "Currency Services",
-      description:
-        "Nullam sollicitudin blandit eros eu pretium. Nullam maximus ultricies auctor.",
+      title: t('features.currencyServices'),
+      description: t('features.currencyServicesDesc'),
     },
   ];
 

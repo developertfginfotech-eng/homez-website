@@ -4,7 +4,7 @@
 'use client'
 
 
-import listings from "@/data/listings";
+import { propertiesAPI } from "@/services/api";
 import React, { useState,useEffect } from 'react'
 import TopFilterBar from "./TopFilterBar";
 import TopFilterBar2 from "./TopFilterBar2";
@@ -14,7 +14,10 @@ import AdvanceFilterModal from "@/components/common/advance-filter-two";
 import PaginationTwo from "../../PaginationTwo";
 import ListingMap1 from "../ListingMap1";
 export default function PropertyFilteringTwo() {
+    const [listings, setListings] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [filteredData, setFilteredData] = useState([]);
+    const [selectedCurrency, setSelectedCurrency] = useState('ALL');
 
     const [currentSortingOption, setCurrentSortingOption] = useState('Newest')
 
@@ -25,7 +28,97 @@ export default function PropertyFilteringTwo() {
     const [colstyle, setColstyle] = useState(true)
     const [pageItems, setPageItems] = useState([])
     const [pageContentTrac, setPageContentTrac] = useState([])
-  
+
+    // Listen for currency changes
+    useEffect(() => {
+      const savedCurrency = localStorage.getItem('selectedCurrency') || 'ALL';
+      setSelectedCurrency(savedCurrency);
+
+      const handleCurrencyChange = (e) => {
+        setSelectedCurrency(e.detail.currency);
+      };
+
+      window.addEventListener('currencyChanged', handleCurrencyChange);
+      return () => window.removeEventListener('currencyChanged', handleCurrencyChange);
+    }, []);
+
+    // Get currency symbol based on country
+    const getCurrency = (country) => {
+      const currencyMap = {
+        'UAE': 'AED',
+        'United Arab Emirates': 'AED',
+        'USA': '$',
+        'United States': '$',
+        'US': '$',
+        'UK': '£',
+        'United Kingdom': '£',
+        'India': '₹',
+        'Europe': '€',
+        'Portugal': '€',
+        'Cyprus': '€',
+        'Malta': '€',
+        'Latvia': '€',
+        'Canada': 'CAD',
+        'Australia': 'AUD',
+      };
+      return currencyMap[country] || '$';
+    };
+
+    // Fetch properties from API on mount
+    useEffect(() => {
+      const fetchProperties = async () => {
+        try {
+          setLoading(true);
+          const response = await propertiesAPI.getAll();
+          if (response && response.properties && Array.isArray(response.properties)) {
+            // Map backend data to match the expected format
+            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+            const backendUrl = API_URL.replace('/api', '');
+
+            const mappedProperties = response.properties.map(property => {
+              // Construct image URL properly
+              let imageUrl = '/images/listings/listing-1.jpg'; // fallback
+              if (property.images && property.images.length > 0) {
+                const img = property.images[0];
+                imageUrl = img.startsWith('http') ? img : `${backendUrl}${img}`;
+              }
+
+              const currency = getCurrency(property.country);
+              return {
+                id: property._id,
+                title: property.title,
+                bed: property.bedrooms || 0,
+                bath: property.bathrooms || 0,
+                sqft: property.sizeInFt || 0,
+                price: `${currency} ${property.price || 0}`,
+                yearBuilding: property.yearBuilt || new Date().getFullYear(),
+                forRent: property.propertyAdType === 'rent',
+                city: property.city || 'Unknown',
+                country: property.country || 'Unknown',
+                location: `${property.city}, ${property.country}` || 'Unknown',
+                propertyType: property.propertyType || 'House',
+                image: imageUrl,
+                features: property.amenities || [],
+                latitude: property.latitude,
+                longitude: property.longitude,
+              };
+            });
+            setListings(mappedProperties);
+          } else {
+            console.error('No properties data returned from API');
+            setListings([]);
+          }
+        } catch (error) {
+          console.error('Error fetching properties:', error);
+          setListings([]);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchProperties();
+    }, []);
+
     useEffect(() => {
       setPageItems(sortedFilteredData
         .slice((pageNumber - 1) * 4, pageNumber * 4))
@@ -145,8 +238,29 @@ export default function PropertyFilteringTwo() {
 
 
     useEffect(() => {
-      
-        const refItems = listings.filter((elm) => {
+        // Currency to country mapping
+        const currencyCountryMap = {
+          'AED': ['UAE', 'United Arab Emirates'],
+          'USD': ['USA', 'United States', 'US'],
+          'EUR': ['Portugal', 'Cyprus', 'Malta', 'Latvia', 'Europe'],
+          'CAD': ['Canada'],
+          'AUD': ['Australia'],
+          'GBP': ['UK', 'United Kingdom'],
+          'INR': ['India'],
+        };
+
+        // Filter by currency first
+        let currencyFilteredListings = listings;
+        if (selectedCurrency !== 'ALL') {
+          const allowedCountries = currencyCountryMap[selectedCurrency] || [];
+          currencyFilteredListings = listings.filter(elm =>
+            allowedCountries.some(country =>
+              elm.country?.toLowerCase() === country.toLowerCase()
+            )
+          );
+        }
+
+        const refItems = currencyFilteredListings.filter((elm) => {
             if (listingStatus == "All") {
               return true;
             } else if (listingStatus == "Buy") {
@@ -155,7 +269,7 @@ export default function PropertyFilteringTwo() {
               return elm.forRent;
             }
           });
-      
+
           let filteredArrays = [];
 
 
@@ -181,11 +295,13 @@ export default function PropertyFilteringTwo() {
          
          
           if (priceRange.length > 0) {
-            const filtered = refItems.filter(
-              (elm) =>
-                Number(elm.price.split('$')[1].split(',').join('')) >= priceRange[0] &&
-                Number(elm.price.split('$')[1].split(',').join('')) <= priceRange[1],
-            );
+            const filtered = refItems.filter((elm) => {
+              // Extract numeric value from price string (works with any currency)
+              const priceMatch = elm.price.match(/[\d,]+/);
+              if (!priceMatch) return false;
+              const numericPrice = Number(priceMatch[0].replace(/,/g, ''));
+              return numericPrice >= priceRange[0] && numericPrice <= priceRange[1];
+            });
             filteredArrays = [...filteredArrays, filtered];
           }
           if (squirefeet.length > 0 && squirefeet[1]) {
@@ -215,10 +331,11 @@ export default function PropertyFilteringTwo() {
 
          
           setFilteredData(commonItems);
-         
-          
-      
+
+
+
     }, [
+        listings,
         listingStatus,
         propertyTypes,
         priceRange,
@@ -228,7 +345,8 @@ export default function PropertyFilteringTwo() {
         squirefeet,
         yearBuild,
         categories,
-        searchQuery
+        searchQuery,
+        selectedCurrency
 
     ])
 
@@ -241,16 +359,24 @@ export default function PropertyFilteringTwo() {
         
       } 
       else if (currentSortingOption.trim() == 'Price Low') {
-        const sorted = [...filteredData].sort((a,b)=>a.price.split('$')[1].split(',').join('') - b.price.split('$')[1].split(',').join(''))
+        const sorted = [...filteredData].sort((a,b)=>{
+          const priceA = Number(a.price?.replace(/[^0-9.]/g, '') || 0);
+          const priceB = Number(b.price?.replace(/[^0-9.]/g, '') || 0);
+          return priceA - priceB;
+        })
         setSortedFilteredData(sorted)
 
-        
-      } 
+
+      }
       else if (currentSortingOption.trim() == 'Price High') {
-        const sorted = [...filteredData].sort((a,b)=>b.price.split('$')[1].split(',').join('') - a.price.split('$')[1].split(',').join(''))
+        const sorted = [...filteredData].sort((a,b)=>{
+          const priceA = Number(a.price?.replace(/[^0-9.]/g, '') || 0);
+          const priceB = Number(b.price?.replace(/[^0-9.]/g, '') || 0);
+          return priceB - priceA;
+        })
         setSortedFilteredData(sorted)
 
-        
+
       } 
     
       else {
@@ -293,14 +419,31 @@ export default function PropertyFilteringTwo() {
                 </div>
                 {/* End .col-12 */}
 
-                <h4 className="mb-1">New York Homes for Sale</h4>
+                <h4 className="mb-1">Properties for Sale & Rent</h4>
 
                 <div className="row align-items-center mb10">
                   <TopFilterBar  pageContentTrac={pageContentTrac}  colstyle ={colstyle} setColstyle={setColstyle}  setCurrentSortingOption={setCurrentSortingOption}/>
                 </div>
-                <div className="row">
-                  <FeaturedListings  colstyle ={colstyle}  data={pageItems}/>
-                </div>
+                {loading ? (
+                  <div className="row">
+                    <div className="col-12 text-center py-5">
+                      <div className="spinner-border text-primary" role="status">
+                        <span className="visually-hidden">Loading properties...</span>
+                      </div>
+                      <p className="mt-3 text-muted">Loading properties from database...</p>
+                    </div>
+                  </div>
+                ) : listings.length === 0 ? (
+                  <div className="row">
+                    <div className="col-12 text-center py-5">
+                      <p className="text-muted">No properties found in the database.</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="row">
+                    <FeaturedListings  colstyle ={colstyle}  data={pageItems}/>
+                  </div>
+                )}
                 {/* End .row */}
 
                 <div className="row text-center">
@@ -323,7 +466,7 @@ export default function PropertyFilteringTwo() {
                   title="London Eye, London, United Kingdom"
                   aria-label="London Eye, London, United Kingdom"
                 /> */}
-                <ListingMap1/>
+                <ListingMap1 properties={sortedFilteredData}/>
               </div>
             </div>
             {/* End col-7 */}

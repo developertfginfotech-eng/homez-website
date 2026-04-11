@@ -2,10 +2,36 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { useEffect, useState } from "react";
+import { filterPropertiesByCurrency, getCurrencySymbol, getSelectedCurrency } from "@/utils/currencyHelper";
 
 const PopularListings = ({ data = [] }) => {
+  const [filteredData, setFilteredData] = useState(data);
+  const [selectedCurrency, setSelectedCurrency] = useState("ALL");
+
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://homez-q5lh.onrender.com/api';
   const backendUrl = API_URL.replace('/api', '');
+
+  useEffect(() => {
+    // Get selected currency and filter data
+    const currency = getSelectedCurrency();
+    setSelectedCurrency(currency);
+    const filtered = filterPropertiesByCurrency(data, currency);
+    setFilteredData(filtered);
+
+    // Listen for currency changes
+    const handleCurrencyChange = (event) => {
+      const newCurrency = event.detail.currency;
+      setSelectedCurrency(newCurrency);
+      const filtered = filterPropertiesByCurrency(data, newCurrency);
+      setFilteredData(filtered);
+    };
+
+    window.addEventListener('currencyChanged', handleCurrencyChange);
+    return () => {
+      window.removeEventListener('currencyChanged', handleCurrencyChange);
+    };
+  }, [data]);
 
   const getImageUrl = (property) => {
     if (property.images && property.images.length > 0) {
@@ -15,8 +41,15 @@ const PopularListings = ({ data = [] }) => {
     return '/images/listings/list-1.jpg'; // fallback
   };
 
-  if (data.length === 0) {
-    return <div className="text-center text-white">No properties available</div>;
+  if (filteredData.length === 0) {
+    return (
+      <div className="text-center text-white">
+        <p>No properties available for the selected currency.</p>
+        {selectedCurrency !== 'ALL' && (
+          <small>Try selecting "All Currencies" from the header.</small>
+        )}
+      </div>
+    );
   }
 
   return (
@@ -39,7 +72,7 @@ const PopularListings = ({ data = [] }) => {
           },
         }}
       >
-        {data.slice(0, 8).map((listing) => (
+        {filteredData.slice(0, 8).map((listing) => (
           <SwiperSlide key={listing.id || listing._id}>
             <div className="item">
               <div className="listing-style1">
@@ -61,7 +94,7 @@ const PopularListings = ({ data = [] }) => {
                   </div>
 
                   <div className="list-price">
-                    ${listing.price?.toLocaleString() || '0'} {listing.afterPriceLabel && <span>/ {listing.afterPriceLabel}</span>}
+                    {getCurrencySymbol(listing.country)} {listing.price?.toLocaleString() || '0'} {listing.afterPriceLabel && <span>/ {listing.afterPriceLabel}</span>}
                   </div>
                 </div>
                 <div className="list-content">

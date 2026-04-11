@@ -37,9 +37,16 @@ export const addProperty = async (propertyData) => {
 };
 
 // Get all properties
-export const getAllProperties = async () => {
+export const getAllProperties = async (language = null) => {
   try {
-    const response = await apiClient.get('/property/all');
+    const lang = language || (typeof window !== 'undefined' ? localStorage.getItem('language') : null) || 'en';
+    const token = getAuthToken();
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+    const response = await apiClient.get('/property/all', {
+      params: { lang },
+      headers,
+    });
     return response.data.properties || [];
   } catch (error) {
     console.error('Error fetching properties:', error);
@@ -70,9 +77,14 @@ export const getPropertiesByAgent = async () => {
 };
 
 // Get property by ID
-export const getPropertyById = async (propertyId) => {
+export const getPropertyById = async (propertyId, language = null) => {
   try {
-    const response = await apiClient.get(`/property/${propertyId}`);
+    // Get current language from localStorage if not provided
+    const lang = language || (typeof window !== 'undefined' ? localStorage.getItem('language') : null) || 'en';
+
+    const response = await apiClient.get(`/property/${propertyId}`, {
+      params: { lang }
+    });
     return response.data.property;
   } catch (error) {
     console.error('Error fetching property:', error);

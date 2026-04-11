@@ -1,19 +1,24 @@
+"use client";
+
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 const ContactMeta = () => {
+  const { t } = useTranslation('common');
+
   const contactInfoData = [
     {
-      text: "Address",
+      text: t('footer.address'),
       info: "329 Queensberry Street, North Melbourne VIC 3051, Australia.",
       link: "#", // Empty link value for the first object
     },
     {
-      text: "Total Free Customer Care",
+      text: t('footer.totalFreeCustomerCare'),
       info: "+(0) 123 050 945 02",
       link: "tel:+012305094502",
     },
     {
-      text: "Need Live Support?",
+      text: t('footer.needLiveSupport'),
       info: "hi@globperty.com",
       link: "mailto:hi@globperty.com",
     },

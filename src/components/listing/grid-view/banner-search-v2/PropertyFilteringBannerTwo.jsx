@@ -175,11 +175,12 @@ export default function PropertyFilteringBannerTwo() {
          
          
           if (priceRange.length > 0) {
-            const filtered = refItems.filter(
-              (elm) =>
-                Number(elm.price.split('$')[1].split(',').join('')) >= priceRange[0] &&
-                Number(elm.price.split('$')[1].split(',').join('')) <= priceRange[1],
-            );
+            const filtered = refItems.filter((elm) => {
+              const priceMatch = elm.price?.match(/[\d,]+/);
+              if (!priceMatch) return false;
+              const numericPrice = Number(priceMatch[0].replace(/,/g, ''));
+              return numericPrice >= priceRange[0] && numericPrice <= priceRange[1];
+            });
             filteredArrays = [...filteredArrays, filtered];
           }
           if (squirefeet.length > 0 && squirefeet[1]) {
@@ -235,16 +236,24 @@ export default function PropertyFilteringBannerTwo() {
         
       } 
       else if (currentSortingOption.trim() == 'Price Low') {
-        const sorted = [...filteredData].sort((a,b)=>a.price.split('$')[1].split(',').join('') - b.price.split('$')[1].split(',').join(''))
+        const sorted = [...filteredData].sort((a,b)=>{
+          const priceA = Number(a.price?.replace(/[^0-9.]/g, '') || 0);
+          const priceB = Number(b.price?.replace(/[^0-9.]/g, '') || 0);
+          return priceA - priceB;
+        })
         setSortedFilteredData(sorted)
 
-        
-      } 
+
+      }
       else if (currentSortingOption.trim() == 'Price High') {
-        const sorted = [...filteredData].sort((a,b)=>b.price.split('$')[1].split(',').join('') - a.price.split('$')[1].split(',').join(''))
+        const sorted = [...filteredData].sort((a,b)=>{
+          const priceA = Number(a.price?.replace(/[^0-9.]/g, '') || 0);
+          const priceB = Number(b.price?.replace(/[^0-9.]/g, '') || 0);
+          return priceB - priceA;
+        })
         setSortedFilteredData(sorted)
 
-        
+
       } 
     
       else {

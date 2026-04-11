@@ -10,10 +10,10 @@ const Hero = () => {
         position: "relative"
       }}>
         <h2 className="hero-title animate-up-1" style={{ fontSize: "42px", fontWeight: "700", marginBottom: "15px", color: "white" }}>
-          World's Largest NoBrokerage Property Site
+          Your International Property Marketplace
         </h2>
         <p className="hero-text fz16 animate-up-2" style={{ marginBottom: "50px", color: "rgba(255,255,255,0.9)", fontWeight: "500" }}>
-          Find a perfect property for yourself. Buy, rent or sell.
+          Find the perfect property worldwide. Buy, rent or sell.
         </p>
         <HeroContent />
       </div>

@@ -55,15 +55,26 @@ const KYCStatus = () => {
           return;
         }
 
-        // Check if KYC is rejected
+        // Check if KYC is rejected - but still fetch from API to get actual rejection reason
         if (kycStatus === "rejected" || (user && user.kycStatus === "rejected")) {
-          setKycData({
-            status: "rejected",
-            createdAt: new Date().toISOString(),
-            rejectionReason: user?.kycRejectionReason || "Please check your documents and resubmit",
-          });
-          setLoading(false);
-          return;
+          try {
+            // Fetch actual rejection reason from API
+            const response = await kycAPI.getKYCStatus();
+            if (response.success && response.kyc) {
+              setKycData(response.kyc);
+              setLoading(false);
+              return;
+            }
+          } catch (apiError) {
+            // If API fails, use localStorage data with fallback message
+            setKycData({
+              status: "rejected",
+              createdAt: new Date().toISOString(),
+              rejectionReason: user?.kycRejectionReason || "Please check your documents and resubmit",
+            });
+            setLoading(false);
+            return;
+          }
         }
 
         // If not in localStorage, try API call
@@ -181,12 +192,48 @@ const KYCStatus = () => {
                 <i className="flaticon-close me-2" />
                 Your KYC verification was rejected.
               </p>
-              {kycData.rejectionReason && (
+              {kycData.rejectionReason ? (
                 <div
-                  className="alert alert-danger p-2 fz13 mb15"
+                  className="alert alert-danger mb15"
+                  role="alert"
+                  style={{
+                    borderLeft: "5px solid #dc3545",
+                    backgroundColor: "#f8d7da",
+                    borderRadius: "8px",
+                    padding: "15px",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "start" }}>
+                    <i
+                      className="fas fa-exclamation-triangle me-2"
+                      style={{ fontSize: "20px", color: "#dc3545", marginTop: "2px" }}
+                    />
+                    <div style={{ flex: 1 }}>
+                      <p className="mb-2 fw-bold" style={{ fontSize: "14px", color: "#dc3545" }}>
+                        Reason for Rejection:
+                      </p>
+                      <div
+                        style={{
+                          fontSize: "13px",
+                          padding: "10px",
+                          backgroundColor: "#fff",
+                          border: "1px solid #f5c2c7",
+                          borderRadius: "6px",
+                          color: "#721c24",
+                        }}
+                      >
+                        {kycData.rejectionReason}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div
+                  className="alert alert-warning mb15 fz13"
                   style={{ fontSize: "13px" }}
                 >
-                  <strong>Reason:</strong> {kycData.rejectionReason}
+                  <i className="fas fa-info-circle me-2" />
+                  No specific reason provided. Please contact support for details.
                 </div>
               )}
               <Link

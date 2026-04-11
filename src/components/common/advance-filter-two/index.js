@@ -89,6 +89,7 @@ const AdvanceFilterModal = ({ filterFunctions }) => {
                       }
                       className="select-custom"
                       classNamePrefix="select"
+                      instanceId="advance-filter-two-type"
                       required
                     />
                   )}
@@ -141,20 +142,23 @@ const AdvanceFilterModal = ({ filterFunctions }) => {
               <div className="widget-wrapper">
                 <h6 className="list-title">Location</h6>
                 <div className="form-style2 input-group">
-                  <Select
-                    defaultValue={[locationOptions[0]]}
-                    name="colors"
-                    styles={customStyles}
-                    options={locationOptions}
-                    className="select-custom filterSelect"
-                    value={{
-                      value: filterFunctions?.location,
-                      label: filterFunctions?.location,
-                    }}
-                    classNamePrefix="select"
-                    onChange={(e) => filterFunctions?.handlelocation(e.value)}
-                    required
-                  />
+                  {showSelect && (
+                    <Select
+                      defaultValue={[locationOptions[0]]}
+                      name="colors"
+                      styles={customStyles}
+                      options={locationOptions}
+                      className="select-custom filterSelect"
+                      value={{
+                        value: filterFunctions?.location,
+                        label: filterFunctions?.location,
+                      }}
+                      classNamePrefix="select"
+                      instanceId="advance-filter-two-location"
+                      onChange={(e) => filterFunctions?.handlelocation(e.value)}
+                      required
+                    />
+                  )}
                 </div>
               </div>
             </div>

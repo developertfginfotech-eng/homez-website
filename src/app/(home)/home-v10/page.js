@@ -16,7 +16,7 @@ import Agents from "@/components/home/home-v10/Agents";
 import BannerSlider from "@/components/home/home-v10/BannerSlider";
 
 export const metadata = {
-  title: "Home v10 || Lahomez - Real Estate NextJS Template",
+  title: "Home v10 || Globperty - Real Estate NextJS Template",
 };
 
 const Home_V10 = () => {
@@ -57,7 +57,7 @@ const Home_V10 = () => {
           <div className="row mt100 mt60-lg ">
             <div className="col-lg-6 m-auto">
               <div className="main-title text-center">
-                <h2 className="title">See How Realton Can Help</h2>
+                <h2 className="title">See How Globperty Can Help</h2>
                 <p className="paragraph">
                   Aliquam lacinia diam quis lacus euismod
                 </p>
@@ -219,7 +219,7 @@ const Home_V10 = () => {
                 data-aos="fade-up"
                 data-aos-delay="300"
               >
-                <h2 className="title">People Love Living with Realton</h2>
+                <h2 className="title">People Love Living with Globperty</h2>
                 <p className="paragraph">
                   Aliquam lacinia diam quis lacus euismod
                 </p>

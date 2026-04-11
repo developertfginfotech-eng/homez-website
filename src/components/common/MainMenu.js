@@ -8,8 +8,10 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const MainMenu = () => {
+  const { t } = useTranslation();
   const pathname = usePathname();
   const [topMenu, setTopMenu] = useState("");
   const [submenu, setSubmenu] = useState("");
@@ -59,7 +61,7 @@ const MainMenu = () => {
       <li className="visible_list">
         <Link className="list-item" href="/">
           <span className={topMenu == "home" ? "title menuActive" : "title"}>
-            Home
+            {t('nav.home')}
           </span>
         </Link>
       </li>
@@ -68,7 +70,7 @@ const MainMenu = () => {
       <li className="megamenu_style dropitem">
         <a className="list-item" href="#">
           <span className={topMenu == "listing" ? "title menuActive" : "title"}>
-            Listing
+            {t('nav.listing')}
           </span>
           <span className="arrow"></span>
         </a>
@@ -99,7 +101,7 @@ const MainMenu = () => {
           <span
             className={topMenu == "property" ? "title menuActive" : "title"}
           >
-            Property
+            {t('nav.property')}
           </span>
           <span className="arrow"></span>
         </a>
@@ -137,7 +139,7 @@ const MainMenu = () => {
       <li className="visible_list dropitem">
         <a className="list-item" href="#">
           <span className={topMenu == "blog" ? "title menuActive" : "title"}>
-            Blog
+            {t('nav.blog')}
           </span>
           <span className="arrow"></span>
         </a>
@@ -156,7 +158,7 @@ const MainMenu = () => {
       <li className="visible_list dropitem">
         <a className="list-item" href="#">
           <span className={topMenu == "pages" ? "title menuActive" : "title"}>
-            Pages
+            {t('nav.pages')}
           </span>
           <span className="arrow"></span>
         </a>
@@ -171,6 +173,7 @@ const MainMenu = () => {
         </ul>
       </li>
       {/* End pages Items */}
+
     </ul>
   );
 };

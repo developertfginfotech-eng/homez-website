@@ -1,25 +1,29 @@
+"use client";
 import Image from "next/image";
+import { useTranslate } from "@/hooks/useTranslate";
 
 const ExclusiveAgnts = () => {
+  const { t } = useTranslate();
+
   const agents = [
     {
       name: "Marvin McKinney",
-      role: "Designer",
+      role: t('agents.designer'),
       image: "/images/team/ea-1.png",
     },
     {
       name: "Ralph Edwards",
-      role: "Designer",
+      role: t('agents.designer'),
       image: "/images/team/ea-2.png",
     },
     {
       name: "Annette Black",
-      role: "Designer",
+      role: t('agents.designer'),
       image: "/images/team/ea-3.png",
     },
     {
       name: "Jane Cooper",
-      role: "Designer",
+      role: t('agents.designer'),
       image: "/images/team/ea-4.png",
     },
   ];
@@ -27,7 +31,7 @@ const ExclusiveAgnts = () => {
   return (
     <div className="exclusive-agent-widget mb30-sm">
       <h4 className="title mb20">
-        <span className="text-thm">{agents.length}+</span> Exclusive Agents
+        <span className="text-thm">{agents.length}+</span> {t('agents.exclusiveAgents')}
       </h4>
       {agents.map((agent, index) => (
         <div className="thumb d-flex align-items-center mb20" key={index}>

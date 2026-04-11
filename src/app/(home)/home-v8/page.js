@@ -16,7 +16,7 @@ import SidebarStickyBar from "@/components/home/home-v8/SidebarStickyBar";
 import Link from "next/link";
 
 export const metadata = {
-  title: "Home v8 || Lahomez - Real Estate NextJS Template",
+  title: "Home v8 || Globperty - Real Estate NextJS Template",
 };
 
 const Home_V8 = () => {
@@ -233,7 +233,7 @@ const Home_V8 = () => {
               data-wow-delay="300ms"
             >
               <div className="main-title text-center">
-                <h2 className="title">See How Realton Can Help</h2>
+                <h2 className="title">See How Globperty Can Help</h2>
                 <p className="paragraph">
                   Aliquam lacinia diam quis lacus euismod
                 </p>

@@ -20,14 +20,6 @@ const PropertyTypeCards = () => {
       iconColor: "#0284c7",
     },
     {
-      title: "PG/Hostel",
-      description: "Find Budget-Friendly PG Options",
-      icon: "fas fa-bed",
-      link: "/grid-full-3-col?type=pg",
-      bgColor: "#f0fdf4",
-      iconColor: "#16a34a",
-    },
-    {
       title: "Commercial",
       description: "Buy or Rent Commercial Properties",
       icon: "fas fa-building",

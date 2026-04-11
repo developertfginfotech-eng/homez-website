@@ -1,14 +1,12 @@
-"use client";
-import ScrollToTop from "@/components/common/ScrollTop";
-import Aos from "aos";
+import ClientProvider from "@/components/providers/ClientProvider";
 import "./globals.css";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "aos/dist/aos.css";
 import "rc-slider/assets/index.css";
+import "leaflet/dist/leaflet.css";
 import { DM_Sans, Poppins } from "next/font/google";
-import { useEffect } from "react";
 
 // DM_Sans font
 const dmSans = DM_Sans({
@@ -24,48 +22,30 @@ const poppins = Poppins({
   variable: "--title-font-family",
 });
 
+export const metadata = {
+  title: "Globperty - Real Estate NextJS Template",
+  description: "Find your dream property",
+};
+
 export default function RootLayout({ children }) {
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      import("bootstrap");
-    }
-  }, []);
-  useEffect(() => {
-    Aos.init({
-      duration: 1200,
-      once: true,
-    });
-  }, []);
-
-  useEffect(() => {
-    // Dynamically load CSS files
-    const cssFiles = [
-      '/css/fontawesome.css',
-      '/css/ace-responsive-menu.css',
-      '/css/dashbord_navitaion.css',
-      '/css/flaticon.css',
-      '/css/menu.css',
-      '/css/ud-custom-spacing.css',
-      '/css/style-compiled.css'
-    ];
-
-    cssFiles.forEach(href => {
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = href;
-      document.head.appendChild(link);
-    });
-  }, []);
-
   return (
     <html lang="en">
+      <head>
+        <link rel="stylesheet" href="/css/fontawesome.css" />
+        <link rel="stylesheet" href="/css/ace-responsive-menu.css" />
+        <link rel="stylesheet" href="/css/dashbord_navitaion.css" />
+        <link rel="stylesheet" href="/css/flaticon.css" />
+        <link rel="stylesheet" href="/css/menu.css" />
+        <link rel="stylesheet" href="/css/ud-custom-spacing.css" />
+        <link rel="stylesheet" href="/css/style-compiled.css" />
+      </head>
       <body
         className={`body  ${poppins.variable} ${dmSans.variable}`}
         cz-shortcut-listen="false"
       >
-        <div className="wrapper ovh">{children}</div>
-
-        <ScrollToTop />
+        <ClientProvider>
+          <div className="wrapper ovh">{children}</div>
+        </ClientProvider>
       </body>
     </html>
   );

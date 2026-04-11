@@ -40,9 +40,15 @@ const ApartmentType = () => {
   }
 
   return (
-    <Swiper
-      className="overflow-visible"
-      spaceBetween={30}
+    <>
+      <style jsx global>{`
+        .iconbox-style1:hover .category-bg-image {
+          opacity: 0.35 !important;
+        }
+      `}</style>
+      <Swiper
+        className="overflow-visible"
+        spaceBetween={30}
       modules={[Navigation, Pagination]}
       navigation={{
         nextEl: ".next__active",
@@ -83,9 +89,27 @@ const ApartmentType = () => {
         <SwiperSlide key={type.id}>
           <div className="item">
             <Link href={getCategoryUrl(type.title)}>
-              <div className="iconbox-style1">
-                <span className={`icon ${type.icon}`} />
-                <div className="iconbox-content">
+              <div className="iconbox-style1 position-relative overflow-hidden" style={{ borderRadius: '12px' }}>
+                {type.image && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      backgroundImage: `url(${type.image})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                      opacity: 0.2,
+                      zIndex: 0,
+                      transition: 'opacity 0.3s ease',
+                    }}
+                    className="category-bg-image"
+                  />
+                )}
+                <span className={`icon ${type.icon}`} style={{ position: 'relative', zIndex: 1 }} />
+                <div className="iconbox-content" style={{ position: 'relative', zIndex: 1 }}>
                   <h6 className="title">{type.title}</h6>
                   <p className="text mb-0">{`${type.count} Properties`}</p>
                 </div>
@@ -94,7 +118,8 @@ const ApartmentType = () => {
           </div>
         </SwiperSlide>
       ))}
-    </Swiper>
+      </Swiper>
+    </>
   );
 };
 

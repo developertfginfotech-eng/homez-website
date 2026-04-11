@@ -47,6 +47,11 @@ const SidebarDashboard = () => {
           icon: "flaticon-chat-1",
           text: "Message",
         },
+        {
+          href: "/dashboard-inquiries",
+          icon: "flaticon-chat",
+          text: "Property Inquiries",
+        },
       ],
     },
     {
@@ -76,14 +81,31 @@ const SidebarDashboard = () => {
           visibleTo: ["broker", "seller", "admin"],
         },
         {
+          href: "/dashboard-image-enhancer",
+          icon: "flaticon-photo",
+          text: "AI Image Enhancer",
+          visibleTo: ["broker", "seller", "admin"],
+        },
+        {
+          href: "/market-intelligence",
+          icon: "flaticon-search-chart",
+          text: "Market Intelligence",
+        },
+        {
+          href: "/ai-recommendations",
+          icon: "flaticon-favourite",
+          text: "AI Recommendations",
+          visibleTo: ["buyer", "user"],
+        },
+        {
           href: "/dashboard-tour-requests",
-          icon: "flaticon-calendar",
+          icon: "flaticon-event",
           text: "Tour Requests",
           visibleTo: ["broker", "seller", "admin"],
         },
         {
           href: "/dashboard-tour-requests",
-          icon: "flaticon-calendar",
+          icon: "flaticon-event",
           text: "My Scheduled Tours",
           visibleTo: ["buyer", "user"],
         },

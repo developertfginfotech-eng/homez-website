@@ -5,28 +5,59 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { filterPropertiesByCurrency, getCurrencySymbol, getSelectedCurrency } from "@/utils/currencyHelper";
 
 const FeaturedListings = () => {
   const [properties, setProperties] = useState([]);
+  const [filteredProperties, setFilteredProperties] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedCurrency, setSelectedCurrency] = useState("ALL");
 
   useEffect(() => {
     const fetchProperties = async () => {
       try {
         const data = await getAllProperties();
-        // Get first 4 approved properties
-        const approvedProps = data.filter(p => p.approvalStatus === 'approved').slice(0, 4);
+        // Get approved properties
+        const approvedProps = data.filter(p => p.approvalStatus === 'approved');
         setProperties(approvedProps);
+
+        // Apply currency filter
+        const currency = getSelectedCurrency();
+        setSelectedCurrency(currency);
+        const filtered = filterPropertiesByCurrency(approvedProps, currency);
+        setFilteredProperties(filtered.slice(0, 4));
       } catch (error) {
         console.error('Error fetching properties:', error);
         setProperties([]);
+        setFilteredProperties([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchProperties();
+
+    // Listen for currency change events
+    const handleCurrencyChange = (event) => {
+      const newCurrency = event.detail.currency;
+      setSelectedCurrency(newCurrency);
+      const filtered = filterPropertiesByCurrency(properties, newCurrency);
+      setFilteredProperties(filtered.slice(0, 4));
+    };
+
+    window.addEventListener('currencyChanged', handleCurrencyChange);
+    return () => {
+      window.removeEventListener('currencyChanged', handleCurrencyChange);
+    };
   }, []);
+
+  // Re-filter when properties change
+  useEffect(() => {
+    if (properties.length > 0) {
+      const filtered = filterPropertiesByCurrency(properties, selectedCurrency);
+      setFilteredProperties(filtered.slice(0, 4));
+    }
+  }, [properties, selectedCurrency]);
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://homez-q5lh.onrender.com/api';
   const backendUrl = API_URL.replace('/api', '');
@@ -43,8 +74,15 @@ const FeaturedListings = () => {
     return <div className="text-center">Loading properties...</div>;
   }
 
-  if (properties.length === 0) {
-    return <div className="text-center">No properties available</div>;
+  if (filteredProperties.length === 0) {
+    return (
+      <div className="text-center">
+        <p>No properties available for the selected currency.</p>
+        {selectedCurrency !== 'ALL' && (
+          <small className="text-muted">Try selecting "All Currencies" from the header.</small>
+        )}
+      </div>
+    );
   }
 
   return (
@@ -76,7 +114,7 @@ const FeaturedListings = () => {
           },
         }}
       >
-        {properties.map((listing) => (
+        {filteredProperties.map((listing) => (
           <SwiperSlide key={listing.id || listing._id}>
             <div className="item">
               <div className="listing-style1">
@@ -98,7 +136,7 @@ const FeaturedListings = () => {
                   </div>
 
                   <div className="list-price">
-                    ${listing.price?.toLocaleString() || '0'} {listing.afterPriceLabel && <span>/ {listing.afterPriceLabel}</span>}
+                    {getCurrencySymbol(listing.country)} {listing.price?.toLocaleString() || '0'} {listing.afterPriceLabel && <span>/ {listing.afterPriceLabel}</span>}
                   </div>
                 </div>
                 <div className="list-content">

@@ -25,9 +25,17 @@ import PropertyGallery from "@/components/property/property-single-style/single-
 import React from "react";
 import MortgageCalculator from "@/components/property/property-single-style/common/MortgageCalculator";
 import WalkScore from "@/components/property/property-single-style/common/WalkScore";
+import PropertyValuation from "@/components/property/PropertyValuation";
+import PropertyInvestmentScore from "@/components/property/PropertyInvestmentScore";
+import NegotiationAssistant from "@/components/property/NegotiationAssistant";
+import CrossCountryMatchWidget from "@/components/property/CrossCountryMatchWidget";
+import PropertyMarketForecast from "@/components/property/PropertyMarketForecast";
+import AIAutoResponse from "@/components/property/AIAutoResponse";
+import AgentMatchWidget from "@/components/property/AgentMatchWidget";
+import ViewTracker from "@/components/property/ViewTracker";
 
 export const metadata = {
-  title: "Property Single V6 || Lahomez - Real Estate NextJS Template",
+  title: "Property Single V6 || Globperty - Real Estate NextJS Template",
 };
 
 const SingleV6 = async props => {
@@ -175,6 +183,9 @@ const SingleV6 = async props => {
               </div>
               {/* End .ps-widget */}
 
+              {/* AI Global Property Matches — real database listings from other countries */}
+              <CrossCountryMatchWidget propertyId={params.id} />
+
               <div className="ps-widget bgc-white bdrs12 default-box-shadow2 p30 mb30 overflow-hidden position-relative">
                 <div className="row">
                   {/* <AllComments /> */}
@@ -208,7 +219,53 @@ const SingleV6 = async props => {
                     <ContactWithAgent />
                   </div>
                 </div>
+
+                {/* AI Property Valuation */}
+                <div className="agen-personal-info position-relative bgc-white default-box-shadow1 bdrs12 p30 mt30">
+                  <div className="widget-wrapper mb-0">
+                    <PropertyValuation propertyId={params.id} currentPrice={0} />
+                  </div>
+                </div>
+
+                {/* AI Investment Score */}
+                <div className="agen-personal-info position-relative bgc-white default-box-shadow1 bdrs12 p30 mt30">
+                  <div className="widget-wrapper mb-0">
+                    <PropertyInvestmentScore propertyId={params.id} />
+                  </div>
+                </div>
+
+                {/* AI Negotiation Assistant */}
+                <div className="agen-personal-info position-relative bgc-white default-box-shadow1 bdrs12 p30 mt30">
+                  <div className="widget-wrapper mb-0">
+                    <NegotiationAssistant propertyId={params.id} />
+                  </div>
+                </div>
+
+                {/* AI Cross-Country Match — real DB properties */}
+                <CrossCountryMatchWidget propertyId={params.id} />
+
+                {/* AI Market Forecast */}
+                <div className="agen-personal-info position-relative bgc-white default-box-shadow1 bdrs12 p30 mt30">
+                  <div className="widget-wrapper mb-0">
+                    <PropertyMarketForecast propertyId={params.id} />
+                  </div>
+                </div>
+
+                {/* AI Auto Response */}
+                <div className="agen-personal-info position-relative bgc-white default-box-shadow1 bdrs12 p30 mt30">
+                  <div className="widget-wrapper mb-0">
+                    <AIAutoResponse propertyId={params.id} />
+                  </div>
+                </div>
+
+                {/* AI Agent Matching */}
+                <div className="agen-personal-info position-relative bgc-white default-box-shadow1 bdrs12 p30 mt30">
+                  <div className="widget-wrapper mb-0">
+                    <AgentMatchWidget propertyId={params.id} />
+                  </div>
+                </div>
               </div>
+              <ViewTracker propertyId={params.id} />
             </div>
           </div>
           {/* End .row */}

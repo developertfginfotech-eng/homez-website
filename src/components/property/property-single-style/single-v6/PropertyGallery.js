@@ -1,22 +1,75 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { FreeMode, Navigation, Thumbs } from "swiper/modules";
 import Image from "next/image";
 import "photoswipe/dist/photoswipe.css";
-import listings from "@/data/listings";
+import { propertiesAPI } from "@/services/api";
 import Map from "./Map";
-
-const images = [
-  "/images/listings/listing-single-6-1.jpg",
-  "/images/listings/listing-single-6-2.jpg",
-  "/images/listings/listing-single-6-3.jpg",
-  "/images/listings/listing-single-6-4.jpg",
-];
 
 const PropertyGallery = ({ id }) => {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
-  const data = listings.filter((elm) => elm.id == id)[0] || listings[0];
+  const [property, setProperty] = useState(null);
+  const [images, setImages] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProperty = async () => {
+      try {
+        setLoading(true);
+        const response = await propertiesAPI.getById(id);
+        if (response && response.property) {
+          const prop = response.property;
+          setProperty(prop);
+
+          // Construct image URLs
+          const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+          const backendUrl = API_URL.replace('/api', '');
+
+          if (prop.images && prop.images.length > 0) {
+            const imageUrls = prop.images.map(img => {
+              return img.startsWith('http') ? img : `${backendUrl}${img}`;
+            });
+            setImages(imageUrls);
+          } else {
+            // Fallback images
+            setImages([
+              "/images/listings/listing-single-6-1.jpg",
+              "/images/listings/listing-single-6-2.jpg",
+            ]);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching property:', error);
+        // Set fallback images on error
+        setImages([
+          "/images/listings/listing-single-6-1.jpg",
+          "/images/listings/listing-single-6-2.jpg",
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchProperty();
+    }
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="row">
+        <div className="ps-widget bgc-white bdrs12 default-box-shadow2 p30 mb30 overflow-hidden position-relative">
+          <div className="text-center py-5">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Loading images...</span>
+            </div>
+            <p className="mt-3 text-muted">Loading property images...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

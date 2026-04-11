@@ -13,6 +13,7 @@ const AdminKYCVerification = () => {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("pending"); // pending, verified, rejected, all
   const [selectedKYC, setSelectedKYC] = useState(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
 
   useEffect(() => {
     fetchKYCSubmissions();
@@ -269,20 +270,40 @@ const AdminKYCVerification = () => {
                               {Object.entries(kyc.documents).map(([key, value]) => {
                                 if (!value) return null;
                                 return (
-                                  <div key={key} className="d-flex align-items-center mb-2">
-                                    <i className="fas fa-file-pdf text-danger me-2"></i>
+                                  <div key={key} className="d-flex align-items-center justify-content-between mb-2">
+                                    <div className="d-flex align-items-center">
+                                      <i className="fas fa-file-pdf text-danger me-2"></i>
+                                      <a
+                                        href={value}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        style={{
+                                          fontSize: "13px",
+                                          color: "#eb6753",
+                                          textDecoration: "none",
+                                          fontWeight: "500",
+                                        }}
+                                      >
+                                        {key.replace(/([A-Z])/g, " $1").trim()}
+                                      </a>
+                                    </div>
                                     <a
                                       href={value}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
+                                      download
                                       style={{
-                                        fontSize: "13px",
-                                        color: "#eb6753",
+                                        fontSize: "12px",
+                                        color: "#6b7280",
                                         textDecoration: "none",
-                                        fontWeight: "500",
+                                        padding: "4px 8px",
+                                        backgroundColor: "#f3f4f6",
+                                        borderRadius: "4px",
+                                        display: "inline-flex",
+                                        alignItems: "center",
+                                        gap: "4px",
                                       }}
+                                      title="Download document"
                                     >
-                                      {key.replace(/([A-Z])/g, " $1").trim()}
+                                      <i className="fas fa-download"></i>
                                     </a>
                                   </div>
                                 );
@@ -296,6 +317,30 @@ const AdminKYCVerification = () => {
                           {/* Status & Actions */}
                           <div className="col-lg-4 text-lg-end">
                             <div className="mb-3">{getStatusBadge(kyc.status)}</div>
+
+                            {/* View Details Button */}
+                            <div className="mb-3">
+                              <button
+                                onClick={() => {
+                                  setSelectedKYC(kyc);
+                                  setShowDetailsModal(true);
+                                }}
+                                className="btn btn-sm w-100"
+                                style={{
+                                  backgroundColor: "#3b82f6",
+                                  color: "white",
+                                  padding: "8px 20px",
+                                  fontSize: "14px",
+                                  fontWeight: "600",
+                                  border: "none",
+                                  borderRadius: "6px",
+                                }}
+                              >
+                                <i className="fas fa-eye me-2"></i>
+                                View Details
+                              </button>
+                            </div>
+
                             {kyc.status === "pending" && (
                               <div className="d-flex gap-2 justify-content-lg-end">
                                 <button
@@ -351,6 +396,379 @@ const AdminKYCVerification = () => {
           </div>
         </div>
       </div>
+
+      {/* KYC Details Modal */}
+      {showDetailsModal && selectedKYC && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0,0,0,0.7)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 99999,
+            padding: "20px",
+          }}
+          onClick={() => setShowDetailsModal(false)}
+        >
+          <div
+            style={{
+              backgroundColor: "white",
+              borderRadius: "12px",
+              maxWidth: "900px",
+              width: "100%",
+              maxHeight: "90vh",
+              overflowY: "auto",
+              padding: "0",
+              boxShadow: "0 10px 40px rgba(0,0,0,0.3)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div style={{
+              padding: "25px 30px",
+              borderBottom: "2px solid #e5e7eb",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              position: "sticky",
+              top: 0,
+              backgroundColor: "white",
+              zIndex: 1,
+            }}>
+              <h3 style={{ margin: 0, fontSize: "24px", fontWeight: "700", color: "#1f2937" }}>
+                <i className="fas fa-file-alt me-2" style={{ color: "#3b82f6" }}></i>
+                KYC Details - {selectedKYC.userName}
+              </h3>
+              <button
+                onClick={() => setShowDetailsModal(false)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  fontSize: "32px",
+                  cursor: "pointer",
+                  color: "#9ca3af",
+                  lineHeight: "1",
+                  padding: "0",
+                  width: "32px",
+                  height: "32px",
+                }}
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Content */}
+            <div style={{ padding: "30px" }}>
+              {/* User Account Information */}
+              <div style={{ marginBottom: "30px", padding: "20px", backgroundColor: "#f0f9ff", borderRadius: "8px", border: "1px solid #bae6fd" }}>
+                <h5 style={{ marginBottom: "15px", fontSize: "18px", fontWeight: "700", color: "#0c4a6e" }}>
+                  <i className="fas fa-user me-2"></i>
+                  User Account Information
+                </h5>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
+                  <div>
+                    <p style={{ margin: "8px 0" }}><strong>Account Name:</strong> {selectedKYC.userName}</p>
+                    <p style={{ margin: "8px 0" }}><strong>Account Email:</strong> {selectedKYC.email}</p>
+                    {selectedKYC.phone && <p style={{ margin: "8px 0" }}><strong>Account Phone:</strong> {selectedKYC.phone}</p>}
+                  </div>
+                  <div>
+                    <p style={{ margin: "8px 0" }}><strong>Country:</strong> {selectedKYC.country}</p>
+                    <p style={{ margin: "8px 0" }}>
+                      <strong>Account Type:</strong>
+                      <span style={{
+                        marginLeft: "8px",
+                        padding: "4px 10px",
+                        backgroundColor: "#e0f2fe",
+                        color: "#075985",
+                        borderRadius: "6px",
+                        fontSize: "13px",
+                        fontWeight: "600",
+                      }}>
+                        {selectedKYC.accountType || selectedKYC.role}
+                      </span>
+                    </p>
+                    <p style={{ margin: "8px 0" }}>
+                      <strong>Status:</strong> {getStatusBadge(selectedKYC.status)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Company Information (only if exists) */}
+              {selectedKYC.companyInfo && Object.values(selectedKYC.companyInfo).some(val => val) && (
+                <div style={{ marginBottom: "30px", padding: "20px", backgroundColor: "#fef3c7", borderRadius: "8px", border: "1px solid #fde68a" }}>
+                  <h5 style={{ marginBottom: "15px", fontSize: "18px", fontWeight: "700", color: "#78350f" }}>
+                    <i className="fas fa-building me-2"></i>
+                    Company Information
+                  </h5>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
+                    {selectedKYC.companyInfo.companyName && (
+                      <p style={{ margin: "8px 0" }}><strong>Company Name:</strong> {selectedKYC.companyInfo.companyName}</p>
+                    )}
+                    {selectedKYC.companyInfo.registrationNumber && (
+                      <p style={{ margin: "8px 0" }}><strong>Registration Number:</strong> {selectedKYC.companyInfo.registrationNumber}</p>
+                    )}
+                    {selectedKYC.companyInfo.companyEmail && (
+                      <p style={{ margin: "8px 0" }}><strong>Company Email:</strong> {selectedKYC.companyInfo.companyEmail}</p>
+                    )}
+                    {selectedKYC.companyInfo.companyPhone && (
+                      <p style={{ margin: "8px 0" }}><strong>Company Phone:</strong> {selectedKYC.companyInfo.companyPhone}</p>
+                    )}
+                    {selectedKYC.companyInfo.companyAddress && (
+                      <p style={{ margin: "8px 0", gridColumn: "1 / -1" }}>
+                        <strong>Company Address:</strong> {[
+                          selectedKYC.companyInfo.companyAddress.line1,
+                          selectedKYC.companyInfo.companyAddress.line2,
+                          selectedKYC.companyInfo.companyAddress.city,
+                          selectedKYC.companyInfo.companyAddress.state,
+                          selectedKYC.companyInfo.companyAddress.zipCode
+                        ].filter(Boolean).join(', ')}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Authorized Signatory Details (only if exists) */}
+              {selectedKYC.authorizedSignatory && Object.values(selectedKYC.authorizedSignatory).some(val => val) && (
+                <div style={{ marginBottom: "30px", padding: "20px", backgroundColor: "#f3e8ff", borderRadius: "8px", border: "1px solid #e9d5ff" }}>
+                  <h5 style={{ marginBottom: "15px", fontSize: "18px", fontWeight: "700", color: "#6b21a8" }}>
+                    <i className="fas fa-user-tie me-2"></i>
+                    Authorized Signatory Details
+                  </h5>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
+                    {selectedKYC.authorizedSignatory.fullName && (
+                      <p style={{ margin: "8px 0" }}><strong>Full Name:</strong> {selectedKYC.authorizedSignatory.fullName}</p>
+                    )}
+                    {selectedKYC.authorizedSignatory.designation && (
+                      <p style={{ margin: "8px 0" }}><strong>Designation:</strong> {selectedKYC.authorizedSignatory.designation}</p>
+                    )}
+                    {selectedKYC.authorizedSignatory.authorizationBasis && (
+                      <p style={{ margin: "8px 0" }}><strong>Authorization Basis:</strong> {selectedKYC.authorizedSignatory.authorizationBasis}</p>
+                    )}
+                    {selectedKYC.authorizedSignatory.reraLicenseNumber && (
+                      <p style={{ margin: "8px 0" }}><strong>RERA License Number:</strong> {selectedKYC.authorizedSignatory.reraLicenseNumber}</p>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Uploaded Documents */}
+              {selectedKYC.documents && Object.keys(selectedKYC.documents).length > 0 && (
+                <div style={{ marginBottom: "30px", padding: "20px", backgroundColor: "#dcfce7", borderRadius: "8px", border: "1px solid #bbf7d0" }}>
+                  <h5 style={{ marginBottom: "15px", fontSize: "18px", fontWeight: "700", color: "#14532d" }}>
+                    <i className="fas fa-file-upload me-2"></i>
+                    Uploaded Documents
+                  </h5>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+                    {Object.entries(selectedKYC.documents).map(([key, value]) => {
+                      if (!value) return null;
+
+                      // Check if this is a front/back document
+                      if (value.hasFrontBack) {
+                        return (
+                          <div key={key} style={{ padding: "15px", backgroundColor: "white", borderRadius: "8px", border: "1px solid #d1fae5" }}>
+                            <p style={{ margin: "0 0 10px 0", fontWeight: "600", color: "#1f2937", fontSize: "15px" }}>
+                              <i className="fas fa-file-pdf text-danger me-2"></i>
+                              {value.documentName || key.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}
+                            </p>
+                            {selectedKYC.submittedAt && (
+                              <p style={{ margin: "0 0 15px 0", fontSize: "12px", color: "#6b7280" }}>
+                                Uploaded: {new Date(selectedKYC.submittedAt).toLocaleString()}
+                              </p>
+                            )}
+                            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                              {value.front && (
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px", backgroundColor: "#f9fafb", borderRadius: "6px" }}>
+                                  <span style={{ fontWeight: "500", color: "#374151" }}>Front Side</span>
+                                  <div style={{ display: "flex", gap: "8px" }}>
+                                    <a
+                                      href={value.front}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      style={{ padding: "6px 12px", backgroundColor: "#3b82f6", color: "white", textDecoration: "none", borderRadius: "4px", fontSize: "13px", fontWeight: "600", display: "inline-flex", alignItems: "center", gap: "4px" }}
+                                    >
+                                      <i className="fas fa-eye"></i>
+                                      View
+                                    </a>
+                                    <a
+                                      href={value.front}
+                                      download
+                                      style={{ padding: "6px 12px", backgroundColor: "#10b981", color: "white", textDecoration: "none", borderRadius: "4px", fontSize: "13px", fontWeight: "600", display: "inline-flex", alignItems: "center", gap: "4px" }}
+                                    >
+                                      <i className="fas fa-download"></i>
+                                      Download
+                                    </a>
+                                  </div>
+                                </div>
+                              )}
+                              {value.back && (
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px", backgroundColor: "#f9fafb", borderRadius: "6px" }}>
+                                  <span style={{ fontWeight: "500", color: "#374151" }}>Back Side</span>
+                                  <div style={{ display: "flex", gap: "8px" }}>
+                                    <a
+                                      href={value.back}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      style={{ padding: "6px 12px", backgroundColor: "#3b82f6", color: "white", textDecoration: "none", borderRadius: "4px", fontSize: "13px", fontWeight: "600", display: "inline-flex", alignItems: "center", gap: "4px" }}
+                                    >
+                                      <i className="fas fa-eye"></i>
+                                      View
+                                    </a>
+                                    <a
+                                      href={value.back}
+                                      download
+                                      style={{ padding: "6px 12px", backgroundColor: "#10b981", color: "white", textDecoration: "none", borderRadius: "4px", fontSize: "13px", fontWeight: "600", display: "inline-flex", alignItems: "center", gap: "4px" }}
+                                    >
+                                      <i className="fas fa-download"></i>
+                                      Download
+                                    </a>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      }
+
+                      // Regular document (single or multiple files)
+                      const files = Array.isArray(value.files) ? value.files : (value.files ? [value.files] : [value]);
+                      return (
+                        <div key={key} style={{ padding: "15px", backgroundColor: "white", borderRadius: "8px", border: "1px solid #d1fae5" }}>
+                          <p style={{ margin: "0 0 10px 0", fontWeight: "600", color: "#1f2937", fontSize: "15px" }}>
+                            <i className="fas fa-file-pdf text-danger me-2"></i>
+                            {value.documentName || key.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}
+                          </p>
+                          {selectedKYC.submittedAt && (
+                            <p style={{ margin: "0 0 15px 0", fontSize: "12px", color: "#6b7280" }}>
+                              Uploaded: {new Date(selectedKYC.submittedAt).toLocaleString()}
+                            </p>
+                          )}
+                          {files.map((file, idx) => (
+                            <div key={idx} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: files.length > 1 ? "8px" : "0" }}>
+                              {files.length > 1 && <span style={{ fontWeight: "500", color: "#6b7280", fontSize: "13px" }}>File {idx + 1}</span>}
+                              <div style={{ display: "flex", gap: "10px", marginLeft: "auto" }}>
+                                <a
+                                  href={file}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  style={{ padding: "8px 16px", backgroundColor: "#3b82f6", color: "white", textDecoration: "none", borderRadius: "6px", fontSize: "14px", fontWeight: "600", display: "inline-flex", alignItems: "center", gap: "6px" }}
+                                >
+                                  <i className="fas fa-eye"></i>
+                                  View
+                                </a>
+                                <a
+                                  href={file}
+                                  download
+                                  style={{ padding: "8px 16px", backgroundColor: "#10b981", color: "white", textDecoration: "none", borderRadius: "6px", fontSize: "14px", fontWeight: "600", display: "inline-flex", alignItems: "center", gap: "6px" }}
+                                >
+                                  <i className="fas fa-download"></i>
+                                  Download
+                                </a>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Additional Information */}
+              {(selectedKYC.notes || selectedKYC.rejectionReason) && (
+                <div style={{ marginBottom: "20px", padding: "20px", backgroundColor: "#fee2e2", borderRadius: "8px", border: "1px solid #fecaca" }}>
+                  <h5 style={{ marginBottom: "15px", fontSize: "18px", fontWeight: "700", color: "#991b1b" }}>
+                    <i className="fas fa-info-circle me-2"></i>
+                    Additional Information
+                  </h5>
+                  {selectedKYC.notes && (
+                    <p style={{ margin: "8px 0" }}><strong>Notes:</strong> {selectedKYC.notes}</p>
+                  )}
+                  {selectedKYC.rejectionReason && (
+                    <p style={{ margin: "8px 0" }}><strong>Rejection Reason:</strong> {selectedKYC.rejectionReason}</p>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Footer Actions */}
+            <div style={{
+              padding: "20px 30px",
+              borderTop: "2px solid #e5e7eb",
+              display: "flex",
+              justifyContent: "flex-end",
+              gap: "10px",
+              position: "sticky",
+              bottom: 0,
+              backgroundColor: "white",
+            }}>
+              {selectedKYC.status === "pending" && (
+                <>
+                  <button
+                    onClick={() => {
+                      handleApprove(selectedKYC.id);
+                      setShowDetailsModal(false);
+                    }}
+                    style={{
+                      padding: "10px 24px",
+                      backgroundColor: "#10b981",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "6px",
+                      fontSize: "15px",
+                      fontWeight: "600",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <i className="fas fa-check me-2"></i>
+                    Approve
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleReject(selectedKYC.id);
+                      setShowDetailsModal(false);
+                    }}
+                    style={{
+                      padding: "10px 24px",
+                      backgroundColor: "#ef4444",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "6px",
+                      fontSize: "15px",
+                      fontWeight: "600",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <i className="fas fa-times me-2"></i>
+                    Reject
+                  </button>
+                </>
+              )}
+              <button
+                onClick={() => setShowDetailsModal(false)}
+                style={{
+                  padding: "10px 24px",
+                  backgroundColor: "#6b7280",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "6px",
+                  fontSize: "15px",
+                  fontWeight: "600",
+                  cursor: "pointer",
+                }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

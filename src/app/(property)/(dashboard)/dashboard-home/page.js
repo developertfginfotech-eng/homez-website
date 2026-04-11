@@ -9,6 +9,7 @@ import RecentActivities from "@/components/property/dashboard/dashboard-home/Rec
 import TopStateBlock from "@/components/property/dashboard/dashboard-home/TopStateBlock";
 import PropertyViews from "@/components/property/dashboard/dashboard-home/property-view";
 import KYCStatus from "@/components/property/dashboard/dashboard-home/KYCStatus";
+import BuyerIntentWidget from "@/components/property/dashboard/dashboard-home/BuyerIntentWidget";
 import { useEffect, useState } from "react";
 
 const DashboardHome = () => {
@@ -77,6 +78,9 @@ const DashboardHome = () => {
                       <PropertyViews />
                     </div>
                   </div>
+
+                  {/* AI Buyer Intent Widget */}
+                  <BuyerIntentWidget />
                 </div>
                 {/* End col-xl-8 */}
 

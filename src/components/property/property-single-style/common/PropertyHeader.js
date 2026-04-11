@@ -2,8 +2,29 @@
 
 import React, { useState, useEffect } from "react";
 import { propertiesAPI } from "@/services/api";
+import { useTranslation } from "react-i18next";
+
+// Country-specific currency configurations
+const getCurrencySymbol = (country) => {
+  const currencyMap = {
+    'UAE': 'AED',
+    'USA': '$',
+    'Portugal': '€',
+    'Canada': 'CAD',
+    'Australia': 'AUD',
+    'Turkey': '₺',
+    'Cyprus': '€',
+    'Malta': '€',
+    'Hungary': 'Ft',
+    'Latvia': '€',
+    'Philippines': '₱',
+    'Malaysia': 'RM'
+  };
+  return currencyMap[country] || '$';
+};
 
 const PropertyHeader = ({ id }) => {
+  const { t } = useTranslation();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -28,11 +49,11 @@ const PropertyHeader = ({ id }) => {
   }, [id]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>{t('common.loading')}</div>;
   }
 
   if (!data) {
-    return <div>Property not found</div>;
+    return <div>{t('common.propertyNotFound')}</div>;
   }
   return (
     <>
@@ -48,32 +69,32 @@ const PropertyHeader = ({ id }) => {
               href="#"
             >
               <i className="fas fa-circle fz10 pe-2" />
-              For {data.propertyType === "Rent" ? "rent" : "sale"}
+              {data.propertyType === "Rent" ? t('propertyDetails.forRent') : t('propertyDetails.forSale')}
             </a>
             <a
               className="ff-heading bdrr1 fz15 pr10 ml10 ml0-sm bdrrn-sm"
               href="#"
             >
               <i className="far fa-clock pe-2" />
-              {data.yearBuilt ? `${Number(new Date().getFullYear()) - Number(data.yearBuilt)} years ago` : "New"}
+              {data.yearBuilt ? `${Number(new Date().getFullYear()) - Number(data.yearBuilt)} ${t('common.yearsAgo')}` : t('common.new')}
             </a>
             <a className="ff-heading ml10 ml0-sm fz15" href="#">
               <i className="flaticon-fullscreen pe-2 align-text-top" />
-              {data.sizeInFt || 0} sqft
+              {data.sizeInFt || 0} {t('listing.sqft')}
             </a>
           </div>
           <div className="property-meta d-flex align-items-center">
             <a className="text fz15" href="#">
               <i className="flaticon-bed pe-2 align-text-top" />
-              {data.bedrooms || 0} bed
+              {data.bedrooms || 0} {t('listing.bed')}
             </a>
             <a className="text ml20 fz15" href="#">
               <i className="flaticon-shower pe-2 align-text-top" />
-              {data.bathrooms || 0} bath
+              {data.bathrooms || 0} {t('listing.bath')}
             </a>
             <a className="text ml20 fz15" href="#">
               <i className="flaticon-expand pe-2 align-text-top" />
-              {data.sizeInFt || 0} sqft
+              {data.sizeInFt || 0} {t('listing.sqft')}
             </a>
           </div>
         </div>
@@ -97,9 +118,9 @@ const PropertyHeader = ({ id }) => {
                 <span className="flaticon-printer" />
               </a>
             </div>
-            <h3 className="price mb-0">${data.price?.toLocaleString() || 0}</h3>
+            <h3 className="price mb-0">{getCurrencySymbol(data.country)} {data.price?.toLocaleString() || 0}</h3>
             <p className="text space fz15">
-              ${data.sizeInFt ? (data.price / data.sizeInFt).toFixed(2) : 0}/sq ft
+              {getCurrencySymbol(data.country)} {data.sizeInFt ? (data.price / data.sizeInFt).toFixed(2) : 0}/sq ft
             </p>
           </div>
         </div>

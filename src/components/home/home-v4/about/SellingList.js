@@ -1,8 +1,13 @@
+"use client";
+import { useTranslate } from "@/hooks/useTranslate";
+
 const SellingList = () => {
+  const { t } = useTranslate();
+
   const listItems = [
-    "Find excellent deals",
-    "Friendly host & Fast support",
-    "List your own property",
+    t('selling.findDeals'),
+    t('selling.friendlySupport'),
+    t('selling.listProperty'),
   ];
 
   return (

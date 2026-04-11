@@ -3,8 +3,11 @@ import testimonialData from "@/data/testimonials";
 import Image from "next/image";
 import { Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { useTranslation } from "react-i18next";
 
 const Testimonial = () => {
+  const { t } = useTranslation();
+
   return (
     <>
       <Swiper
@@ -38,7 +41,7 @@ const Testimonial = () => {
             <div className="item">
               <div className="testimonial-style3 mt-1 mx-1 position-relative mb60">
                 <div className="testimonial-content">
-                  <span className="icon">“</span>
+                  <span className="icon">"</span>
                 </div>
                 <div className="thumb d-flex align-items-center mb40">
                   <div className="flex-shrink-0">
@@ -55,7 +58,7 @@ const Testimonial = () => {
                     <p className="mb-0">{testimonial.company}</p>
                   </div>
                 </div>
-                <p className="text">{testimonial.quote}</p>
+                <p className="text">{t("testimonials.testimonialText")}</p>
               </div>
             </div>
           </SwiperSlide>

@@ -1,24 +1,29 @@
+"use client";
+
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 const AppWidget = () => {
+  const { t } = useTranslation('common');
+
   const appList = [
     {
       icon: "fab fa-apple fz30 text-white",
-      text: "Download on the",
-      title: "Apple Store",
+      text: t('footer.downloadOn'),
+      title: t('footer.appleStore'),
       link: "#",
     },
     {
       icon: "fab fa-google-play fz30 text-white",
-      text: "Get it on",
-      title: "Google Play",
+      text: t('footer.getItOn'),
+      title: t('footer.googlePlay'),
       link: "#",
     },
   ];
 
   return (
     <div className="app-widget">
-      <h5 className="title  mb10">Apps</h5>
+      <h5 className="title  mb10">{t('footer.apps')}</h5>
       <div className="row">
         {appList.map((app, index) => (
           <div className="col-auto" key={index}>

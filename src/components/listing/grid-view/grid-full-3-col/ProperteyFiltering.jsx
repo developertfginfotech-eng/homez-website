@@ -2,6 +2,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import ListingSidebar from '../../sidebar'
 import AdvanceFilterModal from '@/components/common/advance-filter-two'
 import TopFilterBar from './TopFilterBar'
@@ -11,10 +12,23 @@ import PaginationTwo from "../../PaginationTwo";
 import { getAllProperties } from "@/helpers/propertyApi";
 
 export default function ProperteyFiltering() {
+  const searchParams = useSearchParams();
+  const urlSearchQuery = searchParams.get("search") || searchParams.get("city") || "";
+  const urlType = searchParams.get("type") || "All";
+  const urlBeds = parseInt(searchParams.get("beds") || "0", 10);
+  const urlMaxPrice = parseInt(searchParams.get("maxPrice") || "0", 10);
+  const urlPropertyType = searchParams.get("propertyType") || "";
+  const urlGym = searchParams.get("gym") === "true";
+  const urlPool = searchParams.get("pool") === "true";
+  const urlParking = searchParams.get("parking") === "true";
+  const urlGarden = searchParams.get("garden") === "true";
+  const urlInvest = searchParams.get("invest") === "true";
+
   const [filteredData, setFilteredData] = useState([]);
   const [apiProperties, setApiProperties] = useState([]);
   const [isLoadingApi, setIsLoadingApi] = useState(false);
-  const [currentSortingOption, setCurrentSortingOption] = useState('Newest')
+  const [selectedCurrency, setSelectedCurrency] = useState('ALL');
+  const [currentSortingOption, setCurrentSortingOption] = useState(urlInvest ? 'Price Low' : 'Newest')
   const [sortedFilteredData, setSortedFilteredData] = useState([]);
 
 
@@ -22,24 +36,49 @@ export default function ProperteyFiltering() {
     const [colstyle, setColstyle] = useState(false)
     const [pageItems, setPageItems] = useState([])
     const [pageContentTrac, setPageContentTrac] = useState([])
-  
+
     useEffect(() => {
       setPageItems(sortedFilteredData
         .slice((pageNumber - 1) * 9, pageNumber * 9))
         setPageContentTrac([((pageNumber - 1) * 9) + 1 ,pageNumber * 9,sortedFilteredData.length])
     }, [pageNumber,sortedFilteredData])
-    
 
 
-    const [listingStatus, setListingStatus] = useState('All')
-    const [propertyTypes, setPropertyTypes] = useState([])
-    const [priceRange, setPriceRange] = useState([0,100000])
-    const [bedrooms, setBedrooms] = useState(0)
+
+    const [listingStatus, setListingStatus] = useState(urlType === "Rent" ? "Rent" : urlType === "Sale" ? "Buy" : "All")
+    const [propertyTypes, setPropertyTypes] = useState(urlPropertyType ? [urlPropertyType] : [])
+    const [priceRange, setPriceRange] = useState(urlMaxPrice > 0 ? [0, urlMaxPrice] : [0,100000])
+    const [bedrooms, setBedrooms] = useState(urlBeds || 0)
     const [bathroms, setBathroms] = useState(0)
     const [location, setLocation] = useState('All Cities')
      const [squirefeet, setSquirefeet] = useState([])
     const [yearBuild, setyearBuild] = useState([])
     const [categories, setCategories] = useState([])
+
+    // Update listing status when URL type parameter changes
+    useEffect(() => {
+      if (urlType === "Rent") {
+        setListingStatus("Rent");
+      } else if (urlType === "Sale") {
+        setListingStatus("Buy");
+      } else {
+        // "All", "Sold", or no type — show everything
+        setListingStatus("All");
+      }
+    }, [urlType]);
+
+    // Listen for currency changes
+    useEffect(() => {
+      const savedCurrency = localStorage.getItem('selectedCurrency') || 'ALL';
+      setSelectedCurrency(savedCurrency);
+
+      const handleCurrencyChange = (e) => {
+        setSelectedCurrency(e.detail.currency);
+      };
+
+      window.addEventListener('currencyChanged', handleCurrencyChange);
+      return () => window.removeEventListener('currencyChanged', handleCurrencyChange);
+    }, []);
 
     const resetFilter = ()=>{
       setListingStatus('All')
@@ -158,12 +197,37 @@ export default function ProperteyFiltering() {
                 imageUrl = firstImage.startsWith('http') ? firstImage : `${backendUrl}${firstImage}`;
               }
 
+              // Get currency symbol based on country
+              const getCurrency = (country) => {
+                const currencyMap = {
+                  'UAE': 'AED',
+                  'United Arab Emirates': 'AED',
+                  'USA': '$',
+                  'United States': '$',
+                  'US': '$',
+                  'UK': '£',
+                  'United Kingdom': '£',
+                  'India': '₹',
+                  'Europe': '€',
+                  'Portugal': '€',
+                  'Cyprus': '€',
+                  'Malta': '€',
+                  'Latvia': '€',
+                  'Canada': 'CAD',
+                  'Australia': 'AUD',
+                };
+                return currencyMap[country] || '$';
+              };
+
+              const currency = getCurrency(prop.country);
+
               return {
                 id: prop._id,
                 title: prop.title,
-                price: `$${prop.price}`,
+                price: `${currency} ${prop.price}`,
                 location: `${prop.city}, ${prop.country}`,
                 city: prop.city,
+                country: prop.country || 'Unknown',
                 bed: prop.bedrooms || 0,
                 bath: prop.bathrooms || 0,
                 sqft: prop.sizeInFt || 0,
@@ -171,8 +235,8 @@ export default function ProperteyFiltering() {
                 image: imageUrl,
                 features: Array.isArray(prop.amenities) ? prop.amenities : [],
                 category: Array.isArray(prop.category) ? prop.category : [],
-                propertyType: prop.propertyType || "Rent",
-                forRent: prop.propertyType === "Rent",
+                propertyType: prop.propertyType || "House",
+                forRent: prop.propertyAdType === "rent",
               };
             });
 
@@ -191,8 +255,43 @@ export default function ProperteyFiltering() {
   }, []);
 
     useEffect(() => {
+        // First filter by currency
+        const currencyCountryMap = {
+          'AED': ['UAE', 'United Arab Emirates'],
+          'USD': ['USA', 'United States', 'US'],
+          'EUR': ['Portugal', 'Cyprus', 'Malta', 'Latvia', 'Europe'],
+          'CAD': ['Canada'],
+          'AUD': ['Australia'],
+          'GBP': ['UK', 'United Kingdom'],
+          'INR': ['India'],
+        };
 
-        const refItems = apiProperties.filter((elm) => {
+        let refItems = apiProperties;
+        if (selectedCurrency !== 'ALL') {
+          const allowedCountries = currencyCountryMap[selectedCurrency] || [];
+          refItems = apiProperties.filter(elm =>
+            allowedCountries.some(country =>
+              elm.country?.toLowerCase() === country.toLowerCase()
+            )
+          );
+        }
+
+        // Then filter by URL search parameter — supports comma-separated multi-location (OR logic)
+        if (urlSearchQuery) {
+          const searchTerms = urlSearchQuery.split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
+          refItems = refItems.filter((elm) =>
+            searchTerms.some((term) => {
+              const cityMatch = elm.city && elm.city.toLowerCase().includes(term);
+              const countryMatch = elm.country && elm.country.toLowerCase().includes(term);
+              const locationMatch = elm.location && elm.location.toLowerCase().includes(term);
+              const titleMatch = elm.title && elm.title.toLowerCase().includes(term);
+              return cityMatch || countryMatch || locationMatch || titleMatch;
+            })
+          );
+        }
+
+        // Then apply listing status filter
+        refItems = refItems.filter((elm) => {
             if (listingStatus == "All") {
               return true;
             } else if (listingStatus == "Buy") {
@@ -201,34 +300,44 @@ export default function ProperteyFiltering() {
               return elm.forRent;
             }
           });
-      
+
           let filteredArrays = [];
-      
+
           if (propertyTypes.length > 0) {
+            // Normalize both sides: lowercase + remove trailing 's' for singular/plural matching
+            const normalize = (s) => (s || "").toLowerCase().replace(/s$/, "");
+            const normalizedTypes = propertyTypes.map(normalize);
             const filtered = refItems.filter((elm) =>
-            propertyTypes.includes(elm.propertyType)
+              normalizedTypes.includes(normalize(elm.propertyType))
             );
             filteredArrays = [...filteredArrays, filtered];
           }
           filteredArrays = [...filteredArrays,refItems.filter((el=>el.bed >=bedrooms)) ];
           filteredArrays = [...filteredArrays,refItems.filter((el=>el.bath >=bathroms)) ];
-         
-    
+
+          // Amenity filters from URL params
+          if (urlGym) filteredArrays = [...filteredArrays, refItems.filter((el) => el.gym === true)];
+          if (urlPool) filteredArrays = [...filteredArrays, refItems.filter((el) => el.swimmingPool === true || el.pool === true)];
+          if (urlParking) filteredArrays = [...filteredArrays, refItems.filter((el) => el.parking === true)];
+          if (urlGarden) filteredArrays = [...filteredArrays, refItems.filter((el) => el.garden === true)];
+
+
           filteredArrays = [...filteredArrays,!categories.length ? [...refItems] : refItems.filter((elm)=>categories.every(elem=>elm.features.includes(elem))) ];
-  
+
           if (location != 'All Cities') {
-           
-            
+
+
             filteredArrays = [...filteredArrays,refItems.filter((el=>el.city == location)) ];
           }
          
          
           if (priceRange.length > 0) {
-            const filtered = refItems.filter(
-              (elm) =>
-                Number(elm.price.split('$')[1].split(',').join('')) >= priceRange[0] &&
-                Number(elm.price.split('$')[1].split(',').join('')) <= priceRange[1],
-            );
+            const filtered = refItems.filter((elm) => {
+              const priceMatch = elm.price?.match(/[\d,]+/);
+              if (!priceMatch) return false;
+              const numericPrice = Number(priceMatch[0].replace(/,/g, ''));
+              return numericPrice >= priceRange[0] && numericPrice <= priceRange[1];
+            });
             filteredArrays = [...filteredArrays, filtered];
           }
           if (squirefeet.length > 0 && squirefeet[1]) {
@@ -256,12 +365,14 @@ export default function ProperteyFiltering() {
             filteredArrays.every((array) => array.includes(item))
           );
 
-         
+
           setFilteredData(commonItems);
-         
-          
-      
+
+
+
     }, [
+        selectedCurrency,
+        urlSearchQuery,
         listingStatus,
         propertyTypes,
         priceRange,
@@ -283,16 +394,24 @@ export default function ProperteyFiltering() {
         
       } 
       else if (currentSortingOption.trim() == 'Price Low') {
-        const sorted = [...filteredData].sort((a,b)=>a.price.split('$')[1].split(',').join('') - b.price.split('$')[1].split(',').join(''))
+        const sorted = [...filteredData].sort((a,b)=>{
+          const priceA = Number(a.price?.replace(/[^0-9.]/g, '') || 0);
+          const priceB = Number(b.price?.replace(/[^0-9.]/g, '') || 0);
+          return priceA - priceB;
+        })
         setSortedFilteredData(sorted)
 
-        
-      } 
+
+      }
       else if (currentSortingOption.trim() == 'Price High') {
-        const sorted = [...filteredData].sort((a,b)=>b.price.split('$')[1].split(',').join('') - a.price.split('$')[1].split(',').join(''))
+        const sorted = [...filteredData].sort((a,b)=>{
+          const priceA = Number(a.price?.replace(/[^0-9.]/g, '') || 0);
+          const priceB = Number(b.price?.replace(/[^0-9.]/g, '') || 0);
+          return priceB - priceA;
+        })
         setSortedFilteredData(sorted)
 
-        
+
       } 
     
       else {

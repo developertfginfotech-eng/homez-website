@@ -21,7 +21,12 @@ const TopFilterBar = ({filterFunctions,setCurrentSortingOption,colstyle,setColst
                 data-bs-toggle="dropdown"
                 data-bs-auto-close="outside"
               >
-                For Sale <i className="fa fa-angle-down ms-2" />
+                {filterFunctions?.listingStatus === "Rent"
+                  ? "For Rent"
+                  : filterFunctions?.listingStatus === "All"
+                  ? "All Listings"
+                  : "For Sale"}{" "}
+                <i className="fa fa-angle-down ms-2" />
               </button>
               <div className="dropdown-menu">
                 <div className="widget-wrapper bdrb1 pb25 mb0 pl20">

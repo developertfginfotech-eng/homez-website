@@ -17,15 +17,6 @@ const FeaturedListings = ({data,colstyle}) => {
                 style={{height:'240px'}}
                 alt="listings"
               />
-              <div className="sale-sticker-wrap">
-                {!listing.forRent && (
-                  <div className="list-tag fz12">
-                    <span className="flaticon-electricity me-2" />
-                    FEATURED
-                  </div>
-                )}
-              </div>
-
               <div className="list-price">
                 {listing.price} / <span>mo</span>
               </div>

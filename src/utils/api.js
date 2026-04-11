@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://homez-q5lh.onrender.com/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
 // Get auth token from localStorage
 const getAuthToken = () => {
@@ -14,13 +14,23 @@ export const propertyAPI = {
   createProperty: async (propertyData) => {
     try {
       const token = getAuthToken();
+
+      // Check if propertyData is FormData (for file uploads)
+      const isFormData = propertyData instanceof FormData;
+
+      const headers = {
+        ...(token && { Authorization: `Bearer ${token}` }),
+      };
+
+      // Don't set Content-Type for FormData - browser will set it with boundary
+      if (!isFormData) {
+        headers['Content-Type'] = 'application/json';
+      }
+
       const response = await fetch(`${API_URL}/property/add`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
-        body: JSON.stringify(propertyData),
+        headers: headers,
+        body: isFormData ? propertyData : JSON.stringify(propertyData),
       });
 
       const data = await response.json();

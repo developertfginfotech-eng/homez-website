@@ -1,7 +1,12 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 
 const CallToActions = () => {
+  const { t } = useTranslation('common');
+
   return (
     <div
       className="cta-banner bgc-thm-light mx-auto maxw1600 pt90 pt60-md pb90 pb60-md bdrs12 position-relative mx20-lg px20-md"
@@ -21,24 +26,24 @@ const CallToActions = () => {
         <div className="row">
           <div className="col-lg-7 col-xl-6">
             <div className="cta-style3">
-              <h2 className="cta-title">Get Your Dream House</h2>
+              <h2 className="cta-title">{t('sections.getDreamHouse')}</h2>
               <p className="cta-text mb25">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do{" "}
-                <br className="d-none d-md-block" /> eiusmod tempor incididunt.
+                {t('sections.getDreamHouseDesc')}
               </p>
               <Link href="/register" className="ud-btn btn-dark">
-                Register Now <i className="fal fa-arrow-right-long" />
+                {t('sections.registerNow')} <i className="fal fa-arrow-right-long" />
               </Link>
             </div>
           </div>
           <div className="col-lg-5 col-xl-4 offset-xl-2 d-none d-lg-block">
-            <div className="cta-img">
+            <div className="cta-img" style={{ maxWidth: '441px', maxHeight: '511px', overflow: 'hidden' }}>
               <Image
                 width={441}
                 height={511}
-                className="w-100 h-100 cover"
-                src="/images/about/cta-building-1.png"
-                alt="shape"
+                className="cover"
+                style={{ objectFit: 'contain', width: '100%', height: 'auto', maxHeight: '511px' }}
+                src="/images/about/modern-apartment.png"
+                alt="modern apartment building"
               />
             </div>
           </div>

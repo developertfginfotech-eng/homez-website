@@ -9,6 +9,9 @@ import Location from "./Location";
 const FilterContent = () => {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("buy");
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [propertyType, setPropertyType] = useState("");
+  const [location, setLocation] = useState("");
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -25,6 +28,27 @@ const FilterContent = () => {
   // price range handler
   const handleOnChange = (value) => {
     setPrice(value);
+  };
+
+  // Handle search button click
+  const handleSearch = () => {
+    const params = new URLSearchParams();
+
+    // Add search keyword if provided
+    if (searchKeyword.trim()) {
+      params.append("search", searchKeyword.trim());
+    }
+
+    // Add type based on active tab
+    const typeMap = {
+      buy: "Sale",
+      rent: "Rent",
+      sold: "Sold"
+    };
+    params.append("type", typeMap[activeTab] || "Sale");
+
+    // Navigate to listing page with parameters
+    router.push(`/grid-full-3-col?${params.toString()}`);
   };
 
   return (
@@ -53,13 +77,15 @@ const FilterContent = () => {
                 <div className="col-md-4 col-xl-3 bdrr1 bdrrn-sm">
                   <label>Search</label>
                   <div className="advance-search-field position-relative">
-                    <form className="form-search position-relative">
+                    <form className="form-search position-relative" onSubmit={(e) => { e.preventDefault(); handleSearch(); }}>
                       <div className="box-search">
                         <input
                           className="form-control bgc-f7 bdrs12 ps-0"
                           type="text"
                           name="search"
                           placeholder={`Enter Keyword for ${tab.label}`}
+                          value={searchKeyword}
+                          onChange={(e) => setSearchKeyword(e.target.value)}
                         />
                       </div>
                     </form>
@@ -137,7 +163,7 @@ const FilterContent = () => {
                     <button
                       className="ud-btn btn-dark ms-2"
                       type="button"
-                      onClick={() => router.push("/grid-full-3-col")}
+                      onClick={handleSearch}
                     >
                       <span className="flaticon-search pe-2" />
                     </button>

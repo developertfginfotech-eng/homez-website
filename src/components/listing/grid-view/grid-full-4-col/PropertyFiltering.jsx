@@ -8,11 +8,14 @@ import FeaturedListings from './FeatuerdListings'
 import Pagination from "../../Pagination";
 import PaginationTwo from "../../PaginationTwo";
 import { getAllProperties } from "@/helpers/propertyApi";
+import { useSearchParams } from 'next/navigation';
 
 export default function PropertyFiltering() {
+    const searchParams = useSearchParams();
     const [filteredData, setFilteredData] = useState([]);
     const [apiProperties, setApiProperties] = useState([]);
     const [isLoadingApi, setIsLoadingApi] = useState(false);
+    const [selectedCurrency, setSelectedCurrency] = useState('ALL');
     const [currentSortingOption, setCurrentSortingOption] = useState('Newest')
     const [sortedFilteredData, setSortedFilteredData] = useState([]);
 
@@ -38,6 +41,49 @@ export default function PropertyFiltering() {
      const [squirefeet, setSquirefeet] = useState([])
     const [yearBuild, setyearBuild] = useState([])
     const [categories, setCategories] = useState([])
+
+    // Listen for currency changes
+    useEffect(() => {
+      const savedCurrency = localStorage.getItem('selectedCurrency') || 'ALL';
+      setSelectedCurrency(savedCurrency);
+
+      const handleCurrencyChange = (e) => {
+        setSelectedCurrency(e.detail.currency);
+      };
+
+      window.addEventListener('currencyChanged', handleCurrencyChange);
+      return () => window.removeEventListener('currencyChanged', handleCurrencyChange);
+    }, []);
+
+    // Initialize filters from URL parameters
+    useEffect(() => {
+      const typeParam = searchParams.get('type');
+      if (typeParam) {
+        setPropertyTypes([typeParam]);
+      }
+    }, [searchParams]);
+
+    // Get currency symbol based on country
+    const getCurrency = (country) => {
+      const currencyMap = {
+        'UAE': 'AED',
+        'United Arab Emirates': 'AED',
+        'USA': '$',
+        'United States': '$',
+        'US': '$',
+        'UK': '£',
+        'United Kingdom': '£',
+        'India': '₹',
+        'Europe': '€',
+        'Portugal': '€',
+        'Cyprus': '€',
+        'Malta': '€',
+        'Latvia': '€',
+        'Canada': 'CAD',
+        'Australia': 'AUD',
+      };
+      return currencyMap[country] || '$';
+    };
 
     const resetFilter = ()=>{
       setListingStatus('All')
@@ -156,12 +202,14 @@ export default function PropertyFiltering() {
                 imageUrl = firstImage.startsWith('http') ? firstImage : `${backendUrl}${firstImage}`;
               }
 
+              const currency = getCurrency(prop.country);
               return {
                 id: prop._id,
                 title: prop.title,
-                price: `$${prop.price}`,
+                price: `${currency} ${prop.price}`,
                 location: `${prop.city}, ${prop.country}`,
                 city: prop.city,
+                country: prop.country || 'Unknown',
                 bed: prop.bedrooms || 0,
                 bath: prop.bathrooms || 0,
                 sqft: prop.sizeInFt || 0,
@@ -169,8 +217,8 @@ export default function PropertyFiltering() {
                 image: imageUrl,
                 features: Array.isArray(prop.amenities) ? prop.amenities : [],
                 category: Array.isArray(prop.category) ? prop.category : [],
-                propertyType: prop.propertyType || "Rent",
-                forRent: prop.propertyType === "Rent",
+                propertyType: prop.propertyType || "House",
+                forRent: prop.propertyAdType === "rent",
               };
             });
 
@@ -189,8 +237,29 @@ export default function PropertyFiltering() {
   }, []);
 
     useEffect(() => {
+        // Currency to country mapping
+        const currencyCountryMap = {
+          'AED': ['UAE', 'United Arab Emirates'],
+          'USD': ['USA', 'United States', 'US'],
+          'EUR': ['Portugal', 'Cyprus', 'Malta', 'Latvia', 'Europe'],
+          'CAD': ['Canada'],
+          'AUD': ['Australia'],
+          'GBP': ['UK', 'United Kingdom'],
+          'INR': ['India'],
+        };
 
-        const refItems = apiProperties.filter((elm) => {
+        // Filter by currency first
+        let currencyFilteredListings = apiProperties;
+        if (selectedCurrency !== 'ALL') {
+          const allowedCountries = currencyCountryMap[selectedCurrency] || [];
+          currencyFilteredListings = apiProperties.filter(elm =>
+            allowedCountries.some(country =>
+              elm.country?.toLowerCase() === country.toLowerCase()
+            )
+          );
+        }
+
+        const refItems = currencyFilteredListings.filter((elm) => {
             if (listingStatus == "All") {
               return true;
             } else if (listingStatus == "Buy") {
@@ -199,13 +268,28 @@ export default function PropertyFiltering() {
               return elm.forRent;
             }
           });
-      
+
           let filteredArrays = [];
-      
+
           if (propertyTypes.length > 0) {
-            const filtered = refItems.filter((elm) =>
-            propertyTypes.includes(elm.propertyType)
-            );
+            const filtered = refItems.filter((elm) => {
+              const propType = (elm.propertyType || '').toLowerCase();
+              // Handle both singular and plural forms
+              return propertyTypes.some(type => {
+                const filterType = type.toLowerCase();
+                if (filterType === 'apartments' || filterType === 'apartment') {
+                  return propType.includes('apartment');
+                } else if (filterType === 'houses' || filterType === 'house') {
+                  return propType.includes('house');
+                } else if (filterType === 'villas' || filterType === 'villa') {
+                  return propType.includes('villa');
+                } else if (filterType === 'offices' || filterType === 'office') {
+                  return propType.includes('office');
+                } else {
+                  return propType.includes(filterType);
+                }
+              });
+            });
             filteredArrays = [...filteredArrays, filtered];
           }
           filteredArrays = [...filteredArrays,refItems.filter((el=>el.bed >=bedrooms)) ];
@@ -222,11 +306,13 @@ export default function PropertyFiltering() {
          
          
           if (priceRange.length > 0) {
-            const filtered = refItems.filter(
-              (elm) =>
-                Number(elm.price.split('$')[1].split(',').join('')) >= priceRange[0] &&
-                Number(elm.price.split('$')[1].split(',').join('')) <= priceRange[1],
-            );
+            const filtered = refItems.filter((elm) => {
+              // Extract numeric value from price string (works with any currency)
+              const priceMatch = elm.price.match(/[\d,]+/);
+              if (!priceMatch) return false;
+              const numericPrice = Number(priceMatch[0].replace(/,/g, ''));
+              return numericPrice >= priceRange[0] && numericPrice <= priceRange[1];
+            });
             filteredArrays = [...filteredArrays, filtered];
           }
           if (squirefeet.length > 0 && squirefeet[1]) {
@@ -256,10 +342,11 @@ export default function PropertyFiltering() {
 
          
           setFilteredData(commonItems);
-         
-          
-      
+
+
+
     }, [
+        apiProperties,
         listingStatus,
         propertyTypes,
         priceRange,
@@ -269,7 +356,7 @@ export default function PropertyFiltering() {
         squirefeet,
         yearBuild,
         categories,
-        apiProperties
+        selectedCurrency
     ])
 
     useEffect(() => {
@@ -277,29 +364,37 @@ export default function PropertyFiltering() {
       if (currentSortingOption == 'Newest') {
         const sorted = [...filteredData].sort((a,b)=>a.yearBuilding - b.yearBuilding)
         setSortedFilteredData(sorted)
-       
-        
-      } 
+
+
+      }
       else if (currentSortingOption.trim() == 'Price Low') {
-        const sorted = [...filteredData].sort((a,b)=>a.price.split('$')[1].split(',').join('') - b.price.split('$')[1].split(',').join(''))
+        const sorted = [...filteredData].sort((a,b)=> {
+          const priceA = Number(a.price.match(/[\d,]+/)?.[0]?.replace(/,/g, '') || 0);
+          const priceB = Number(b.price.match(/[\d,]+/)?.[0]?.replace(/,/g, '') || 0);
+          return priceA - priceB;
+        })
         setSortedFilteredData(sorted)
 
-        
-      } 
+
+      }
       else if (currentSortingOption.trim() == 'Price High') {
-        const sorted = [...filteredData].sort((a,b)=>b.price.split('$')[1].split(',').join('') - a.price.split('$')[1].split(',').join(''))
+        const sorted = [...filteredData].sort((a,b)=> {
+          const priceA = Number(a.price.match(/[\d,]+/)?.[0]?.replace(/,/g, '') || 0);
+          const priceB = Number(b.price.match(/[\d,]+/)?.[0]?.replace(/,/g, '') || 0);
+          return priceB - priceA;
+        })
         setSortedFilteredData(sorted)
 
-        
-      } 
-    
-      else {
-        setSortedFilteredData(filteredData)
-    
-        
+
       }
 
-      
+      else {
+        setSortedFilteredData(filteredData)
+
+
+      }
+
+
     }, [filteredData,currentSortingOption,])
   return (
     <section className="pt0 pb90 bgc-f7">

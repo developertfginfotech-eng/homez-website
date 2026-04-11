@@ -6,7 +6,7 @@ import Form from "@/components/pages/contact/Form";
 import Office from "@/components/pages/contact/Office";
 
 export const metadata = {
-  title: "Contact  || Lahomez - Real Estate NextJS Template",
+  title: "Contact  || Globperty - Real Estate NextJS Template",
 };
 
 const Contact = () => {
@@ -75,7 +75,7 @@ const Contact = () => {
               <div className="main-title text-center">
                 <h2 className="title">Visit Our Office</h2>
                 <p className="paragraph">
-                  Realton has more than 9,000 offices of all sizes and all
+                  Globperty has more than 9,000 offices of all sizes and all
                   potential of session.
                 </p>
               </div>

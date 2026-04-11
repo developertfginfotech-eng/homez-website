@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { authAPI, kycAPI } from "@/services/api";
+import { authAPI } from "@/services/api";
 
 const SignIn = () => {
   const [formData, setFormData] = useState({
@@ -37,17 +37,17 @@ const SignIn = () => {
           localStorage.setItem("user", JSON.stringify(response.user));
         }
 
-        // Close login modal
+        // Close login modal first
         const modalElement = document.querySelector('[data-bs-dismiss="modal"]');
         if (modalElement) {
           modalElement.click();
         }
 
-        // Redirect everyone to home page after successful login
-        // KYC will be checked when they click "Add Property"
+        // Wait for modal to close, then do a full page reload
+        // This ensures CSS loads properly
         setTimeout(() => {
           window.location.href = "/";
-        }, 1500);
+        }, 800);
       }
     } catch (err) {
       setError(err.message || "Login failed. Please try again.");

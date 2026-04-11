@@ -1,3 +1,4 @@
+"use client";
 import MobileMenu from "@/components/common/mobile-menu";
 import CallToActions from "@/components/home/home-v4/CallToActions";
 import DefaultHeader from "@/components/common/DefaultHeader";
@@ -13,12 +14,12 @@ import About from "@/components/home/home-v4/about";
 import Testimonial from "@/components/home/home-v4/Testimonial";
 import FilterProperties from "@/components/home/home-v4/FilterProperties";
 import Footer from "@/components/home/home-v4/footer";
-
-export const metadata = {
-  title: "Home v4 || Lahomez - Real Estate NextJS Template",
-};
+import { useTranslate } from "@/hooks/useTranslate";
+import RecommendedProperties from "@/components/home/RecommendedProperties";
+import MarketIntelligenceWidget from "@/components/home/MarketIntelligenceWidget";
 
 const Home_V4 = () => {
+  const { t } = useTranslate();
   return (
     <>
       {/* Main Header Nav */}
@@ -31,7 +32,20 @@ const Home_V4 = () => {
 
       {/* Home Banner Style V1 */}
       <section className="home-banner-style4 p0 bgc-white">
-        <div className="home-style4 maxw1600 bdrs24 position-relative mx-auto mx20-lg">
+        <div
+          className="position-relative"
+          style={{
+            backgroundImage: 'url(/images/home/investment.jpg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center center',
+            backgroundRepeat: 'no-repeat',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            height: '660px',
+            width: '100%'
+          }}
+        >
           <div className="container">
             <div className="row">
               <div className="col-xl-9">
@@ -44,19 +58,19 @@ const Home_V4 = () => {
       </section>
       {/* End Home Banner Style V4 */}
 
-      {/* Explore property-city */}
-      <section className="pb40-md pb90">
+      {/* Explore property-country */}
+      <section className="pb40-md pb90 pt60">
         <div className="container">
           <div
-            className="row align-items-center"
+            className="row align-items-center mb40"
             data-aos="fade-up"
             data-aos-delay="100"
           >
             <div className="col-lg-9">
               <div className="main-title2">
-                <h2 className="title">Properties by Cities</h2>
+                <h2 className="title">{t('sections.propertiesByCountries')}</h2>
                 <p className="paragraph">
-                  Aliquam lacinia diam quis lacus euismod
+                  {t('sections.exploreCountries')}
                 </p>
               </div>
             </div>
@@ -65,7 +79,7 @@ const Home_V4 = () => {
             <div className="col-lg-3">
               <div className="text-start text-lg-end mb-3">
                 <Link className="ud-btn2" href="/map-v3">
-                  See All Cities
+                  {t('sections.seeAllCountries')}
                   <i className="fal fa-arrow-right-long" />
                 </Link>
               </div>
@@ -84,7 +98,7 @@ const Home_V4 = () => {
           {/* End .row */}
         </div>
       </section>
-      {/* End Explore property-city */}
+      {/* End Explore property-country */}
 
       {/* Popular Property */}
       <section className="pt-0 pb60">
@@ -92,6 +106,10 @@ const Home_V4 = () => {
           <FilterProperties />
         </div>
       </section>
+
+      {/* AI Recommended Properties */}
+      <RecommendedProperties />
+      {/* End AI Recommended Properties */}
 
       {/* Abut intro */}
       <section className="pt30 pb-0">
@@ -105,15 +123,14 @@ const Home_V4 = () => {
               >
                 <div className="mb30">
                   <h2 className="title text-capitalize">
-                    Let’s find the right <br className="d-none d-md-block" />{" "}
-                    selling option for you
+                    {t('sections.sellingOption')}
                   </h2>
                 </div>
                 <div className="why-chose-list style2">
                   <Features />
                 </div>
                 <Link href="#" className="ud-btn btn-dark">
-                  Learn More
+                  {t('common.learnMore')}
                   <i className="fal fa-arrow-right-long" />
                 </Link>
               </div>
@@ -146,9 +163,9 @@ const Home_V4 = () => {
                 data-aos="fade-up"
                 data-aos-delay="100"
               >
-                <h2 className="title">Explore Apartment Types</h2>
+                <h2 className="title">{t('sections.exploreApartmentTypes')}</h2>
                 <p className="paragraph">
-                  Aliquam lacinia diam quis lacus euismod
+                  {t('sections.exploreSubtitle')}
                 </p>
               </div>
             </div>
@@ -208,9 +225,9 @@ const Home_V4 = () => {
                 data-aos="fade-up"
                 data-aos-delay="300"
               >
-                <h2 className="title">People Love Living with Realton</h2>
+                <h2 className="title">{t('sections.testimonialTitle')}</h2>
                 <p className="paragraph">
-                  Aliquam lacinia diam quis lacus euismod
+                  {t('sections.exploreSubtitle')}
                 </p>
               </div>
             </div>
@@ -263,7 +280,7 @@ const Home_V4 = () => {
           <div className="row">
             <div className="col-lg-12" data-aos="fade-up">
               <div className="main-title text-center">
-                <h6>Trusted by the world’s best</h6>
+                <h6>{t('sections.partnersTitle')}</h6>
               </div>
             </div>
             <div className="col-lg-12 text-center">
@@ -286,9 +303,9 @@ const Home_V4 = () => {
           <div className="row">
             <div className="col-lg-6 m-auto" data-aos="fade-up">
               <div className="main-title text-start text-md-center">
-                <h2 className="title">From Our Blog</h2>
+                <h2 className="title">{t('sections.blogTitle')}</h2>
                 <p className="paragraph">
-                  Aliquam lacinia diam quis lacus euismod
+                  {t('sections.exploreSubtitle')}
                 </p>
               </div>
             </div>
@@ -303,8 +320,12 @@ const Home_V4 = () => {
       </section>
       {/* Explore Blog */}
 
+      {/* Market Intelligence Widget */}
+      <MarketIntelligenceWidget />
+      {/* End Market Intelligence Widget */}
+
       {/* Our CTA */}
-      <section className="our-cta p-0">
+      <section className="our-cta p-0" style={{ overflow: 'hidden', marginTop: '80px' }}>
         <CallToActions />
       </section>
       {/* Our CTA */}

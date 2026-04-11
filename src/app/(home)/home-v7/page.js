@@ -18,7 +18,7 @@ import Link from "next/link";
 import PropertyListing from "@/components/home/home-v7/PropertyListing";
 
 export const metadata = {
-  title: "Home v7 || Lahomez - Real Estate NextJS Template",
+  title: "Home v7 || Globperty - Real Estate NextJS Template",
 };
 
 const Home_V7 = () => {
@@ -279,7 +279,7 @@ const Home_V7 = () => {
               data-wow-delay="300ms"
             >
               <div className="main-title text-center">
-                <h2 className="title">See How Realton Can Help</h2>
+                <h2 className="title">See How Globperty Can Help</h2>
                 <p className="paragraph">
                   Aliquam lacinia diam quis lacus euismod
                 </p>

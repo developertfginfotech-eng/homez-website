@@ -6,7 +6,7 @@ import React, { Suspense } from "react";
 import PropertyFiltering from "@/components/listing/grid-view/grid-default/PropertyFiltering";
 
 export const metadata = {
-  title: "Gird Default || Lahomez - Real Estate NextJS Template",
+  title: "Gird Default || Globperty - Real Estate NextJS Template",
 };
 
 const GridDefault = () => {
@@ -26,10 +26,10 @@ const GridDefault = () => {
           <div className="row">
             <div className="col-lg-12">
               <div className="breadcumb-style1">
-                <h2 className="title">New York Homes for Sale</h2>
+                <h2 className="title">Properties for Sale & Rent</h2>
                 <div className="breadcumb-list">
-                  <a href="#">Home</a>
-                  <a href="#">For Rent</a>
+                  <a href="/">Home</a>
+                  <a href="/grid-default">Listings</a>
                 </div>
                 <a
                   className="filter-btn-left mobile-filter-btn d-block d-lg-none"

@@ -3,10 +3,10 @@ import MobileMenu from "@/components/common/mobile-menu";
 
 import PropertyFilteringMapFour from "@/components/listing/map-style/map-v3/PropertyFilteringMapFour";
 
-import React from "react";
+import React, { Suspense } from "react";
 
 export const metadata = {
-  title: "Map V3 || Lahomez - Real Estate NextJS Template",
+  title: "Map V3 || Globperty - Real Estate NextJS Template",
 };
 
 const MapV3 = () => {
@@ -21,8 +21,16 @@ const MapV3 = () => {
       {/* End Mobile Nav  */}
 
       {/* start  filter sidebar */}
-      <PropertyFilteringMapFour/>
-   
+      <Suspense fallback={
+        <div className="text-center p-5">
+          <div className="spinner-border text-thm" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      }>
+        <PropertyFilteringMapFour/>
+      </Suspense>
+
       {/* Property Filtering */}
     </>
   );

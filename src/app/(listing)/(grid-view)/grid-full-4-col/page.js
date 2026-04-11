@@ -1,18 +1,43 @@
-import DefaultHeader from "@/components/common/DefaultHeader";
+'use client';
 
+import DefaultHeader from "@/components/common/DefaultHeader";
 import Footer from "@/components/common/default-footer";
 import MobileMenu from "@/components/common/mobile-menu";
-
 import ProperteyFiltering from "@/components/listing/grid-view/grid-full-4-col/PropertyFiltering";
-
-
 import React from "react";
-
-export const metadata = {
-  title: "Gird Full 4 Column || Lahomez - Real Estate NextJS Template",
-};
+import { useSearchParams } from 'next/navigation';
+import { useTranslation } from "react-i18next";
 
 const GridFull4Col = () => {
+  const { t } = useTranslation('common');
+  const searchParams = useSearchParams();
+  const propertyType = searchParams.get('type');
+  const listingStatus = searchParams.get('status');
+
+  // Generate dynamic title
+  const getTitle = () => {
+    let title = t('listing.properties');
+    if (propertyType) {
+      // Map property types to translation keys
+      const typeMap = {
+        'House': 'propertyTypes.houses',
+        'Houses': 'propertyTypes.houses',
+        'Apartment': 'propertyTypes.apartments',
+        'Apartments': 'propertyTypes.apartments',
+        'Office': 'propertyTypes.office',
+        'Villa': 'propertyTypes.villa',
+      };
+      title = typeMap[propertyType] ? t(typeMap[propertyType]) : propertyType;
+    }
+    if (listingStatus) {
+      const status = listingStatus.toLowerCase() === 'sale' ? t('listing.forSale') : t('listing.forRent');
+      title += ` ${status}`;
+    } else {
+      title += ` ${t('listing.forSale')} & ${t('listing.forRent')}`;
+    }
+    return title;
+  };
+
   return (
     <>
       {/* Main Header Nav */}
@@ -29,10 +54,12 @@ const GridFull4Col = () => {
           <div className="row">
             <div className="col-lg-12">
               <div className="breadcumb-style1">
-                <h2 className="title">New York Homes for Sale</h2>
+                <h2 className="title">{getTitle()}</h2>
                 <div className="breadcumb-list">
-                  <a href="#">Home</a>
-                  <a href="#">For Rent</a>
+                  <a href="/">{t('nav.home')}</a>
+                  <a href="#">
+                    {listingStatus ? `${t('listing.forSale')} ${listingStatus}` : t('listing.properties')}
+                  </a>
                 </div>
                 <a
                   className="filter-btn-left mobile-filter-btn d-block d-lg-none"
@@ -41,7 +68,7 @@ const GridFull4Col = () => {
                   role="button"
                   aria-controls="listingSidebarFilter"
                 >
-                  <span className="flaticon-settings" /> Filter
+                  <span className="flaticon-settings" /> {t('listing.filter')}
                 </a>
               </div>
             </div>

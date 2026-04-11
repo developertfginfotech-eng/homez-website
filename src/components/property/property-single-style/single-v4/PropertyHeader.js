@@ -1,16 +1,94 @@
-import listings from "@/data/listings";
-import React from "react";
+"use client";
+import React, { useState, useEffect } from "react";
+import { propertiesAPI } from "@/services/api";
+import { useAutoTranslate, useTranslate } from "@/hooks/useTranslate";
 
 const PropertyHeader = ({id}) => {
-  const data = listings.filter((elm) => elm.id == id)[0] || listings[0];
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const { t } = useTranslate();
+
+  // Auto-translate property data
+  const { data: translatedData, isTranslating } = useAutoTranslate(data, ['title', 'location']);
+
+  useEffect(() => {
+    const fetchProperty = async () => {
+      if (!id) return;
+      try {
+        const response = await propertiesAPI.getById(id);
+        if (response.success && response.property) {
+          const prop = response.property;
+          // Map API data to component format
+          const currency = getCurrency(prop.country);
+          setData({
+            id: prop._id,
+            title: prop.title,
+            location: `${prop.city}, ${prop.country}`,
+            forRent: prop.propertyAdType === 'rent',
+            yearBuilding: prop.yearBuilt || new Date().getFullYear(),
+            price: `${currency} ${prop.price}`,
+            sqft: prop.sizeInFt || 0,
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching property:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProperty();
+  }, [id]);
+
+  const getCurrency = (country) => {
+    const currencyMap = {
+      'UAE': 'AED',
+      'United Arab Emirates': 'AED',
+      'USA': '$',
+      'United States': '$',
+      'US': '$',
+      'UK': '£',
+      'United Kingdom': '£',
+      'India': '₹',
+      'Europe': '€',
+      'Portugal': '€',
+      'Cyprus': '€',
+      'Malta': '€',
+      'Latvia': '€',
+      'Canada': 'CAD',
+      'Australia': 'AUD',
+    };
+    return currencyMap[country] || '$';
+  };
+
+  if (loading || isTranslating) {
+    return (
+      <div className="col-12 text-center py-5">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">{loading ? 'Loading property...' : 'Translating...'}</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!data) {
+    return (
+      <div className="col-12 text-center py-5">
+        <p>Property not found</p>
+      </div>
+    );
+  }
+
+  const displayData = translatedData || data;
+
   return (
     <>
       <div className="col-lg-8">
         <div className="single-property-content mb30-md">
-          <h2 className="sp-lg-title">{data.title}</h2>
+          <h2 className="sp-lg-title">{displayData.title}</h2>
           <div className="pd-meta mb15 d-md-flex align-items-center">
             <p className="text fz15 mb-0 bdrr1 pr10 bdrrn-sm">
-              {data.location}
+              {displayData.location}
             </p>
           </div>
           <div className="property-meta d-flex align-items-center">
@@ -19,7 +97,7 @@ const PropertyHeader = ({id}) => {
               href="#"
             >
               <i className="fas fa-circle fz10 pe-2" />
-              For {data.forRent ? 'rent':'sale'}
+              {t(displayData.forRent ? 'propertyDetails.forRent' : 'propertyDetails.forSale')}
             </a>
             <a
               className="ff-heading bdrr1 fz15 pr10 ml10 ml0-sm bdrrn-sm"
@@ -54,7 +132,12 @@ const PropertyHeader = ({id}) => {
               </a>
             </div>
             <h3 className="price mb-0">{data.price}</h3>
-            <p className="text space fz15">${(Number(data.price.split('$')[1].split(',').join(''))/data.sqft).toFixed(2)}/sq ft</p>
+            <p className="text space fz15">
+              {data.price && data.sqft > 0
+                ? `${(Number(data.price.replace(/[^0-9.]/g, '')) / data.sqft).toFixed(2)}/sq ft`
+                : 'N/A'
+              }
+            </p>
           </div>
         </div>
       </div>

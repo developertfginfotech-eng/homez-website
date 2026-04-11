@@ -1,78 +1,552 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { propertyAPI } from "@/utils/api";
+import { aiAPI } from "@/services/aiApi";
+
+// Currency configurations by country
+const getCurrencyConfig = (country) => {
+  const currencies = {
+    'UAE': { symbol: 'AED', code: 'AED', position: 'before' },
+    'USA': { symbol: '$', code: 'USD', position: 'before' },
+    'Portugal': { symbol: '€', code: 'EUR', position: 'after' },
+    'Canada': { symbol: 'C$', code: 'CAD', position: 'before' },
+    'Australia': { symbol: 'A$', code: 'AUD', position: 'before' },
+    'Turkey': { symbol: '₺', code: 'TRY', position: 'after' },
+    'Cyprus': { symbol: '€', code: 'EUR', position: 'after' },
+    'Malta': { symbol: '€', code: 'EUR', position: 'after' },
+    'Hungary': { symbol: 'Ft', code: 'HUF', position: 'after' },
+    'Latvia': { symbol: '€', code: 'EUR', position: 'after' },
+    'Philippines': { symbol: '₱', code: 'PHP', position: 'before' },
+    'Malaysia': { symbol: 'RM', code: 'MYR', position: 'before' },
+  };
+  return currencies[country] || { symbol: '$', code: 'USD', position: 'before' };
+};
+
+// Country-specific address field configurations
+const getAddressFieldConfig = (country) => {
+  const configs = {
+    'UAE': {
+      stateLabel: 'Emirate',
+      cityLabel: 'Area',
+      cityPlaceholder: 'Type to search area',
+      hasPostalCode: false
+    },
+    'USA': {
+      stateLabel: 'State',
+      cityLabel: 'City',
+      cityPlaceholder: 'Type to search city',
+      hasPostalCode: true,
+      postalCodeLabel: 'ZIP Code',
+      postalCodePlaceholder: 'Enter ZIP code'
+    },
+    'Portugal': {
+      stateLabel: 'District',
+      cityLabel: 'Municipality',
+      cityPlaceholder: 'Type to search municipality',
+      hasPostalCode: true,
+      postalCodeLabel: 'Postal Code',
+      postalCodePlaceholder: 'Enter postal code'
+    },
+    'Canada': {
+      stateLabel: 'Province',
+      cityLabel: 'City',
+      cityPlaceholder: 'Type to search city',
+      hasPostalCode: true,
+      postalCodeLabel: 'Postal Code',
+      postalCodePlaceholder: 'Enter postal code'
+    },
+    'Australia': {
+      stateLabel: 'State/Territory',
+      cityLabel: 'City/Suburb',
+      cityPlaceholder: 'Type to search city or suburb',
+      hasPostalCode: true,
+      postalCodeLabel: 'Postcode',
+      postalCodePlaceholder: 'Enter postcode'
+    },
+    'Turkey': {
+      stateLabel: 'Province',
+      cityLabel: 'District',
+      cityPlaceholder: 'Type to search district',
+      hasPostalCode: true,
+      postalCodeLabel: 'Postal Code',
+      postalCodePlaceholder: 'Enter postal code'
+    },
+    'Cyprus': {
+      stateLabel: 'District',
+      cityLabel: 'Town',
+      cityPlaceholder: 'Type to search town',
+      hasPostalCode: true,
+      postalCodeLabel: 'Postal Code',
+      postalCodePlaceholder: 'Enter postal code'
+    },
+    'Malta': {
+      stateLabel: 'Region',
+      cityLabel: 'Locality',
+      cityPlaceholder: 'Type to search locality',
+      hasPostalCode: false
+    },
+    'Hungary': {
+      stateLabel: 'County',
+      cityLabel: 'City',
+      cityPlaceholder: 'Type to search city',
+      hasPostalCode: true,
+      postalCodeLabel: 'Postal Code',
+      postalCodePlaceholder: 'Enter postal code'
+    },
+    'Latvia': {
+      stateLabel: 'Municipality',
+      cityLabel: 'City/Town',
+      cityPlaceholder: 'Type to search city or town',
+      hasPostalCode: true,
+      postalCodeLabel: 'Postal Code',
+      postalCodePlaceholder: 'Enter postal code'
+    },
+    'Philippines': {
+      stateLabel: 'Province',
+      cityLabel: 'City/Municipality',
+      cityPlaceholder: 'Type to search city or municipality',
+      hasPostalCode: true,
+      postalCodeLabel: 'ZIP Code',
+      postalCodePlaceholder: 'Enter ZIP code'
+    },
+    'Malaysia': {
+      stateLabel: 'State',
+      cityLabel: 'City',
+      cityPlaceholder: 'Type to search city',
+      hasPostalCode: true,
+      postalCodeLabel: 'Postcode',
+      postalCodePlaceholder: 'Enter postcode'
+    }
+  };
+
+  return configs[country] || {
+    stateLabel: 'State/Province',
+    cityLabel: 'City',
+    cityPlaceholder: 'Type to search city',
+    hasPostalCode: true,
+    postalCodeLabel: 'Postal Code',
+    postalCodePlaceholder: 'Enter postal code'
+  };
+};
+
+// Postal code validation patterns by country
+const validatePostalCode = (country, postalCode) => {
+  if (!postalCode || postalCode.trim() === '') {
+    return { valid: true, message: '' }; // Optional field
+  }
+
+  const patterns = {
+    'USA': {
+      pattern: /^\d{5}(-\d{4})?$/,
+      message: 'Invalid US ZIP code (format: 12345 or 12345-6789)'
+    },
+    'Canada': {
+      pattern: /^[A-Z]\d[A-Z]\s?\d[A-Z]\d$/i,
+      message: 'Invalid Canadian postal code (format: A1A 1A1)'
+    },
+    'UK': {
+      pattern: /^[A-Z]{1,2}\d{1,2}[A-Z]?\s?\d[A-Z]{2}$/i,
+      message: 'Invalid UK postcode (format: SW1A 1AA)'
+    },
+    'Portugal': {
+      pattern: /^\d{4}-\d{3}$/,
+      message: 'Invalid Portuguese postal code (format: 1234-567)'
+    },
+    'Australia': {
+      pattern: /^\d{4}$/,
+      message: 'Invalid Australian postcode (4 digits)'
+    },
+    'Turkey': {
+      pattern: /^\d{5}$/,
+      message: 'Invalid Turkish postal code (5 digits)'
+    },
+    'Cyprus': {
+      pattern: /^\d{4}$/,
+      message: 'Invalid Cyprus postal code (4 digits)'
+    },
+    'Hungary': {
+      pattern: /^\d{4}$/,
+      message: 'Invalid Hungarian postal code (4 digits)'
+    },
+    'Latvia': {
+      pattern: /^LV-\d{4}$/i,
+      message: 'Invalid Latvian postal code (format: LV-1234)'
+    },
+    'Philippines': {
+      pattern: /^\d{4}$/,
+      message: 'Invalid Philippine ZIP code (4 digits)'
+    },
+    'Malaysia': {
+      pattern: /^\d{5}$/,
+      message: 'Invalid Malaysian postcode (5 digits)'
+    },
+    'India': {
+      pattern: /^\d{6}$/,
+      message: 'Invalid Indian PIN code (6 digits)'
+    }
+  };
+
+  const validator = patterns[country];
+  if (!validator) {
+    // No specific pattern for this country - allow any format
+    return { valid: true, message: '' };
+  }
+
+  const isValid = validator.pattern.test(postalCode.trim());
+  return {
+    valid: isValid,
+    message: isValid ? '' : validator.message
+  };
+};
+
+// Country-specific cities data
+const COUNTRY_CITIES = {
+  UAE: {
+    'Abu Dhabi': ['Abu Dhabi City', 'Al Ain', 'Al Dhafra', 'Musaffah', 'Khalifa City', 'Mohamed Bin Zayed City'],
+    'Dubai': ['Dubai City', 'Deira', 'Bur Dubai', 'Jumeirah', 'Dubai Marina', 'Downtown Dubai', 'Business Bay', 'JBR', 'Palm Jumeirah', 'Arabian Ranches', 'Dubai Silicon Oasis', 'International City'],
+    'Sharjah': ['Sharjah City', 'Kalba', 'Khor Fakkan', 'Dibba Al-Hisn', 'Al Nahda', 'Al Majaz', 'Al Khan'],
+    'Ajman': ['Ajman City', 'Manama', 'Masfout', 'Al Nuaimiya', 'Al Rashidiya'],
+    'Umm Al Quwain': ['Umm Al Quwain City', 'Falaj Al Mualla'],
+    'Ras Al Khaimah': ['Ras Al Khaimah City', 'Digdaga', 'Al Jazirah Al Hamra', 'Al Hamra Village'],
+    'Fujairah': ['Fujairah City', 'Dibba Al-Fujairah', 'Kalba', 'Khor Fakkan']
+  },
+  USA: {
+    'California': ['Los Angeles', 'San Francisco', 'San Diego', 'San Jose', 'Sacramento', 'Oakland', 'Fresno'],
+    'Texas': ['Houston', 'Dallas', 'Austin', 'San Antonio', 'Fort Worth', 'El Paso'],
+    'Florida': ['Miami', 'Orlando', 'Tampa', 'Jacksonville', 'Fort Lauderdale'],
+    'New York': ['New York City', 'Buffalo', 'Rochester', 'Albany', 'Syracuse'],
+    'Illinois': ['Chicago', 'Aurora', 'Naperville', 'Joliet', 'Rockford']
+  },
+  Portugal: {
+    'Lisbon': ['Lisbon City', 'Sintra', 'Cascais', 'Loures', 'Oeiras'],
+    'Porto': ['Porto City', 'Vila Nova de Gaia', 'Matosinhos', 'Gondomar'],
+    'Faro': ['Faro City', 'Albufeira', 'Portimão', 'Lagos', 'Tavira'],
+    'Braga': ['Braga City', 'Guimarães', 'Vila Verde'],
+    'Coimbra': ['Coimbra City', 'Figueira da Foz', 'Cantanhede']
+  },
+  Canada: {
+    'Ontario': ['Toronto', 'Ottawa', 'Mississauga', 'Brampton', 'Hamilton'],
+    'Quebec': ['Montreal', 'Quebec City', 'Laval', 'Gatineau'],
+    'British Columbia': ['Vancouver', 'Surrey', 'Burnaby', 'Richmond', 'Victoria'],
+    'Alberta': ['Calgary', 'Edmonton', 'Red Deer', 'Lethbridge'],
+    'Manitoba': ['Winnipeg', 'Brandon', 'Steinbach']
+  },
+  Australia: {
+    'New South Wales': ['Sydney', 'Newcastle', 'Wollongong', 'Central Coast'],
+    'Victoria': ['Melbourne', 'Geelong', 'Ballarat', 'Bendigo'],
+    'Queensland': ['Brisbane', 'Gold Coast', 'Sunshine Coast', 'Townsville'],
+    'Western Australia': ['Perth', 'Fremantle', 'Bunbury', 'Albany'],
+    'South Australia': ['Adelaide', 'Mount Gambier', 'Whyalla']
+  },
+  Turkey: {
+    'Istanbul': ['Beşiktaş', 'Kadıköy', 'Şişli', 'Beyoğlu', 'Üsküdar', 'Fatih', 'Bakırköy', 'Maltepe'],
+    'Ankara': ['Çankaya', 'Keçiören', 'Yenimahalle', 'Mamak', 'Etimesgut', 'Sincan'],
+    'Izmir': ['Konak', 'Karşıyaka', 'Bornova', 'Buca', 'Çiğli', 'Balçova'],
+    'Antalya': ['Muratpaşa', 'Kepez', 'Konyaaltı', 'Alanya', 'Manavgat', 'Side'],
+    'Bursa': ['Osmangazi', 'Nilüfer', 'Yıldırım', 'Mudanya', 'Gemlik']
+  },
+  Cyprus: {
+    'Nicosia': ['Strovolos', 'Lakatamia', 'Latsia', 'Aglandjia', 'Engomi'],
+    'Limassol': ['Limassol City', 'Germasogeia', 'Agios Athanasios', 'Mesa Geitonia', 'Zakaki'],
+    'Larnaca': ['Larnaca City', 'Aradippou', 'Livadia', 'Oroklini', 'Dhekelia'],
+    'Paphos': ['Paphos City', 'Kato Paphos', 'Geroskipou', 'Chloraka', 'Pegeia'],
+    'Famagusta': ['Famagusta City', 'Paralimni', 'Protaras', 'Ayia Napa', 'Deryneia']
+  },
+  Malta: {
+    'Northern': ['Mellieha', 'St. Pauls Bay', 'Mosta', 'Naxxar', 'Mgarr'],
+    'Southern': ['Birgu', 'Kalkara', 'Fgura', 'Marsaxlokk', 'Zejtun', 'Marsaskala'],
+    'Western': ['Rabat', 'Mdina', 'Dingli', 'Siggiewi', 'Zebbug'],
+    'Harbour': ['Valletta', 'Floriana', 'Senglea', 'Cospicua', 'Vittoriosa'],
+    'Central': ['Birkirkara', 'Balzan', 'Lija', 'Attard', 'San Gwann', 'Swieqi', 'Sliema']
+  },
+  Hungary: {
+    'Budapest': ['District V', 'District VI', 'District VII', 'District VIII', 'District IX', 'District XI', 'District XIII'],
+    'Pest': ['Gödöllő', 'Dunakeszi', 'Vecsés', 'Budaörs', 'Érd'],
+    'Győr-Moson-Sopron': ['Győr', 'Sopron', 'Mosonmagyaróvár', 'Csorna'],
+    'Hajdú-Bihar': ['Debrecen', 'Hajdúszoboszló', 'Hajdúböszörmény', 'Berettyóújfalu'],
+    'Bács-Kiskun': ['Kecskemét', 'Baja', 'Kalocsa', 'Kiskunfélegyháza']
+  },
+  Latvia: {
+    'Riga': ['Centrs', 'Ķengarags', 'Āgenskalns', 'Imanta', 'Pļavnieki', 'Purvciems'],
+    'Daugavpils': ['Daugavpils City', 'Griva', 'Jaunbūve', 'Mežciems'],
+    'Liepāja': ['Liepāja City', 'Karosta', 'Ezerkrasts', 'Ziemelu'],
+    'Jelgava': ['Jelgava City', 'Platones', 'Kalnciems', 'Lielplatone'],
+    'Jūrmala': ['Majori', 'Dzintari', 'Bulduri', 'Lielupe', 'Dubulti']
+  },
+  Philippines: {
+    'Metro Manila': ['Manila', 'Quezon City', 'Makati', 'Taguig', 'Pasig', 'Mandaluyong', 'Manila Bay Area'],
+    'Cebu': ['Cebu City', 'Mandaue', 'Lapu-Lapu', 'Talisay', 'Consolacion'],
+    'Davao': ['Davao City', 'Tagum', 'Panabo', 'Digos', 'Mati'],
+    'Laguna': ['Calamba', 'Santa Rosa', 'Biñan', 'San Pedro', 'Cabuyao'],
+    'Cavite': ['Bacoor', 'Imus', 'Dasmariñas', 'Cavite City', 'Tagaytay']
+  },
+  Malaysia: {
+    'Kuala Lumpur': ['KLCC', 'Bukit Bintang', 'Bangsar', 'Mont Kiara', 'Cheras', 'Sentul'],
+    'Selangor': ['Petaling Jaya', 'Shah Alam', 'Subang Jaya', 'Klang', 'Ampang', 'Cyberjaya', 'Puchong'],
+    'Penang': ['Georgetown', 'Bayan Lepas', 'Bukit Mertajam', 'Tanjung Bungah', 'Batu Ferringhi'],
+    'Johor': ['Johor Bahru', 'Iskandar Puteri', 'Skudai', 'Pasir Gudang', 'Muar'],
+    'Perak': ['Ipoh', 'Taiping', 'Teluk Intan', 'Sitiawan', 'Kuala Kangsar']
+  }
+};
+
+// City-specific localities/areas
+const CITY_LOCALITIES = {
+  // UAE
+  'Dubai Marina': ['Marina Gate', 'Marina Promenade', 'Marina Walk', 'Emaar 6 Towers', 'Marina Pinnacle', 'Silverene'],
+  'Downtown Dubai': ['Burj Khalifa', 'Dubai Mall Area', 'Old Town', 'South Ridge', 'Boulevard'],
+  'Business Bay': ['Executive Towers', 'Bay Square', 'Bay Gate', 'Churchill Towers'],
+  'JBR': ['Jumeirah Beach Residence', 'Sadaf', 'Bahar', 'Murjan', 'Amwaj', 'Rimal'],
+  'Palm Jumeirah': ['Golden Mile', 'Shoreline Apartments', 'Fairmont Residences', 'Tiara Residences'],
+  'Jumeirah': ['Jumeirah 1', 'Jumeirah 2', 'Jumeirah 3', 'Umm Suqeim 1', 'Umm Suqeim 2'],
+  'Deira': ['Al Murar', 'Al Rigga', 'Naif', 'Port Saeed', 'Al Mamzar'],
+  'Bur Dubai': ['Karama', 'Mankhool', 'Al Raffa', 'Oud Metha', 'Zabeel'],
+  'Arabian Ranches': ['Saheel', 'Hattan', 'Alvorada', 'Mirador', 'Savannah'],
+  'Dubai Silicon Oasis': ['Cedre Villas', 'Spring Towers', 'Axis Residence'],
+  'International City': ['Morocco Cluster', 'China Cluster', 'Italy Cluster', 'England Cluster', 'Spain Cluster'],
+  'Abu Dhabi City': ['Corniche', 'Al Reem Island', 'Al Raha Beach', 'Yas Island', 'Saadiyat Island', 'Al Maryah Island', 'Khalifa City A', 'Khalifa City B'],
+  'Al Ain': ['Al Jimi', 'Al Mutawa', 'Al Muwaiji', 'Al Tawia'],
+  'Musaffah': ['Musaffah Industrial', 'Musaffah Residential', 'Shabiya'],
+  'Sharjah City': ['Al Nahda', 'Al Majaz', 'Al Taawun', 'Al Qasimia', 'Al Khan'],
+
+  // USA
+  'Los Angeles': ['Downtown LA', 'Hollywood', 'Beverly Hills', 'Santa Monica', 'Venice Beach'],
+  'San Francisco': ['Financial District', 'Mission District', 'SOMA', 'Nob Hill', 'Pacific Heights'],
+  'New York City': ['Manhattan', 'Brooklyn', 'Queens', 'Bronx', 'Staten Island'],
+  'Miami': ['South Beach', 'Brickell', 'Coral Gables', 'Coconut Grove', 'Wynwood'],
+  'Chicago': ['Loop', 'River North', 'Lincoln Park', 'Wicker Park', 'Gold Coast'],
+
+  // Portugal
+  'Lisbon City': ['Baixa', 'Chiado', 'Belém', 'Alfama', 'Bairro Alto', 'Parque das Nações'],
+  'Porto City': ['Ribeira', 'Boavista', 'Foz do Douro', 'Matosinhos Sul', 'Cedofeita'],
+  'Cascais': ['Cascais Centro', 'Estoril', 'Parede', 'São João do Estoril'],
+
+  // Canada
+  'Toronto': ['Downtown', 'Yorkville', 'Scarborough', 'North York', 'Etobicoke'],
+  'Vancouver': ['Downtown', 'Kitsilano', 'Yaletown', 'West End', 'Coal Harbour'],
+  'Montreal': ['Ville-Marie', 'Plateau-Mont-Royal', 'Westmount', 'Old Montreal', 'Griffintown'],
+
+  // Australia
+  'Sydney': ['CBD', 'Bondi', 'Manly', 'Parramatta', 'North Sydney', 'Surry Hills'],
+  'Melbourne': ['CBD', 'South Yarra', 'St Kilda', 'Carlton', 'Richmond', 'Docklands'],
+  'Brisbane': ['CBD', 'Fortitude Valley', 'South Bank', 'New Farm', 'West End'],
+
+  // Turkey
+  'Beşiktaş': ['Levent', 'Etiler', 'Ortaköy', 'Bebek', 'Arnavutköy'],
+  'Kadıköy': ['Moda', 'Fenerbahçe', 'Göztepe', 'Bostancı', 'Kozyatağı'],
+  'Şişli': ['Nişantaşı', 'Mecidiyeköy', 'Gayrettepe', 'Osmanbey'],
+  'Beyoğlu': ['Taksim', 'Galata', 'Cihangir', 'Asmalımescit'],
+  'Çankaya': ['Kavaklıdere', 'Çankaya Merkez', 'Dikmen', 'Ayrancı'],
+  'Konak': ['Alsancak', 'Karşıyaka', 'Bostanlı', 'Bayraklı'],
+
+  // Cyprus
+  'Limassol City': ['Tourist Area', 'City Centre', 'Potamos Germasogeia', 'Old Port'],
+  'Paphos City': ['Kato Paphos', 'Universal', 'Tombs of the Kings', 'Coral Bay'],
+  'Larnaca City': ['Mackenzie', 'Finikoudes', 'Kamares', 'Dhekelia Road'],
+
+  // Malta
+  'Sliema': ['Sliema Ferries', 'Tigne Point', 'Tower Road', 'The Strand'],
+  'St. Pauls Bay': ['Bugibba', 'Qawra', 'Xemxija'],
+  'Valletta': ['Merchants Street', 'Republic Street', 'South Street'],
+
+  // Hungary
+  'District V': ['Belváros', 'Lipótváros', 'Parliament area'],
+  'District VI': ['Terézváros', 'Oktogon', 'Andrássy út'],
+  'District VII': ['Erzsébetváros', 'Jewish Quarter', 'Party District'],
+  'Debrecen': ['Kossuth Square', 'Nagytemplom', 'University Campus'],
+
+  // Latvia
+  'Centrs': ['Old Town', 'Quiet Centre', 'Embassy District', 'Art Nouveau District'],
+  'Āgenskalns': ['Kalnciema', 'Āgenskalna priedes', 'Torņakalns'],
+  'Majori': ['Jomas Street', 'Beach Area', 'Concert Hall'],
+
+  // Philippines
+  'Makati': ['Ayala Center', 'Salcedo Village', 'Legazpi Village', 'Rockwell', 'Poblacion'],
+  'Taguig': ['BGC', 'Fort Bonifacio', 'McKinley Hill', 'Venice Grand Canal'],
+  'Quezon City': ['Eastwood', 'UP Diliman', 'Cubao', 'Timog', 'Katipunan'],
+  'Cebu City': ['Ayala Center Cebu', 'IT Park', 'Banilad', 'Capitol Site'],
+
+  // Malaysia
+  'KLCC': ['Petronas Twin Towers', 'Suria KLCC', 'Ampang Park', 'KLCC Park'],
+  'Bukit Bintang': ['Pavilion', 'Berjaya Times Square', 'Changkat', 'Jalan Alor'],
+  'Bangsar': ['Bangsar Baru', 'Bangsar South', 'Lucky Garden', 'Telawi'],
+  'Mont Kiara': ['Solaris', 'Plaza Mont Kiara', 'Hartamas', 'Sri Hartamas'],
+  'Petaling Jaya': ['PJ Old Town', 'Damansara', 'Section 13', 'SS2', 'Kelana Jaya'],
+  'Georgetown': ['Armenian Street', 'Chulia Street', 'Lebuh Acheh', 'Gurney Drive']
+};
 
 const PropertyDetailsForm = ({ initialData }) => {
   const [currentStep, setCurrentStep] = useState(1);
+
+  // Get user's country from localStorage
+  const getUserCountry = () => {
+    try {
+      const userStr = localStorage.getItem("user");
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        return user.country || "UAE";
+      }
+    } catch (error) {
+      console.error("Error getting user country:", error);
+    }
+    return "UAE";
+  };
+
   const [formData, setFormData] = useState({
     // From initial selection
-    country: initialData?.country || "",
+    country: initialData?.country || getUserCountry(),
     state: initialData?.state || "",
     propertyCategory: initialData?.propertyCategory || "residential",
     propertyAdType: initialData?.propertyAdType || "rent",
 
     // Property Details
-    propertyName: "",
-    propertyType: "",
-    buildingType: "",
-    propertyAge: "",
-    floor: "",
-    totalFloor: "",
-    superBuiltUpArea: "",
-    carpetArea: "",
-    furnishing: "",
-    onMainRoad: false,
-    cornerProperty: false,
+    propertyName: initialData?.propertyName || "",
+    propertyType: initialData?.propertyType || "",
+    buildingType: initialData?.buildingType || "",
+    propertyAge: initialData?.propertyAge || "",
+    floor: initialData?.floor || "",
+    totalFloor: initialData?.totalFloor || "",
+    superBuiltUpArea: initialData?.superBuiltUpArea || "",
+    carpetArea: initialData?.carpetArea || "",
+    furnishing: initialData?.furnishing || "",
+    onMainRoad: initialData?.onMainRoad || false,
+    cornerProperty: initialData?.cornerProperty || false,
 
     // Location Details
-    city: "",
-    locality: "",
-    street: "",
-    landmark: "",
-    zipCode: "",
+    city: initialData?.city || "",
+    locality: initialData?.locality || "",
+    street: initialData?.street || "",
+    landmark: initialData?.landmark || "",
+    zipCode: initialData?.zipCode || "",
 
     // Resale Details
-    expectedPrice: "",
-    priceNegotiable: false,
-    ownershipType: "",
-    availableFrom: "",
-    bedrooms: "",
-    bathrooms: "",
-    balconies: "",
+    expectedPrice: initialData?.expectedPrice || "",
+    priceNegotiable: initialData?.priceNegotiable || false,
+    ownershipType: initialData?.ownershipType || "",
+    availableFrom: initialData?.availableFrom ? new Date(initialData.availableFrom).toISOString().split('T')[0] : "",
+    bedrooms: initialData?.bedrooms || "",
+    bathrooms: initialData?.bathrooms || "",
+    balconies: initialData?.balconies || "",
 
     // Amenities
-    powerBackup: false,
-    lift: false,
-    parking: "",
-    waterStorage: false,
-    security: false,
-    gym: false,
-    swimmingPool: false,
-    garden: false,
-    clubHouse: false,
-    internetWifi: false,
+    powerBackup: initialData?.powerBackup || false,
+    lift: initialData?.lift || false,
+    parking: initialData?.parking || "",
+    waterStorage: initialData?.waterStorage || false,
+    security: initialData?.security || false,
+    gym: initialData?.gym || false,
+    swimmingPool: initialData?.swimmingPool || false,
+    garden: initialData?.garden || false,
+    clubHouse: initialData?.clubHouse || false,
+    internetWifi: initialData?.internetWifi || false,
 
-    // Gallery
-    photos: [],
-    videos: [],
+    // Gallery - preserve existing images
+    photos: initialData?.images || initialData?.photos || [],
+    videos: initialData?.videos || [],
 
     // Additional Information
-    propertyDescription: "",
-    previousOccupancy: "",
-    whoWillShow: "",
-    paintingService: false,
-    cleaningService: false,
-    secondaryNumber: "",
+    propertyDescription: initialData?.description || initialData?.propertyDescription || "",
+    previousOccupancy: initialData?.previousOccupancy || "",
+    whoWillShow: initialData?.whoWillShow || "",
+    paintingService: initialData?.paintingService || false,
+    cleaningService: initialData?.cleaningService || false,
+    secondaryNumber: initialData?.secondaryNumber || "",
 
     // Schedule
-    availabilityDays: "everyday",
-    showingTime: "",
+    availabilityDays: initialData?.availabilityDays || "everyday",
+    showingTime: initialData?.showingTime || "",
   });
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [aiGenerating, setAiGenerating] = useState(false);
+  const [showAiSuccess, setShowAiSuccess] = useState(false);
+  const [hasAiGenerated, setHasAiGenerated] = useState(false);
+  const [customWordCount, setCustomWordCount] = useState(250); // Default 250 words, max 1000
+  const [aiPhotoAnalyzing, setAiPhotoAnalyzing] = useState(false);
+  const [aiPhotoResult, setAiPhotoResult] = useState(null);
+  const [aiPhotoError, setAiPhotoError] = useState(null);
+
+  // AI Description Generator
+  const handleGenerateDescription = async () => {
+    // Check if we have enough data to generate description
+    if (!formData.propertyName || !formData.bedrooms || !formData.city) {
+      alert('Please fill in Property Name, Bedrooms, and City first');
+      return;
+    }
+
+    // Validate word count
+    if (customWordCount < 50 || customWordCount > 1000) {
+      setErrors(prev => ({
+        ...prev,
+        wordCount: 'Word count must be between 50 and 1000'
+      }));
+      return;
+    }
+
+    setAiGenerating(true);
+    try {
+      const propertyData = {
+        propertyName: formData.propertyName,
+        propertyType: formData.propertyType,
+        bedrooms: formData.bedrooms,
+        bathrooms: formData.bathrooms,
+        superBuiltUpArea: formData.superBuiltUpArea,
+        carpetArea: formData.carpetArea,
+        city: formData.city,
+        state: formData.state,
+        country: initialData?.country || 'UAE',
+        price: formData.expectedPrice || formData.price,
+        furnishing: formData.furnishing,
+        propertyAdType: initialData?.propertyAdType || 'rent',
+        amenities: {
+          gym: formData.gym,
+          swimmingPool: formData.swimmingPool,
+          parking: formData.parking,
+          garden: formData.garden,
+          security: formData.security,
+          lift: formData.lift,
+          powerBackup: formData.powerBackup,
+        },
+        floor: formData.floor,
+        totalFloor: formData.totalFloor,
+        propertyAge: formData.propertyAge,
+        onMainRoad: formData.onMainRoad,
+        cornerProperty: formData.cornerProperty,
+        wordCount: customWordCount, // Add custom word count
+      };
+
+      const response = await aiAPI.generateDescription(propertyData);
+
+      if (response.success && response.data) {
+        setFormData(prev => ({
+          ...prev,
+          propertyDescription: response.data.description
+        }));
+
+        // Show inline success message and mark as AI generated
+        setShowAiSuccess(true);
+        setHasAiGenerated(true);
+        setTimeout(() => setShowAiSuccess(false), 5000); // Hide after 5 seconds
+      }
+    } catch (error) {
+      console.error('AI generation error:', error);
+      // Show error in a more subtle way
+      setErrors(prev => ({
+        ...prev,
+        aiGeneration: 'Failed to generate description. Please try again.'
+      }));
+      setTimeout(() => {
+        setErrors(prev => {
+          const newErrors = { ...prev };
+          delete newErrors.aiGeneration;
+          return newErrors;
+        });
+      }, 5000);
+    } finally {
+      setAiGenerating(false);
+    }
+  };
 
   const validateStep1 = () => {
     const newErrors = {};
@@ -113,10 +587,18 @@ const PropertyDetailsForm = ({ initialData }) => {
     const newErrors = {};
 
     if (!formData.city) {
-      newErrors.city = "City Required";
+      newErrors.city = `${getAddressFieldConfig(formData.country).cityLabel} Required`;
     }
     if (!formData.locality) {
-      newErrors.locality = "Locality Required";
+      newErrors.locality = "Locality/Area Required";
+    }
+
+    // Validate postal code if country requires it
+    if (getAddressFieldConfig(formData.country).hasPostalCode && formData.zipCode) {
+      const postalValidation = validatePostalCode(formData.country, formData.zipCode);
+      if (!postalValidation.valid) {
+        newErrors.zipCode = postalValidation.message;
+      }
     }
 
     setErrors(newErrors);
@@ -134,12 +616,33 @@ const PropertyDetailsForm = ({ initialData }) => {
     }
     if (!formData.availableFrom) {
       newErrors.availableFrom = "Available From Date Required";
+    } else {
+      // Validate that the date is not in the past
+      const selectedDate = new Date(formData.availableFrom);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Reset time to start of day
+
+      if (selectedDate < today) {
+        newErrors.availableFrom = "Cannot select a past date. Please select today or a future date";
+      }
     }
     if (!formData.bedrooms) {
       newErrors.bedrooms = "Number of Bedrooms Required";
     }
     if (!formData.bathrooms) {
       newErrors.bathrooms = "Number of Bathrooms Required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const validateStep5 = () => {
+    const newErrors = {};
+
+    if (!formData.photos || formData.photos.length === 0) {
+      newErrors.photos = "At least one property photo is required";
+      alert("Please upload at least one property photo before continuing.");
     }
 
     setErrors(newErrors);
@@ -163,6 +666,117 @@ const PropertyDetailsForm = ({ initialData }) => {
     }
   };
 
+  const handlePhotoUpload = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+
+    const newPhotos = [];
+    files.forEach((file) => {
+      if (file.size > 10 * 1024 * 1024) {
+        alert(`${file.name} is too large. Maximum size is 10MB.`);
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        newPhotos.push({
+          file: file,
+          preview: event.target.result,
+          name: file.name,
+        });
+
+        if (newPhotos.length === files.length) {
+          setFormData((prev) => ({
+            ...prev,
+            photos: [...prev.photos, ...newPhotos],
+          }));
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleRemovePhoto = (index) => {
+    setFormData((prev) => ({
+      ...prev,
+      photos: prev.photos.filter((_, i) => i !== index),
+    }));
+    if (formData.photos.length <= 1) { setAiPhotoResult(null); setAiPhotoError(null); }
+  };
+
+  const handleAnalyzePhotosWithAI = async () => {
+    if (formData.photos.length === 0) return;
+    setAiPhotoAnalyzing(true);
+    setAiPhotoError(null);
+    try {
+      const token = localStorage.getItem('authToken');
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      const images = formData.photos.slice(0, 4).map(p => p.preview);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ai/analyze-images`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ images }),
+      });
+      const result = await response.json();
+      if (result.success && result.data) {
+        const d = result.data;
+        setFormData(prev => ({
+          ...prev,
+          ...(d.title && { propertyName: d.title }),
+          ...(d.bedrooms && { bedrooms: String(d.bedrooms) }),
+          ...(d.bathrooms && { bathrooms: String(d.bathrooms) }),
+          ...(d.sizeInFt && { superBuiltUpArea: String(d.sizeInFt) }),
+          ...(d.priceEstimate && { expectedPrice: String(d.priceEstimate).replace(/[^0-9]/g, '') }),
+          ...(d.description && { propertyDescription: d.description }),
+        }));
+        setAiPhotoResult(d);
+        setCurrentStep(1);
+      } else {
+        const msg = result.message || '';
+        if (msg.toLowerCase().includes('quota') || msg.includes('429')) {
+          setAiPhotoError('AI is temporarily busy. Please try again in a moment.');
+        } else {
+          setAiPhotoError(msg || 'Could not analyze images. Please try again.');
+        }
+      }
+    } catch {
+      setAiPhotoError('Failed to analyze images. Please check your connection.');
+    } finally {
+      setAiPhotoAnalyzing(false);
+    }
+  };
+
+  const handleVideoUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 50 * 1024 * 1024) {
+      alert("Video is too large. Maximum size is 50MB.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setFormData((prev) => ({
+        ...prev,
+        videos: [{
+          file: file,
+          preview: event.target.result,
+          name: file.name,
+        }],
+      }));
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveVideo = () => {
+    setFormData((prev) => ({
+      ...prev,
+      videos: [],
+    }));
+  };
+
   const handleSave = async () => {
     // Validate current step
     if (currentStep === 1 && !validateStep1()) {
@@ -172,6 +786,9 @@ const PropertyDetailsForm = ({ initialData }) => {
       return;
     }
     if (currentStep === 3 && !validateStep3()) {
+      return;
+    }
+    if (currentStep === 5 && !validateStep5()) {
       return;
     }
 
@@ -186,44 +803,107 @@ const PropertyDetailsForm = ({ initialData }) => {
       // Final step - submit to backend
       setIsSubmitting(true);
       try {
-        // Map form data to backend requirements
-        const backendData = {
-          propertyName: formData.propertyName,
-          title: formData.propertyType || `${formData.propertyCategory} Property`,
-          description: formData.propertyDescription || `A ${formData.propertyCategory} property in ${formData.city}`,
-          category: formData.propertyCategory,
-          price: parseInt(formData.expectedPrice) || 0,
-          address: `${formData.street || ''} ${formData.locality || ''}`.trim() || formData.city,
-          city: formData.city,
-          country: formData.country,
-          state: formData.state,
-          zipCode: formData.zipCode || '000000',
-          propertyType: formData.propertyType,
-          buildingType: formData.buildingType,
-          propertyAge: formData.propertyAge,
-          floor: formData.floor,
-          totalFloor: formData.totalFloor,
-          superBuiltUpArea: formData.superBuiltUpArea,
-          carpetArea: formData.carpetArea,
-          furnishing: formData.furnishing,
-          bedrooms: formData.bedrooms,
-          bathrooms: formData.bathrooms,
-          balconies: formData.balconies,
-          priceNegotiable: formData.priceNegotiable,
-          amenities: Object.keys(formData).filter(key => formData[key] === true && ['powerBackup', 'lift', 'waterStorage', 'security', 'gym', 'swimmingPool', 'garden', 'clubHouse', 'internetWifi'].includes(key)),
-        };
+        // Prepare image files for upload
+        const formDataToSend = new FormData();
 
-        // Debug: Log the form data BEFORE mapping
-        console.log('📋 Raw formData before mapping:', formData);
+        // Initial Selection
+        formDataToSend.append('country', formData.country);
+        formDataToSend.append('state', formData.state);
+        formDataToSend.append('propertyCategory', formData.propertyCategory);
+        formDataToSend.append('propertyAdType', formData.propertyAdType);
+        formDataToSend.append('whatsappUpdates', formData.whatsappUpdates || false);
 
-        // Debug: Log the data being sent with actual values
-        console.log('📤 Submitting backend data:', backendData);
-        console.log('❌ CRITICAL FIELDS:');
-        console.log('  propertyName (raw):', formData.propertyName, '| (mapped):', backendData.propertyName, '| length:', backendData.propertyName?.length);
-        console.log('  state (raw):', formData.state, '| (mapped):', backendData.state);
-        console.log('  superBuiltUpArea (raw):', formData.superBuiltUpArea, '| (mapped):', backendData.superBuiltUpArea);
+        // Tab 1: Property Details
+        formDataToSend.append('propertyName', formData.propertyName);
+        formDataToSend.append('title', formData.propertyName);
+        formDataToSend.append('propertyType', formData.propertyType);
+        formDataToSend.append('buildingType', formData.buildingType);
+        formDataToSend.append('propertyAge', formData.propertyAge);
+        formDataToSend.append('floor', formData.floor);
+        formDataToSend.append('totalFloor', formData.totalFloor);
+        formDataToSend.append('superBuiltUpArea', formData.superBuiltUpArea);
+        formDataToSend.append('carpetArea', formData.carpetArea || 0);
+        formDataToSend.append('furnishing', formData.furnishing);
+        formDataToSend.append('onMainRoad', formData.onMainRoad || false);
+        formDataToSend.append('cornerProperty', formData.cornerProperty || false);
 
-        const response = await propertyAPI.createProperty(backendData);
+        // Tab 2: Location Details
+        formDataToSend.append('city', formData.city);
+        formDataToSend.append('locality', formData.locality || '');
+        formDataToSend.append('street', formData.street || '');
+        formDataToSend.append('landmark', formData.landmark || '');
+        formDataToSend.append('address', `${formData.street || ''} ${formData.locality || ''}`.trim() || formData.city);
+        formDataToSend.append('zipCode', formData.zipCode || '000000');
+
+        // Tab 2: Media
+        formDataToSend.append('videoUrl', formData.videoUrl || '');
+        formDataToSend.append('videoOption', 'youtube');
+
+        // Tab 3: Resale Details
+        formDataToSend.append('expectedPrice', parseInt(formData.expectedPrice) || 0);
+        formDataToSend.append('price', parseInt(formData.expectedPrice) || 0);
+        formDataToSend.append('priceNegotiable', formData.priceNegotiable || false);
+        formDataToSend.append('ownershipType', formData.ownershipType || '');
+        formDataToSend.append('availableFrom', formData.availableFrom || new Date().toISOString());
+        formDataToSend.append('bedrooms', formData.bedrooms);
+        formDataToSend.append('bathrooms', formData.bathrooms);
+        formDataToSend.append('balconies', formData.balconies || 0);
+
+        // Tab 4: Details (Legacy)
+        formDataToSend.append('sizeInFt', formData.superBuiltUpArea);
+        formDataToSend.append('description', formData.propertyDescription || `${formData.propertyName} - A ${formData.propertyCategory} property in ${formData.city}`);
+        formDataToSend.append('category', formData.propertyCategory);
+
+        // Tab 4: Amenities (Boolean fields)
+        formDataToSend.append('powerBackup', formData.powerBackup || false);
+        formDataToSend.append('lift', formData.lift || false);
+        formDataToSend.append('parking', formData.parking || 'none');
+        formDataToSend.append('waterStorage', formData.waterStorage || false);
+        formDataToSend.append('security', formData.security || false);
+        formDataToSend.append('gym', formData.gym || false);
+        formDataToSend.append('swimmingPool', formData.swimmingPool || false);
+        formDataToSend.append('garden', formData.garden || false);
+        formDataToSend.append('clubHouse', formData.clubHouse || false);
+        formDataToSend.append('internetWifi', formData.internetWifi || false);
+
+        // Tab 4: Amenities (Array for backward compatibility)
+        const amenities = Object.keys(formData).filter(key =>
+          formData[key] === true &&
+          ['powerBackup', 'lift', 'waterStorage', 'security', 'gym', 'swimmingPool', 'garden', 'clubHouse', 'internetWifi'].includes(key)
+        );
+        formDataToSend.append('amenities', JSON.stringify(amenities));
+
+        // Tab 6: Additional Information
+        formDataToSend.append('propertyDescription', formData.propertyDescription || '');
+        formDataToSend.append('previousOccupancy', formData.previousOccupancy || '');
+        formDataToSend.append('whoWillShow', formData.whoWillShow || '');
+        formDataToSend.append('secondaryNumber', formData.secondaryNumber || '');
+        formDataToSend.append('paintingService', formData.paintingService || false);
+        formDataToSend.append('cleaningService', formData.cleaningService || false);
+
+        // Tab 7: Schedule
+        formDataToSend.append('availabilityDays', formData.availabilityDays || 'everyday');
+        formDataToSend.append('showingTime', formData.showingTime || '');
+
+        // Add photos
+        if (formData.photos && formData.photos.length > 0) {
+          formData.photos.forEach((photo) => {
+            formDataToSend.append('images', photo.file);
+          });
+        }
+
+        // Add video if exists
+        if (formData.videos && formData.videos.length > 0) {
+          formDataToSend.append('video', formData.videos[0].file);
+        }
+
+        // Debug: Log submission
+        console.log('📤 Submitting property with FormData');
+        console.log('  Title:', formData.propertyName);
+        console.log('  Photos:', formData.photos.length);
+        console.log('  Videos:', formData.videos.length);
+
+        const response = await propertyAPI.createProperty(formDataToSend);
 
         if (response.success) {
           alert("Property submitted successfully! It will be reviewed by our team.");
@@ -263,12 +943,39 @@ const PropertyDetailsForm = ({ initialData }) => {
     { id: 7, icon: "fas fa-calendar-alt", label: "Schedule" },
   ];
 
+  const handleStartOver = () => {
+    sessionStorage.removeItem("propertyFormData");
+    window.location.reload();
+  };
+
   return (
-    <div className="row">
-      {/* Left Sidebar Navigation */}
-      <div className="col-lg-3 col-xl-2">
-        <div className="property-form-nav bgc-white bdrs12 p20 mb30">
-          {navigationSteps.map((step) => (
+    <>
+      {/* Start Over Button */}
+      <div className="row mb20">
+        <div className="col-12">
+          <button
+            type="button"
+            onClick={handleStartOver}
+            className="ud-btn btn-white2"
+            style={{
+              padding: "10px 20px",
+              fontSize: "14px",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+            }}
+          >
+            <i className="fas fa-arrow-left"></i>
+            Change Selection (State, Property Type, Rent/Sale)
+          </button>
+        </div>
+      </div>
+
+      <div className="row">
+        {/* Left Sidebar Navigation */}
+        <div className="col-lg-3 col-xl-2">
+          <div className="property-form-nav bgc-white bdrs12 p20 mb30">
+            {navigationSteps.map((step) => (
             <div
               key={step.id}
               className={`nav-item d-flex align-items-center mb15 pb15 ${
@@ -344,10 +1051,29 @@ const PropertyDetailsForm = ({ initialData }) => {
                     onChange={handleChange}
                   >
                     <option value="">Select</option>
-                    <option value="apartment">Apartment</option>
-                    <option value="independent-house">Independent House/Villa</option>
-                    <option value="gated-community">Gated Community Villa</option>
-                    <option value="builder-floor">Builder Floor Apartment</option>
+                    {formData.propertyCategory === "residential" && (
+                      <>
+                        <option value="house">House</option>
+                        <option value="apartments">Apartments</option>
+                        <option value="villa">Villa</option>
+                      </>
+                    )}
+                    {formData.propertyCategory === "commercial" && (
+                      <>
+                        <option value="office">Office</option>
+                        <option value="shop">Shop/Showroom</option>
+                        <option value="warehouse">Warehouse</option>
+                        <option value="industrial">Industrial Building</option>
+                      </>
+                    )}
+                    {formData.propertyCategory === "land" && (
+                      <>
+                        <option value="residential-plot">Residential Plot</option>
+                        <option value="commercial-plot">Commercial Plot</option>
+                        <option value="agricultural-land">Agricultural Land</option>
+                        <option value="industrial-plot">Industrial Plot</option>
+                      </>
+                    )}
                   </select>
                   {errors.propertyType && (
                     <span className="text-danger fz12">{errors.propertyType}</span>
@@ -574,25 +1300,32 @@ const PropertyDetailsForm = ({ initialData }) => {
           {currentStep === 2 && (
             <div className="location-details-step">
               <div className="row">
-                {/* City */}
+                {/* City/Area with Autocomplete */}
                 <div className="col-md-6 mb25">
                   <label className="form-label fw600">
-                    City<span className="text-danger">*</span>
+                    {getAddressFieldConfig(formData.country).cityLabel}<span className="text-danger">*</span>
                   </label>
                   <input
                     type="text"
                     name="city"
                     className={`form-control ${errors.city ? "border-danger" : ""}`}
-                    placeholder="Enter City"
+                    placeholder={getAddressFieldConfig(formData.country).cityPlaceholder}
                     value={formData.city}
                     onChange={handleChange}
+                    list="property-city-list"
+                    autoComplete="off"
                   />
+                  <datalist id="property-city-list">
+                    {formData.state && COUNTRY_CITIES[formData.country]?.[formData.state]?.map((city) => (
+                      <option key={city} value={city} />
+                    ))}
+                  </datalist>
                   {errors.city && (
                     <span className="text-danger fz12">{errors.city}</span>
                   )}
                 </div>
 
-                {/* Locality */}
+                {/* Locality with Autocomplete */}
                 <div className="col-md-6 mb25">
                   <label className="form-label fw600">
                     Locality/Area<span className="text-danger">*</span>
@@ -601,10 +1334,17 @@ const PropertyDetailsForm = ({ initialData }) => {
                     type="text"
                     name="locality"
                     className={`form-control ${errors.locality ? "border-danger" : ""}`}
-                    placeholder="Enter Locality"
+                    placeholder="Type to search locality/area"
                     value={formData.locality}
                     onChange={handleChange}
+                    list="property-locality-list"
+                    autoComplete="off"
                   />
+                  <datalist id="property-locality-list">
+                    {formData.city && CITY_LOCALITIES[formData.city]?.map((locality) => (
+                      <option key={locality} value={locality} />
+                    ))}
+                  </datalist>
                   {errors.locality && (
                     <span className="text-danger fz12">{errors.locality}</span>
                   )}
@@ -636,18 +1376,48 @@ const PropertyDetailsForm = ({ initialData }) => {
                   />
                 </div>
 
-                {/* Zip Code */}
-                <div className="col-md-6 mb25">
-                  <label className="form-label fw600">Zip Code</label>
-                  <input
-                    type="text"
-                    name="zipCode"
-                    className="form-control"
-                    placeholder="Enter Zip Code"
-                    value={formData.zipCode}
-                    onChange={handleChange}
-                  />
-                </div>
+                {/* Zip/Postal Code - Only show for countries that have it */}
+                {getAddressFieldConfig(formData.country).hasPostalCode && (
+                  <div className="col-md-6 mb25">
+                    <label className="form-label fw600">
+                      {getAddressFieldConfig(formData.country).postalCodeLabel}
+                    </label>
+                    <input
+                      type="text"
+                      name="zipCode"
+                      className={`form-control ${errors.zipCode ? 'is-invalid' : ''}`}
+                      placeholder={getAddressFieldConfig(formData.country).postalCodePlaceholder}
+                      value={formData.zipCode}
+                      onChange={(e) => {
+                        handleChange(e);
+                        // Validate postal code on change
+                        const validation = validatePostalCode(formData.country, e.target.value);
+                        if (!validation.valid) {
+                          setErrors(prev => ({ ...prev, zipCode: validation.message }));
+                        } else {
+                          setErrors(prev => {
+                            const newErrors = { ...prev };
+                            delete newErrors.zipCode;
+                            return newErrors;
+                          });
+                        }
+                      }}
+                      onBlur={(e) => {
+                        // Also validate on blur
+                        const validation = validatePostalCode(formData.country, e.target.value);
+                        if (!validation.valid) {
+                          setErrors(prev => ({ ...prev, zipCode: validation.message }));
+                        }
+                      }}
+                    />
+                    {errors.zipCode && (
+                      <span className="text-danger fz12 d-block mt-1">
+                        <i className="fas fa-exclamation-circle me-1"></i>
+                        {errors.zipCode}
+                      </span>
+                    )}
+                  </div>
+                )}
 
                 {/* Info Box */}
                 <div className="col-md-12 mb25">
@@ -695,14 +1465,19 @@ const PropertyDetailsForm = ({ initialData }) => {
                 <div className="col-md-6 mb25">
                   <label className="form-label fw600">
                     Expected Price<span className="text-danger">*</span>
+                    <span className="text-muted fz12 ms-2">
+                      ({getCurrencyConfig(formData.country).code})
+                    </span>
                   </label>
                   <div className="input-group">
-                    <span className="input-group-text">$</span>
+                    <span className="input-group-text">
+                      {getCurrencyConfig(formData.country).symbol}
+                    </span>
                     <input
                       type="number"
                       name="expectedPrice"
                       className={`form-control ${errors.expectedPrice ? "border-danger" : ""}`}
-                      placeholder="Enter Price"
+                      placeholder={`Enter Price in ${getCurrencyConfig(formData.country).code}`}
                       value={formData.expectedPrice}
                       onChange={handleChange}
                     />
@@ -762,10 +1537,18 @@ const PropertyDetailsForm = ({ initialData }) => {
                     className={`form-control ${errors.availableFrom ? "border-danger" : ""}`}
                     value={formData.availableFrom}
                     onChange={handleChange}
+                    min={new Date().toISOString().split('T')[0]}
                   />
                   {errors.availableFrom && (
-                    <span className="text-danger fz12">{errors.availableFrom}</span>
+                    <span className="text-danger fz12">
+                      <i className="fas fa-exclamation-circle me-1"></i>
+                      {errors.availableFrom}
+                    </span>
                   )}
+                  <small className="text-muted fz12 d-block mt-1">
+                    <i className="fas fa-info-circle me-1"></i>
+                    Select today's date or a future date
+                  </small>
                 </div>
 
                 {/* Bedrooms */}
@@ -780,11 +1563,11 @@ const PropertyDetailsForm = ({ initialData }) => {
                     onChange={handleChange}
                   >
                     <option value="">Select</option>
-                    <option value="1">1 BHK</option>
-                    <option value="2">2 BHK</option>
-                    <option value="3">3 BHK</option>
-                    <option value="4">4 BHK</option>
-                    <option value="5">5+ BHK</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5+</option>
                   </select>
                   {errors.bedrooms && (
                     <span className="text-danger fz12">{errors.bedrooms}</span>
@@ -1097,6 +1880,7 @@ const PropertyDetailsForm = ({ initialData }) => {
                       multiple
                       accept="image/*"
                       style={{ display: "none" }}
+                      onChange={handlePhotoUpload}
                     />
                     <button
                       type="button"
@@ -1110,6 +1894,102 @@ const PropertyDetailsForm = ({ initialData }) => {
                       Supported formats: JPG, PNG, JPEG (Max 10MB each)
                     </p>
                   </div>
+
+                  {/* Photo Previews */}
+                  {formData.photos.length > 0 && (
+                    <div className="photo-previews mt20">
+                      <div className="row g-3">
+                        {formData.photos.map((photo, index) => (
+                          <div className="col-md-3 col-sm-4 col-6" key={index}>
+                            <div className="photo-preview-item position-relative" style={{ borderRadius: "8px", overflow: "hidden" }}>
+                              <img
+                                src={photo.preview}
+                                alt={`Property ${index + 1}`}
+                                style={{
+                                  width: "100%",
+                                  height: "150px",
+                                  objectFit: "cover",
+                                  borderRadius: "8px",
+                                }}
+                              />
+                              <button
+                                type="button"
+                                className="btn btn-danger btn-sm position-absolute"
+                                style={{ top: "5px", right: "5px", padding: "5px 10px" }}
+                                onClick={() => handleRemovePhoto(index)}
+                              >
+                                <i className="fas fa-times"></i>
+                              </button>
+                              <div className="text-center mt-1">
+                                <small className="text-muted fz10">{photo.name}</small>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <p className="text-success fz14 mt15">
+                        <i className="fas fa-check-circle me-2"></i>
+                        {formData.photos.length} photo{formData.photos.length > 1 ? 's' : ''} uploaded
+                      </p>
+
+                      {/* AI Auto-Fill Button */}
+                      <div style={{ marginTop: 16 }}>
+                        <button
+                          type="button"
+                          onClick={handleAnalyzePhotosWithAI}
+                          disabled={aiPhotoAnalyzing}
+                          style={{
+                            width: '100%',
+                            background: aiPhotoAnalyzing ? '#6D28D9' : 'linear-gradient(135deg, #7C3AED, #5B21B6)',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: 10,
+                            padding: '13px 20px',
+                            fontSize: 14,
+                            fontWeight: 700,
+                            cursor: aiPhotoAnalyzing ? 'not-allowed' : 'pointer',
+                            opacity: aiPhotoAnalyzing ? 0.8 : 1,
+                            boxShadow: '0 4px 14px rgba(124,58,237,0.3)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: 8,
+                          }}
+                        >
+                          {aiPhotoAnalyzing ? (
+                            <><span className="spinner-border spinner-border-sm" role="status" /> Analyzing {formData.photos.length} photo{formData.photos.length > 1 ? 's' : ''} with AI…</>
+                          ) : aiPhotoResult ? (
+                            <><i className="fas fa-sync-alt" /> Re-Analyze with AI</>
+                          ) : (
+                            <><i className="fas fa-magic" /> Auto-Fill Form from {formData.photos.length} Photo{formData.photos.length > 1 ? 's' : ''}</>
+                          )}
+                        </button>
+
+                        {aiPhotoError && (
+                          <div style={{ marginTop: 8, padding: '9px 13px', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 7, fontSize: 13, color: '#DC2626' }}>
+                            <i className="fas fa-exclamation-triangle me-2" />{aiPhotoError}
+                          </div>
+                        )}
+
+                        {aiPhotoResult && !aiPhotoError && (
+                          <div style={{ marginTop: 8, padding: '11px 15px', background: '#F5F3FF', border: '1.5px solid #DDD6FE', borderRadius: 9, fontSize: 13 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 6 }}>
+                              <i className="fas fa-check-circle" style={{ color: '#7C3AED', fontSize: 15 }} />
+                              <strong style={{ color: '#5B21B6' }}>AI detected — form auto-filled! Review Step 1.</strong>
+                            </div>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                              {aiPhotoResult.title && <span style={{ background: '#EDE9FE', color: '#5B21B6', borderRadius: 5, padding: '2px 8px', fontSize: 11 }}>📝 {aiPhotoResult.title.slice(0, 28)}{aiPhotoResult.title.length > 28 ? '…' : ''}</span>}
+                              {aiPhotoResult.propertyType && <span style={{ background: '#EDE9FE', color: '#5B21B6', borderRadius: 5, padding: '2px 8px', fontSize: 11 }}>🏠 {aiPhotoResult.propertyType}</span>}
+                              {aiPhotoResult.bedrooms && <span style={{ background: '#EDE9FE', color: '#5B21B6', borderRadius: 5, padding: '2px 8px', fontSize: 11 }}>🛏 {aiPhotoResult.bedrooms} bed</span>}
+                              {aiPhotoResult.bathrooms && <span style={{ background: '#EDE9FE', color: '#5B21B6', borderRadius: 5, padding: '2px 8px', fontSize: 11 }}>🚿 {aiPhotoResult.bathrooms} bath</span>}
+                              {aiPhotoResult.sizeInFt && <span style={{ background: '#EDE9FE', color: '#5B21B6', borderRadius: 5, padding: '2px 8px', fontSize: 11 }}>📐 {aiPhotoResult.sizeInFt} sqft</span>}
+                              {aiPhotoResult.priceEstimate && <span style={{ background: '#EDE9FE', color: '#5B21B6', borderRadius: 5, padding: '2px 8px', fontSize: 11 }}>💰 {aiPhotoResult.priceEstimate}</span>}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Video Upload */}
@@ -1124,6 +2004,7 @@ const PropertyDetailsForm = ({ initialData }) => {
                       id="videoUpload"
                       accept="video/*"
                       style={{ display: "none" }}
+                      onChange={handleVideoUpload}
                     />
                     <button
                       type="button"
@@ -1137,6 +2018,26 @@ const PropertyDetailsForm = ({ initialData }) => {
                       Supported formats: MP4, MOV, AVI (Max 50MB)
                     </p>
                   </div>
+
+                  {/* Video Preview */}
+                  {formData.videos.length > 0 && (
+                    <div className="video-preview mt20">
+                      <div className="alert alert-success d-flex justify-content-between align-items-center">
+                        <div>
+                          <i className="fas fa-check-circle me-2"></i>
+                          <strong>{formData.videos[0].name}</strong>
+                        </div>
+                        <button
+                          type="button"
+                          className="btn btn-danger btn-sm"
+                          onClick={handleRemoveVideo}
+                        >
+                          <i className="fas fa-times me-2"></i>
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -1175,15 +2076,254 @@ const PropertyDetailsForm = ({ initialData }) => {
               <div className="row">
                 {/* Property Description */}
                 <div className="col-md-12 mb25">
-                  <label className="form-label fw600">Property Description</label>
+                  <div className="d-flex justify-content-between align-items-center mb-3">
+                    <label className="form-label fw600 mb-0">
+                      Property Description
+                    </label>
+                    <div className="d-flex gap-2 align-items-center">
+                      {/* Word Count Input */}
+                      <div className="d-flex align-items-center" style={{ marginRight: '10px' }}>
+                        <label
+                          htmlFor="wordCount"
+                          style={{
+                            fontSize: '13px',
+                            fontWeight: '500',
+                            marginRight: '8px',
+                            marginBottom: 0,
+                            color: '#64748b',
+                            whiteSpace: 'nowrap'
+                          }}
+                        >
+                          Words:
+                        </label>
+                        <input
+                          type="number"
+                          id="wordCount"
+                          min="50"
+                          max="1000"
+                          value={customWordCount}
+                          onChange={(e) => {
+                            const value = parseInt(e.target.value) || 50;
+                            setCustomWordCount(Math.min(1000, Math.max(50, value)));
+                            // Clear error when user starts typing
+                            if (errors.wordCount) {
+                              setErrors(prev => {
+                                const newErrors = { ...prev };
+                                delete newErrors.wordCount;
+                                return newErrors;
+                              });
+                            }
+                          }}
+                          disabled={aiGenerating}
+                          style={{
+                            width: '80px',
+                            padding: '6px 10px',
+                            fontSize: '13px',
+                            border: errors.wordCount ? '1px solid #ef4444' : '1px solid #e5e7eb',
+                            borderRadius: '6px',
+                            textAlign: 'center',
+                            outline: 'none',
+                          }}
+                          onFocus={(e) => {
+                            e.target.style.borderColor = '#00796B';
+                          }}
+                          onBlur={(e) => {
+                            e.target.style.borderColor = errors.wordCount ? '#ef4444' : '#e5e7eb';
+                          }}
+                        />
+                        <span
+                          style={{
+                            fontSize: '11px',
+                            color: '#94a3b8',
+                            marginLeft: '5px',
+                            whiteSpace: 'nowrap'
+                          }}
+                        >
+                          (50-1000)
+                        </span>
+                      </div>
+                      {hasAiGenerated && !aiGenerating && (
+                        <button
+                          type="button"
+                          className="btn btn-sm"
+                          onClick={handleGenerateDescription}
+                          style={{
+                            backgroundColor: '#FFF',
+                            color: '#00796B',
+                            border: '2px solid #00796B',
+                            padding: '8px 20px',
+                            borderRadius: '8px',
+                            fontSize: '13px',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            transition: 'all 0.3s ease',
+                          }}
+                          onMouseEnter={(e) => {
+                            e.target.style.backgroundColor = '#F0F9F8';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.backgroundColor = '#FFF';
+                          }}
+                        >
+                          <i className="fas fa-redo me-2"></i>
+                          Regenerate
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        className="btn btn-sm"
+                        onClick={handleGenerateDescription}
+                        disabled={aiGenerating}
+                        style={{
+                          backgroundColor: '#00796B',
+                          color: 'white',
+                          border: 'none',
+                          padding: '8px 20px',
+                          borderRadius: '8px',
+                          fontSize: '13px',
+                          fontWeight: '600',
+                          cursor: aiGenerating ? 'not-allowed' : 'pointer',
+                          opacity: aiGenerating ? 0.7 : 1,
+                          boxShadow: '0 2px 8px rgba(0, 121, 107, 0.2)',
+                          transition: 'all 0.3s ease',
+                          display: hasAiGenerated && !aiGenerating ? 'none' : 'block',
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!aiGenerating) {
+                            e.target.style.backgroundColor = '#00695C';
+                            e.target.style.transform = 'translateY(-1px)';
+                            e.target.style.boxShadow = '0 4px 12px rgba(0, 121, 107, 0.3)';
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.backgroundColor = '#00796B';
+                          e.target.style.transform = 'translateY(0)';
+                          e.target.style.boxShadow = '0 2px 8px rgba(0, 121, 107, 0.2)';
+                        }}
+                      >
+                        {aiGenerating ? (
+                          <>
+                            <span className="spinner-border spinner-border-sm me-2" role="status" />
+                            Generating...
+                          </>
+                        ) : (
+                          <>
+                            <i className="fas fa-sparkles me-2"></i>
+                            Generate with AI
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
                   <textarea
                     name="propertyDescription"
                     className="form-control"
-                    rows="5"
+                    rows="6"
                     placeholder="Describe your property, nearby facilities, unique features..."
                     value={formData.propertyDescription}
                     onChange={handleChange}
+                    style={{
+                      resize: 'vertical',
+                      minHeight: '120px',
+                      fontSize: '14px',
+                      lineHeight: '1.6',
+                      padding: '12px 15px',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '8px',
+                    }}
                   ></textarea>
+                  <div className="d-flex justify-content-between align-items-center mt-2">
+                    <small className="text-muted fz12">
+                      <i className="fas fa-lightbulb me-1" style={{ color: '#FFA726' }}></i>
+                      {hasAiGenerated
+                        ? 'AI-generated description. Edit it or regenerate for a different version'
+                        : 'Click "Generate with AI" for a professional description, or write your own'
+                      }
+                    </small>
+                    <div className="d-flex align-items-center gap-3">
+                      {hasAiGenerated && formData.propertyDescription && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setFormData(prev => ({ ...prev, propertyDescription: '' }));
+                            setHasAiGenerated(false);
+                          }}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            color: '#DC3545',
+                            fontSize: '12px',
+                            cursor: 'pointer',
+                            padding: '0',
+                            textDecoration: 'underline',
+                          }}
+                        >
+                          <i className="fas fa-times me-1"></i>
+                          Clear
+                        </button>
+                      )}
+                      {formData.propertyDescription && (
+                        <small className="text-muted fz12">
+                          {formData.propertyDescription.length} characters
+                        </small>
+                      )}
+                    </div>
+                  </div>
+                  {/* AI Success Message */}
+                  {showAiSuccess && (
+                    <div
+                      className="alert alert-success d-flex align-items-center mt-3 mb-0"
+                      style={{
+                        padding: '12px 16px',
+                        border: 'none',
+                        borderRadius: '8px',
+                        backgroundColor: '#D4EDDA',
+                        borderLeft: '4px solid #28A745',
+                        animation: 'slideIn 0.3s ease-out',
+                      }}
+                    >
+                      <i className="fas fa-check-circle me-2" style={{ color: '#28A745' }}></i>
+                      <span style={{ fontSize: '13px', color: '#155724' }}>
+                        AI description generated successfully! You can edit it before saving.
+                      </span>
+                    </div>
+                  )}
+                  {/* AI Error Message */}
+                  {errors.aiGeneration && (
+                    <div
+                      className="alert alert-danger d-flex align-items-center mt-3 mb-0"
+                      style={{
+                        padding: '12px 16px',
+                        border: 'none',
+                        borderRadius: '8px',
+                        backgroundColor: '#F8D7DA',
+                        borderLeft: '4px solid #DC3545',
+                      }}
+                    >
+                      <i className="fas fa-exclamation-circle me-2" style={{ color: '#DC3545' }}></i>
+                      <span style={{ fontSize: '13px', color: '#721C24' }}>
+                        {errors.aiGeneration}
+                      </span>
+                    </div>
+                  )}
+                  {/* Word Count Error Message */}
+                  {errors.wordCount && (
+                    <div
+                      className="alert alert-warning d-flex align-items-center mt-3 mb-0"
+                      style={{
+                        padding: '12px 16px',
+                        border: 'none',
+                        borderRadius: '8px',
+                        backgroundColor: '#FFF3CD',
+                        borderLeft: '4px solid #FFA726',
+                      }}
+                    >
+                      <i className="fas fa-exclamation-triangle me-2" style={{ color: '#FFA726' }}></i>
+                      <span style={{ fontSize: '13px', color: '#856404' }}>
+                        {errors.wordCount}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Previous Occupancy */}
@@ -1220,133 +2360,39 @@ const PropertyDetailsForm = ({ initialData }) => {
                   </select>
                 </div>
 
-                {/* Secondary Contact */}
+                {/* Alternate Contact */}
                 <div className="col-md-6 mb25">
-                  <label className="form-label fw600">Secondary Contact Number</label>
+                  <label className="form-label fw600">Alternate Contact Number</label>
                   <input
                     type="tel"
                     name="secondaryNumber"
-                    className="form-control"
-                    placeholder="Enter Secondary Number"
+                    className={`form-control ${errors.secondaryNumber ? "border-danger" : ""}`}
+                    placeholder="Enter Alternate Contact Number"
                     value={formData.secondaryNumber}
                     onChange={handleChange}
+                    pattern="[0-9]{7,15}"
+                    title="Please enter a valid phone number (7-15 digits)"
                   />
+                  {errors.secondaryNumber && (
+                    <span className="text-danger fz12">{errors.secondaryNumber}</span>
+                  )}
                 </div>
 
-                {/* KYC Documents Section */}
+                {/* KYC Verification Status */}
                 <div className="col-md-12 mt30 mb20">
-                  <h6 className="fw600 mb20">
-                    <i className="fas fa-file-alt me-2"></i>
-                    KYC Documents (Required)
-                  </h6>
-                  <div className="alert alert-warning">
-                    <i className="fas fa-exclamation-triangle me-2"></i>
-                    Document requirements vary by country. Please upload valid identification.
-                  </div>
-                </div>
-
-                {/* Document Upload Based on Country */}
-                <div className="col-md-12 mb30">
-                  <div className="bgc-f7 p30 bdrs8">
-                    {formData.country === "India" && (
-                      <>
-                        <h6 className="mb20">India - Required Documents</h6>
-                        <div className="row">
-                          <div className="col-md-6 mb20">
-                            <label className="form-label">Aadhaar Card</label>
-                            <input type="file" className="form-control" accept=".pdf,.jpg,.png" />
-                          </div>
-                          <div className="col-md-6 mb20">
-                            <label className="form-label">PAN Card</label>
-                            <input type="file" className="form-control" accept=".pdf,.jpg,.png" />
-                          </div>
-                          <div className="col-md-6 mb20">
-                            <label className="form-label">Property Ownership Proof</label>
-                            <input type="file" className="form-control" accept=".pdf" />
-                          </div>
-                        </div>
-                      </>
-                    )}
-
-                    {formData.country === "USA" && (
-                      <>
-                        <h6 className="mb20">USA - Required Documents</h6>
-                        <div className="row">
-                          <div className="col-md-6 mb20">
-                            <label className="form-label">Driver's License / State ID</label>
-                            <input type="file" className="form-control" accept=".pdf,.jpg,.png" />
-                          </div>
-                          <div className="col-md-6 mb20">
-                            <label className="form-label">Social Security Number (SSN)</label>
-                            <input type="text" className="form-control" placeholder="XXX-XX-XXXX" />
-                          </div>
-                          <div className="col-md-6 mb20">
-                            <label className="form-label">Property Deed</label>
-                            <input type="file" className="form-control" accept=".pdf" />
-                          </div>
-                        </div>
-                      </>
-                    )}
-
-                    {formData.country === "UK" && (
-                      <>
-                        <h6 className="mb20">UK - Required Documents</h6>
-                        <div className="row">
-                          <div className="col-md-6 mb20">
-                            <label className="form-label">Passport / Driving License</label>
-                            <input type="file" className="form-control" accept=".pdf,.jpg,.png" />
-                          </div>
-                          <div className="col-md-6 mb20">
-                            <label className="form-label">National Insurance Number</label>
-                            <input type="text" className="form-control" placeholder="XX 12 34 56 X" />
-                          </div>
-                          <div className="col-md-6 mb20">
-                            <label className="form-label">Property Title Deeds</label>
-                            <input type="file" className="form-control" accept=".pdf" />
-                          </div>
-                        </div>
-                      </>
-                    )}
-
-                    {formData.country === "Canada" && (
-                      <>
-                        <h6 className="mb20">Canada - Required Documents</h6>
-                        <div className="row">
-                          <div className="col-md-6 mb20">
-                            <label className="form-label">Driver's License / Provincial ID</label>
-                            <input type="file" className="form-control" accept=".pdf,.jpg,.png" />
-                          </div>
-                          <div className="col-md-6 mb20">
-                            <label className="form-label">Social Insurance Number (SIN)</label>
-                            <input type="text" className="form-control" placeholder="XXX-XXX-XXX" />
-                          </div>
-                          <div className="col-md-6 mb20">
-                            <label className="form-label">Property Deed</label>
-                            <input type="file" className="form-control" accept=".pdf" />
-                          </div>
-                        </div>
-                      </>
-                    )}
-
-                    {formData.country === "Australia" && (
-                      <>
-                        <h6 className="mb20">Australia - Required Documents</h6>
-                        <div className="row">
-                          <div className="col-md-6 mb20">
-                            <label className="form-label">Driver's License / Proof of Age Card</label>
-                            <input type="file" className="form-control" accept=".pdf,.jpg,.png" />
-                          </div>
-                          <div className="col-md-6 mb20">
-                            <label className="form-label">Tax File Number (TFN)</label>
-                            <input type="text" className="form-control" placeholder="XXX XXX XXX" />
-                          </div>
-                          <div className="col-md-6 mb20">
-                            <label className="form-label">Property Title Certificate</label>
-                            <input type="file" className="form-control" accept=".pdf" />
-                          </div>
-                        </div>
-                      </>
-                    )}
+                  <div className="alert alert-success d-flex align-items-center" style={{ backgroundColor: "#d1fae5", border: "2px solid #10b981" }}>
+                    <div className="me-3" style={{ fontSize: "40px", color: "#10b981" }}>
+                      <i className="fas fa-check-circle"></i>
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <h6 className="fw600 mb-2" style={{ color: "#065f46", fontSize: "16px" }}>
+                        <i className="fas fa-shield-alt me-2"></i>
+                        KYC Verification Complete
+                      </h6>
+                      <p className="mb-0" style={{ color: "#047857", fontSize: "14px" }}>
+                        Your identity has been verified. You can now post properties without additional document uploads.
+                      </p>
+                    </div>
                   </div>
                 </div>
 
@@ -1613,6 +2659,7 @@ const PropertyDetailsForm = ({ initialData }) => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

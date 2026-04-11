@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { tourAPI } from "@/services/api";
+import Link from "next/link";
 
 const ScheduleTour = () => {
   const params = useParams();
@@ -20,11 +21,15 @@ const ScheduleTour = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [user, setUser] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   // Load user data from localStorage on mount
   useEffect(() => {
+    const token = localStorage.getItem('authToken');
     const userData = localStorage.getItem('user');
-    if (userData) {
+
+    if (token && userData) {
+      setIsLoggedIn(true);
       try {
         const parsedUser = JSON.parse(userData);
         setUser(parsedUser);
@@ -38,6 +43,8 @@ const ScheduleTour = () => {
       } catch (err) {
         console.error("Failed to parse user data:", err);
       }
+    } else {
+      setIsLoggedIn(false);
     }
   }, []);
 
@@ -100,29 +107,25 @@ const ScheduleTour = () => {
     }
   };
 
+  // Show login message if user is not logged in
+  if (!isLoggedIn) {
+    return (
+      <div className="ps-navtab">
+        <div className="alert alert-warning border-warning" role="alert" style={{ padding: '20px', borderRadius: '8px', background: '#fff8e1', border: '1px solid #ffd54f' }}>
+          <p className="mb-3" style={{ fontSize: '15px', color: '#333', lineHeight: '1.6' }}>
+            You must first <Link href="/login" className="text-decoration-underline fw-bold" style={{ color: '#eb6753' }}>Login</Link> to your USER ACCOUNT to submit requests.
+          </p>
+          <p className="mb-0" style={{ fontSize: '14px', color: '#666' }}>
+            If you haven't registered yet, it's really easy and free.{' '}
+            <Link href="/register" className="text-decoration-underline fw-bold" style={{ color: '#eb6753' }}>Signup</Link> here.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="ps-navtab">
-      <ul className="nav nav-pills mb-3" id="pills-tab" role="tablist">
-        {tabs.map((tab) => (
-          <li className="nav-item" key={tab.id} role="presentation">
-            <button
-              className={`nav-link${
-                tab.id === tourType ? " active mr15 mb5-lg" : ""
-              }`}
-              id={`pills-${tab.id}-tab`}
-              type="button"
-              role="tab"
-              aria-controls={`pills-${tab.id}`}
-              aria-selected={tab.id === tourType ? "true" : "false"}
-              onClick={() => setTourType(tab.id)}
-            >
-              {tab.label}
-            </button>
-          </li>
-        ))}
-      </ul>
-      {/* End nav-pills */}
-
       <div className="tab-content" id="pills-tabContent">
         {error && (
           <div className="alert alert-danger mb20" role="alert">
@@ -131,20 +134,11 @@ const ScheduleTour = () => {
         )}
         {success && (
           <div className="alert alert-success mb20" role="alert">
-            Tour request submitted successfully! We will contact you soon.
+            Enquiry submitted successfully! We will contact you soon.
           </div>
         )}
 
-        {tabs.map((tab) => (
-          <div
-            className={`tab-pane fade${
-              tab.id === tourType ? " show active" : ""
-            }`}
-            id={`pills-${tab.id}`}
-            role="tabpanel"
-            aria-labelledby={`pills-${tab.id}-tab`}
-            key={tab.id}
-          >
+        <div className="tab-pane fade show active">
             <form className="form-style1" onSubmit={handleSubmit}>
               <div className="row">
                 <div className="col-md-12">
@@ -196,9 +190,6 @@ const ScheduleTour = () => {
                       readOnly={!!user}
                       required
                     />
-                    {user && (
-                      <small className="text-muted">Using your account name</small>
-                    )}
                   </div>
                 </div>
                 {/* End .col-12 */}
@@ -218,9 +209,6 @@ const ScheduleTour = () => {
                       readOnly={!!user}
                       required
                     />
-                    {user && (
-                      <small className="text-muted">Using your account phone</small>
-                    )}
                   </div>
                 </div>
                 {/* End .col-12 */}
@@ -240,9 +228,6 @@ const ScheduleTour = () => {
                       readOnly={!!user}
                       required
                     />
-                    {user && (
-                      <small className="text-muted">Using your account email</small>
-                    )}
                   </div>
                 </div>
                 {/* End .col-12 */}
@@ -272,7 +257,7 @@ const ScheduleTour = () => {
                       className="ud-btn btn-thm"
                       disabled={loading}
                     >
-                      {loading ? "Submitting..." : "Submit a Tour Request"}
+                      {loading ? "Submitting..." : "Submit Enquiry"}
                       {!loading && <i className="fal fa-arrow-right-long" />}
                     </button>
                   </div>
@@ -281,7 +266,6 @@ const ScheduleTour = () => {
               </div>
             </form>
           </div>
-        ))}
       </div>
     </div>
   );

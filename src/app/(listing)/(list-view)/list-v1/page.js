@@ -6,7 +6,7 @@ import PropertyFilteringList from "@/components/listing/list-view/list-v1/Proper
 import React from "react";
 
 export const metadata = {
-  title: "List V1 || Lahomez - Real Estate NextJS Template",
+  title: "List V1 || Globperty - Real Estate NextJS Template",
 };
 
 const ListV1 = () => {
@@ -26,10 +26,10 @@ const ListV1 = () => {
           <div className="row">
             <div className="col-lg-12">
               <div className="breadcumb-style1">
-                <h2 className="title">List View</h2>
+                <h2 className="title">Properties for Sale & Rent</h2>
                 <div className="breadcumb-list">
-                  <a href="#">Home</a>
-                  <a href="#">For Rent</a>
+                  <a href="/">Home</a>
+                  <a href="/list-v1">Listings</a>
                 </div>
                 <a
                   className="filter-btn-left mobile-filter-btn d-block d-lg-none"

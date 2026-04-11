@@ -1,8 +1,42 @@
-import listings from "@/data/listings";
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useState, useEffect } from "react";
 
 const FeaturedListings = ({data,colstyle}) => {
+  const [favorites, setFavorites] = useState([]);
+
+  // Load favorites from localStorage on mount
+  useEffect(() => {
+    const savedFavorites = localStorage.getItem('favoriteProperties');
+    if (savedFavorites) {
+      setFavorites(JSON.parse(savedFavorites));
+    }
+  }, []);
+
+  // Save favorites to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('favoriteProperties', JSON.stringify(favorites));
+  }, [favorites]);
+
+  const toggleFavorite = (e, propertyId) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    setFavorites(prev => {
+      if (prev.includes(propertyId)) {
+        return prev.filter(id => id !== propertyId);
+      } else {
+        return [...prev, propertyId];
+      }
+    });
+  };
+
+  const isFavorite = (propertyId) => {
+    return favorites.includes(propertyId);
+  };
+
   return (
     <>
       {data.map((listing) => (
@@ -33,8 +67,12 @@ const FeaturedListings = ({data,colstyle}) => {
                 <a href="#" className="mr5">
                   <span className="flaticon-new-tab" />
                 </a>
-                <a href="#">
-                  <span className="flaticon-like" />
+                <a
+                  href="#"
+                  onClick={(e) => toggleFavorite(e, listing.id)}
+                  style={{ color: isFavorite(listing.id) ? '#ff5a5f' : 'inherit' }}
+                >
+                  <span className={isFavorite(listing.id) ? "flaticon-heart-2" : "flaticon-like"} />
                 </a>
               </div>
             </div>

@@ -1,13 +1,12 @@
 import DashboardHeader from "@/components/common/DashboardHeader";
 import MobileMenu from "@/components/common/mobile-menu";
-import Pagination from "@/components/property/Pagination";
 import DboardMobileNavigation from "@/components/property/dashboard/DboardMobileNavigation";
 import Footer from "@/components/property/dashboard/Footer";
 import SidebarDashboard from "@/components/property/dashboard/SidebarDashboard";
 import ListingsFavourites from "@/components/property/dashboard/dashboard-my-favourites/ListingsFavourites";
 
 export const metadata = {
-  title: "Dashboard My Favourites || Lahomez - Real Estate NextJS Template",
+  title: "Dashboard My Favourites || Globperty - Real Estate NextJS Template",
 };
 
 const DashboardMyFavourites = () => {
@@ -49,13 +48,6 @@ const DashboardMyFavourites = () => {
 
               <div className="row">
                 <ListingsFavourites />
-                <div className="col-xl-12">
-                  <div className="ps-widget bgc-white bdrs12 default-box-shadow2 p30 mb30 overflow-hidden position-relative">
-                    <div className="mt30">
-                      <Pagination />
-                    </div>
-                  </div>
-                </div>
               </div>
               {/* End .row */}
             </div>

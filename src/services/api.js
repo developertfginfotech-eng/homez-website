@@ -3,7 +3,7 @@
  * Centralized API communication with the backend
  */
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
 /**
  * Authentication API calls
@@ -90,25 +90,49 @@ export const kycAPI = {
       addressProof: 'addressproof'
     };
 
-    // Append v1.0 files
+    // Append v1.0 files (only if they're not v2.0 front/back structures)
     Object.keys(v1Files).forEach(key => {
-      if (files[key]) {
-        formData.append(v1Files[key], files[key]);
+      const fileData = files[key];
+      // Only process as v1.0 if it's NOT a v2.0 front/back structure
+      if (fileData && !(typeof fileData === 'object' && (fileData.front || fileData.back))) {
+        formData.append(v1Files[key], fileData);
       }
     });
 
     // Append v2.0 files (dynamic keys from requirements)
-    // All keys that don't match v1.0 format are treated as v2.0
+    // Process all files that either don't exist in v1Files OR have v2.0 front/back structure
     Object.keys(files).forEach(key => {
-      if (!v1Files[key]) {
-        const fileData = files[key];
+      const fileData = files[key];
+      const isV2FrontBack = fileData && typeof fileData === 'object' && (fileData.front || fileData.back);
+
+      // Process if: not in v1Files OR is a v2.0 front/back structure
+      if (!v1Files[key] || isV2FrontBack) {
+        console.log(`📎 Processing file key: ${key}`, {
+          isArray: Array.isArray(fileData),
+          hasObjectStructure: fileData && typeof fileData === 'object',
+          hasFrontBack: isV2FrontBack,
+          fileData: fileData
+        });
+
         if (Array.isArray(fileData)) {
           // Multiple files (e.g., title deeds)
           fileData.forEach((file, index) => {
+            console.log(`  ➡️ Appending array file: ${key}[${index}] - ${file?.name}`);
             formData.append(key, file);
           });
+        } else if (isV2FrontBack) {
+          // Front/back files (e.g., passport, emirates_id)
+          if (fileData.front) {
+            console.log(`  ➡️ Appending front: ${key}_front - ${fileData.front?.name}`);
+            formData.append(`${key}_front`, fileData.front);
+          }
+          if (fileData.back) {
+            console.log(`  ➡️ Appending back: ${key}_back - ${fileData.back?.name}`);
+            formData.append(`${key}_back`, fileData.back);
+          }
         } else if (fileData) {
           // Single file
+          console.log(`  ➡️ Appending single file: ${key} - ${fileData?.name}`);
           formData.append(key, fileData);
         }
       }
@@ -273,6 +297,37 @@ export const propertiesAPI = {
     if (!response.ok) throw new Error('Failed to delete property');
     return response.json();
   },
+
+  trackView: async (id) => {
+    const token = localStorage.getItem('authToken');
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${API_URL}/property/${id}/view`, {
+      method: 'POST',
+      headers: headers,
+    });
+    if (!response.ok) throw new Error('Failed to track view');
+    return response.json();
+  },
+
+  trackSearch: async (query, filters, resultsCount) => {
+    const token = localStorage.getItem('authToken');
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    try {
+      await fetch(`${API_URL}/property/track/search`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ query, filters, resultsCount }),
+      });
+    } catch (_) { /* fail silently */ }
+  },
 };
 
 /**
@@ -341,6 +396,30 @@ export const favoritesAPI = {
       },
     });
     if (!response.ok) throw new Error('Failed to remove favorite');
+    return response.json();
+  },
+
+  checkFavorite: async (propertyId) => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_URL}/favorites/check/${propertyId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw new Error('Failed to check favorite');
+    return response.json();
+  },
+
+  getFavoritesOnMyProperties: async () => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_URL}/favorites/my-properties`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw new Error('Failed to fetch favorites on properties');
     return response.json();
   },
 };
@@ -418,6 +497,128 @@ export const tourAPI = {
       body: JSON.stringify({ status }),
     });
     if (!response.ok) throw new Error('Failed to update tour status');
+    return response.json();
+  },
+};
+
+/**
+ * Dashboard API calls
+ */
+export const dashboardAPI = {
+  getStats: async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        // Return empty data if not logged in
+        return {
+          success: false,
+          message: 'Not authenticated',
+          activities: [],
+          stats: {}
+        };
+      }
+      const response = await fetch(`${API_URL}/dashboard/stats`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        // Return structured error instead of throwing
+        return {
+          success: false,
+          message: error.message || 'Failed to fetch dashboard statistics',
+          activities: [],
+          stats: {}
+        };
+      }
+      return response.json();
+    } catch (error) {
+      console.error('Dashboard stats error:', error);
+      return {
+        success: false,
+        message: 'Error fetching dashboard statistics',
+        activities: [],
+        stats: {}
+      };
+    }
+  },
+};
+
+/**
+ * Reviews API calls
+ */
+export const reviewsAPI = {
+  addReview: async (reviewData) => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_URL}/reviews`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(reviewData),
+    });
+    if (!response.ok) throw new Error('Failed to add review');
+    return response.json();
+  },
+
+  getPropertyReviews: async (propertyId) => {
+    const response = await fetch(`${API_URL}/reviews/property/${propertyId}`, {
+      method: 'GET',
+    });
+    if (!response.ok) throw new Error('Failed to fetch property reviews');
+    return response.json();
+  },
+
+  getUserReviews: async () => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_URL}/reviews/user`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw new Error('Failed to fetch user reviews');
+    return response.json();
+  },
+
+  getReviewsOnMyProperties: async () => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_URL}/reviews/my-properties`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw new Error('Failed to fetch reviews on properties');
+    return response.json();
+  },
+
+  updateReview: async (reviewId, reviewData) => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_URL}/reviews/${reviewId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(reviewData),
+    });
+    if (!response.ok) throw new Error('Failed to update review');
+    return response.json();
+  },
+
+  deleteReview: async (reviewId) => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_URL}/reviews/${reviewId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw new Error('Failed to delete review');
     return response.json();
   },
 };

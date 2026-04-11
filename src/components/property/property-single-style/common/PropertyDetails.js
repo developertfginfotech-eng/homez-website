@@ -2,9 +2,30 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import { propertiesAPI } from "@/services/api";
 
+// Country-specific currency configurations
+const getCurrencySymbol = (country) => {
+  const currencyMap = {
+    'UAE': 'AED',
+    'USA': '$',
+    'Portugal': '€',
+    'Canada': 'CAD',
+    'Australia': 'AUD',
+    'Turkey': '₺',
+    'Cyprus': '€',
+    'Malta': '€',
+    'Hungary': 'Ft',
+    'Latvia': '€',
+    'Philippines': '₱',
+    'Malaysia': 'RM'
+  };
+  return currencyMap[country] || '$';
+};
+
 const PropertyDetails = ({ property: propProperty }) => {
+  const { t } = useTranslation();
   const [property, setProperty] = useState(propProperty || null);
   const [loading, setLoading] = useState(!propProperty);
   const params = useParams();
@@ -40,49 +61,49 @@ const PropertyDetails = ({ property: propProperty }) => {
   const columns = [
     [
       {
-        label: "Property Name",
+        label: t('propertyDetails.propertyName'),
         value: property.propertyName || "N/A",
       },
       {
-        label: "Property ID",
+        label: t('propertyDetails.propertyID'),
         value: property.customId || property._id?.slice(-8) || "N/A",
       },
       {
-        label: "Price",
-        value: `$${property.price?.toLocaleString() || 0}`,
+        label: t('listing.price'),
+        value: `${getCurrencySymbol(property.country)} ${property.price?.toLocaleString() || 0}`,
       },
       {
-        label: "Property Size",
-        value: `${property.sizeInFt || 0} Sq Ft`,
+        label: t('propertyDetails.propertySize'),
+        value: `${property.sizeInFt || 0} ${t('propertyDetails.sqft')}`,
       },
       {
-        label: "Bathrooms",
+        label: t('propertyDetails.bathrooms'),
         value: property.bathrooms || 0,
       },
       {
-        label: "Bedrooms",
+        label: t('propertyDetails.bedrooms'),
         value: property.bedrooms || 0,
       },
     ],
     [
       {
-        label: "Garage",
+        label: t('propertyDetails.garage'),
         value: property.garages || 0,
       },
       {
-        label: "Garage Size",
-        value: `${property.garageSize || 0} SqFt`,
+        label: t('propertyDetails.garageSize'),
+        value: `${property.garageSize || 0} ${t('propertyDetails.sqft')}`,
       },
       {
-        label: "Year Built",
+        label: t('propertyDetails.yearBuilt'),
         value: property.yearBuilt || "N/A",
       },
       {
-        label: "Property Type",
+        label: t('propertyDetails.propertyType'),
         value: property.structureType || property.category?.[0] || "N/A",
       },
       {
-        label: "Property Status",
+        label: t('propertyDetails.propertyStatus'),
         value: property.propertyType || "N/A",
       },
     ],

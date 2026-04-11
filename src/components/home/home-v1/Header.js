@@ -10,6 +10,21 @@ import React, { useEffect, useState } from "react";
 const Header = () => {
   const [navbar, setNavbar] = useState(false);
   const [user, setUser] = useState(null);
+  const [selectedCurrency, setSelectedCurrency] = useState("ALL");
+
+  // Currency options based on countries
+  const currencies = [
+    { code: "ALL", label: "All Currencies", symbol: "" },
+    { code: "AED", label: "AED - UAE Dirham", symbol: "AED", country: "UAE" },
+    { code: "USD", label: "USD - US Dollar", symbol: "$", country: "USA" },
+    { code: "EUR", label: "EUR - Euro", symbol: "€", countries: ["Portugal", "Cyprus", "Malta", "Latvia"] },
+    { code: "CAD", label: "CAD - Canadian Dollar", symbol: "CAD", country: "Canada" },
+    { code: "AUD", label: "AUD - Australian Dollar", symbol: "AUD", country: "Australia" },
+    { code: "TRY", label: "TRY - Turkish Lira", symbol: "₺", country: "Turkey" },
+    { code: "HUF", label: "HUF - Hungarian Forint", symbol: "Ft", country: "Hungary" },
+    { code: "PHP", label: "PHP - Philippine Peso", symbol: "₱", country: "Philippines" },
+    { code: "MYR", label: "MYR - Malaysian Ringgit", symbol: "RM", country: "Malaysia" },
+  ];
 
   const changeBackground = () => {
     if (window.scrollY >= 10) {
@@ -34,6 +49,12 @@ const Header = () => {
 
     checkUser();
 
+    // Load selected currency from localStorage
+    const savedCurrency = localStorage.getItem("selectedCurrency");
+    if (savedCurrency) {
+      setSelectedCurrency(savedCurrency);
+    }
+
     // Listen for storage changes (logout from other tabs/components)
     const handleStorageChange = () => {
       checkUser();
@@ -46,6 +67,14 @@ const Header = () => {
       window.removeEventListener("storage", handleStorageChange);
     };
   }, []);
+
+  const handleCurrencyChange = (e) => {
+    const currency = e.target.value;
+    setSelectedCurrency(currency);
+    localStorage.setItem("selectedCurrency", currency);
+    // Trigger a custom event to notify other components about currency change
+    window.dispatchEvent(new CustomEvent("currencyChanged", { detail: { currency } }));
+  };
 
   return (
     <>
@@ -107,6 +136,37 @@ const Header = () => {
                       <span className="d-none d-xl-block">Login / Register</span>
                     </a>
                   )}
+
+                  {/* Currency Selector - Only shown when logged in */}
+                  {user && (
+                    <div className="currency-selector" style={{ marginLeft: '15px' }}>
+                      <select
+                        value={selectedCurrency}
+                        onChange={handleCurrencyChange}
+                        className="form-select"
+                        style={{
+                          padding: '8px 12px',
+                          fontSize: '14px',
+                          border: '2px solid #eb6753',
+                          borderRadius: '6px',
+                          backgroundColor: 'white',
+                          color: '#1f2937',
+                          cursor: 'pointer',
+                          minWidth: '150px',
+                          fontWeight: '600',
+                          outline: 'none',
+                        }}
+                        title="Filter properties by currency"
+                      >
+                        {currencies.map((currency) => (
+                          <option key={currency.code} value={currency.code}>
+                            {currency.symbol ? `${currency.symbol} ` : ''}{currency.label.split(' - ')[0]}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
                   {/* Only show Add Property button for sellers, brokers, and admins */}
                   {user && (user.role === 'seller' || user.role === 'broker' || user.role === 'admin') && (
                     <Link

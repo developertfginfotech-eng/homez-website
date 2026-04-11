@@ -1,34 +1,38 @@
+"use client";
 import AdvanceFilterModal from "@/components/common/advance-filter";
 import HeroContent from "./HeroContent";
 import Image from "next/image";
 import Category from "./Category";
 import VideoBox from "./VideoBox";
+import { useTranslate } from "@/hooks/useTranslate";
 
 const Hero = () => {
+  const { t } = useTranslate();
+
   return (
     <>
       <div className="inner-banner-style4">
         <h2 className="hero-title animate-up-1">
-          Easy Way to Find a <br className="d-none d-md-block" /> Perfect
-          Property
+          {t('hero.title')}
         </h2>
         <p className="hero-text fz15 animate-up-2">
-          From as low as $10 per day with limited time offer discounts
+          {t('hero.subtitle')}
         </p>
 
         <div className="home4-floatin-img">
           <Image
             width={140}
             height={120}
-            className="img-1 spin-left d-none d-xl-block contain"
+            className="img-1 spin-left d-none d-xl-block"
+            style={{ objectFit: "contain" }}
             src="/images/about/element-10.png"
             alt="image"
           />
           <Image
             width={160}
             height={103}
-            style={{ objectFit: "contain" }}
             className="img-2 bounce-y d-none d-xl-block"
+            style={{ objectFit: "contain" }}
             src="/images/about/element-9.png"
             alt="image"
           />

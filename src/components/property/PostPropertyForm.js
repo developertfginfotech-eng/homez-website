@@ -4,47 +4,151 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
+// Country-specific address field configurations
+const getAddressFieldConfig = (country) => {
+  const configs = {
+    'UAE': {
+      stateLabel: 'Emirate',
+      statePlaceholder: 'Select emirate',
+      hasPostalCode: false
+    },
+    'USA': {
+      stateLabel: 'State',
+      statePlaceholder: 'Select state',
+      hasPostalCode: true,
+      postalCodeLabel: 'ZIP Code',
+      postalCodePlaceholder: 'Enter ZIP code'
+    },
+    'Portugal': {
+      stateLabel: 'District',
+      statePlaceholder: 'Select district',
+      hasPostalCode: true,
+      postalCodeLabel: 'Postal Code',
+      postalCodePlaceholder: 'Enter postal code'
+    },
+    'Canada': {
+      stateLabel: 'Province',
+      statePlaceholder: 'Select province',
+      hasPostalCode: true,
+      postalCodeLabel: 'Postal Code',
+      postalCodePlaceholder: 'Enter postal code'
+    },
+    'Australia': {
+      stateLabel: 'State/Territory',
+      statePlaceholder: 'Select state/territory',
+      hasPostalCode: true,
+      postalCodeLabel: 'Postcode',
+      postalCodePlaceholder: 'Enter postcode'
+    },
+    'Turkey': {
+      stateLabel: 'Province',
+      statePlaceholder: 'Select province',
+      hasPostalCode: true,
+      postalCodeLabel: 'Postal Code',
+      postalCodePlaceholder: 'Enter postal code'
+    },
+    'Cyprus': {
+      stateLabel: 'District',
+      statePlaceholder: 'Select district',
+      hasPostalCode: true,
+      postalCodeLabel: 'Postal Code',
+      postalCodePlaceholder: 'Enter postal code'
+    },
+    'Malta': {
+      stateLabel: 'Region',
+      statePlaceholder: 'Select region',
+      hasPostalCode: false
+    },
+    'Hungary': {
+      stateLabel: 'County',
+      statePlaceholder: 'Select county',
+      hasPostalCode: true,
+      postalCodeLabel: 'Postal Code',
+      postalCodePlaceholder: 'Enter postal code'
+    },
+    'Latvia': {
+      stateLabel: 'Municipality',
+      statePlaceholder: 'Select municipality',
+      hasPostalCode: true,
+      postalCodeLabel: 'Postal Code',
+      postalCodePlaceholder: 'Enter postal code'
+    },
+    'Philippines': {
+      stateLabel: 'Province',
+      statePlaceholder: 'Select province',
+      hasPostalCode: true,
+      postalCodeLabel: 'ZIP Code',
+      postalCodePlaceholder: 'Enter ZIP code'
+    },
+    'Malaysia': {
+      stateLabel: 'State',
+      statePlaceholder: 'Select state',
+      hasPostalCode: true,
+      postalCodeLabel: 'Postcode',
+      postalCodePlaceholder: 'Enter postcode'
+    }
+  };
+
+  return configs[country] || {
+    stateLabel: 'State/Province',
+    statePlaceholder: 'Select state/province',
+    hasPostalCode: true,
+    postalCodeLabel: 'Postal Code',
+    postalCodePlaceholder: 'Enter postal code'
+  };
+};
+
 const PostPropertyForm = () => {
   const router = useRouter();
-  const [selectedCountry, setSelectedCountry] = useState("India");
+
+  // Check if user is admin
+  const isAdmin = () => {
+    try {
+      const userStr = localStorage.getItem("user");
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        return user.role === 'admin';
+      }
+    } catch (error) {
+      console.error("Error checking user role:", error);
+    }
+    return false;
+  };
+
+  // Get user's country from localStorage - users can only post properties in their registered country
+  // Admins can post in any country
+  const getUserCountry = () => {
+    try {
+      const userStr = localStorage.getItem("user");
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        // If admin, default to UAE but allow changing
+        return user.country || "UAE";
+      }
+    } catch (error) {
+      console.error("Error getting user country:", error);
+    }
+    return "UAE";
+  };
+
+  const [selectedCountry, setSelectedCountry] = useState(getUserCountry());
   const [selectedState, setSelectedState] = useState("");
   const [propertyCategory, setPropertyCategory] = useState("residential");
   const [propertyAdType, setPropertyAdType] = useState("rent");
   const [userPropertiesCount, setUserPropertiesCount] = useState(0);
   const [kycVerified, setKycVerified] = useState(true); // Default to true for backward compatibility
+  const [userIsAdmin] = useState(isAdmin()); // Store admin status
 
-  // Country and States data
+  // Country and States data - matching signup form countries
   const countryStateData = {
-    India: [
-      "Andhra Pradesh",
-      "Arunachal Pradesh",
-      "Assam",
-      "Bihar",
-      "Chhattisgarh",
-      "Delhi",
-      "Goa",
-      "Gujarat",
-      "Haryana",
-      "Himachal Pradesh",
-      "Jharkhand",
-      "Karnataka",
-      "Kerala",
-      "Madhya Pradesh",
-      "Maharashtra",
-      "Manipur",
-      "Meghalaya",
-      "Mizoram",
-      "Nagaland",
-      "Odisha",
-      "Punjab",
-      "Rajasthan",
-      "Sikkim",
-      "Tamil Nadu",
-      "Telangana",
-      "Tripura",
-      "Uttar Pradesh",
-      "Uttarakhand",
-      "West Bengal",
+    UAE: [
+      "Abu Dhabi",
+      "Dubai",
+      "Sharjah",
+      "Ajman",
+      "Umm Al Quwain",
+      "Ras Al Khaimah",
+      "Fujairah",
     ],
     USA: [
       "Alabama",
@@ -98,6 +202,28 @@ const PostPropertyForm = () => {
       "Wisconsin",
       "Wyoming",
     ],
+    Portugal: [
+      "Aveiro",
+      "Beja",
+      "Braga",
+      "Bragança",
+      "Castelo Branco",
+      "Coimbra",
+      "Évora",
+      "Faro",
+      "Guarda",
+      "Leiria",
+      "Lisbon",
+      "Portalegre",
+      "Porto",
+      "Santarém",
+      "Setúbal",
+      "Viana do Castelo",
+      "Vila Real",
+      "Viseu",
+      "Azores",
+      "Madeira",
+    ],
     Canada: [
       "Alberta",
       "British Columbia",
@@ -113,12 +239,6 @@ const PostPropertyForm = () => {
       "Saskatchewan",
       "Yukon",
     ],
-    UK: [
-      "England",
-      "Scotland",
-      "Wales",
-      "Northern Ireland",
-    ],
     Australia: [
       "New South Wales",
       "Victoria",
@@ -128,6 +248,80 @@ const PostPropertyForm = () => {
       "Tasmania",
       "Australian Capital Territory",
       "Northern Territory",
+    ],
+    Turkey: [
+      "Istanbul",
+      "Ankara",
+      "Izmir",
+      "Antalya",
+      "Bursa",
+      "Adana",
+      "Gaziantep",
+      "Konya",
+      "Mersin",
+      "Kayseri",
+    ],
+    Cyprus: [
+      "Nicosia",
+      "Limassol",
+      "Larnaca",
+      "Paphos",
+      "Famagusta",
+      "Kyrenia",
+    ],
+    Malta: [
+      "Valletta",
+      "Mdina",
+      "Sliema",
+      "St. Julian's",
+      "Gozo",
+      "Comino",
+    ],
+    Hungary: [
+      "Budapest",
+      "Pest",
+      "Bács-Kiskun",
+      "Baranya",
+      "Békés",
+      "Borsod-Abaúj-Zemplén",
+      "Csongrád",
+      "Fejér",
+      "Győr-Moson-Sopron",
+      "Hajdú-Bihar",
+    ],
+    Latvia: [
+      "Riga",
+      "Daugavpils",
+      "Liepāja",
+      "Jelgava",
+      "Jūrmala",
+      "Ventspils",
+      "Rēzekne",
+      "Valmiera",
+    ],
+    Philippines: [
+      "Metro Manila",
+      "Cebu",
+      "Davao",
+      "Cagayan de Oro",
+      "Iloilo",
+      "Bacolod",
+      "Baguio",
+      "General Santos",
+      "Quezon City",
+      "Makati",
+    ],
+    Malaysia: [
+      "Kuala Lumpur",
+      "Selangor",
+      "Penang",
+      "Johor",
+      "Perak",
+      "Sabah",
+      "Sarawak",
+      "Melaka",
+      "Negeri Sembilan",
+      "Kedah",
     ],
   };
 
@@ -144,12 +338,17 @@ const PostPropertyForm = () => {
           return;
         }
 
-        // Check KYC status
+        // Check KYC status and set user's country
         const kycStatus = localStorage.getItem("kycVerified");
         const userStr = localStorage.getItem("user");
         if (userStr) {
           const user = JSON.parse(userStr);
           setKycVerified(kycStatus === "true" || user.kycVerified === true);
+
+          // Set country from user's account
+          if (user.country) {
+            setSelectedCountry(user.country);
+          }
         }
 
         // TODO: Replace with actual API call to backend
@@ -195,13 +394,26 @@ const PostPropertyForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!selectedCountry) {
-      alert("Please select a country");
+    // Validate all required fields with better error messages
+    if (!selectedCountry || selectedCountry.length < 2) {
+      alert("Please select a valid country. Your country is set from your account registration.");
       return;
     }
 
-    if (!selectedState) {
-      alert("Please select a state/province");
+    if (!selectedState || selectedState.trim() === "") {
+      alert(`Please select a ${getAddressFieldConfig(selectedCountry).stateLabel.toLowerCase()}. Type to search and select from the dropdown.`);
+      return;
+    }
+
+    // Validate that selected state is valid (exists in the list)
+    const isValidState = availableStates.includes(selectedState);
+    if (!isValidState) {
+      alert(`Please select a valid ${getAddressFieldConfig(selectedCountry).stateLabel.toLowerCase()} from the dropdown list.`);
+      return;
+    }
+
+    if (!propertyAdType) {
+      alert("Please select Rent or Resale to continue.");
       return;
     }
 
@@ -227,7 +439,7 @@ const PostPropertyForm = () => {
         <div className="mb25 text-center">
           <p className="fz14 mb-0" style={{ color: "#6B7280" }}>
             You have already posted{" "}
-            <span className="fw600" style={{ color: "#1F2937" }}>{userPropertiesCount} properties</span> on Lahomez{" "}
+            <span className="fw600" style={{ color: "#1F2937" }}>{userPropertiesCount} properties</span> on Globperty{" "}
             <Link href="/dashboard-my-properties" className="text-thm">
               view all
             </Link>
@@ -236,20 +448,26 @@ const PostPropertyForm = () => {
       )}
 
       <form onSubmit={handleSubmit}>
-        {/* Country Selector */}
+        {/* Country Selector - Locked to user's registered country (except for admins) */}
         <div className="mb25">
-          <label className="form-label fw600 mb10 fz14">Country</label>
+          <label className="form-label fw600 mb10 fz14">
+            Country
+            {!userIsAdmin && <span className="text-muted fz12 ms-2">(From your account)</span>}
+            {userIsAdmin && <span className="badge bg-success fz11 ms-2">Admin - Can select any country</span>}
+          </label>
           <select
             className="form-select form-control"
             value={selectedCountry}
             onChange={handleCountryChange}
+            disabled={!userIsAdmin}
             style={{
               padding: "12px 16px",
               fontSize: "14px",
               border: "1px solid #E5E7EB",
               borderRadius: "8px",
-              backgroundColor: "white",
+              backgroundColor: "#F9FAFB",
               color: "#1F2937",
+              cursor: "not-allowed",
             }}
           >
             {Object.keys(countryStateData).map((country) => (
@@ -258,39 +476,52 @@ const PostPropertyForm = () => {
               </option>
             ))}
           </select>
+          {!userIsAdmin ? (
+            <small className="text-muted fz12 mt-1 d-block">
+              <i className="fas fa-info-circle me-1"></i>
+              You can only post properties in your registered country
+            </small>
+          ) : (
+            <small className="text-success fz12 mt-1 d-block">
+              <i className="fas fa-crown me-1"></i>
+              As an admin, you can post properties in any country
+            </small>
+          )}
         </div>
 
-        {/* State/Province Selector */}
+        {/* State/Province/Emirate Selector with Autocomplete */}
         <div className="mb25">
           <label className="form-label fw600 mb10 fz14">
-            {selectedCountry === "USA" || selectedCountry === "Canada"
-              ? "State/Province"
-              : "State"}
+            {getAddressFieldConfig(selectedCountry).stateLabel}
+            <span className="text-danger ms-1">*</span>
           </label>
-          <select
-            className="form-select form-control"
+          <input
+            type="text"
+            className="form-control"
             value={selectedState}
             onChange={(e) => setSelectedState(e.target.value)}
+            placeholder={`Type to search ${getAddressFieldConfig(selectedCountry).stateLabel.toLowerCase()}`}
+            list="property-state-list"
+            autoComplete="off"
+            required
             style={{
               padding: "12px 16px",
               fontSize: "14px",
-              border: "1px solid #E5E7EB",
+              border: selectedState ? "1px solid #10b981" : "1px solid #E5E7EB",
               borderRadius: "8px",
               backgroundColor: "white",
               color: "#1F2937",
             }}
-          >
-            <option value="">
-              Select {selectedCountry === "USA" || selectedCountry === "Canada"
-                ? "State/Province"
-                : "State"}
-            </option>
+          />
+          <datalist id="property-state-list">
             {availableStates.map((state) => (
-              <option key={state} value={state}>
-                {state}
-              </option>
+              <option key={state} value={state} />
             ))}
-          </select>
+          </datalist>
+          <small className="text-muted fz12 mt-1 d-block">
+            <i className="fas fa-info-circle me-1"></i>
+            Type to search and select from the dropdown
+          </small>
         </div>
 
         {/* Property Type Tabs */}
@@ -370,11 +601,18 @@ const PostPropertyForm = () => {
 
         {/* Select Property Ad Type */}
         <div className="mb25">
-          <label className="form-label fw600 mb10 fz14">Select Property Ad Type</label>
+          <label className="form-label fw600 mb10 fz14">
+            Select Property Ad Type
+            <span className="text-danger ms-1">*</span>
+          </label>
+          <small className="text-muted fz12 d-block mb-2">
+            <i className="fas fa-info-circle me-1"></i>
+            Choose whether you want to rent or sell your property
+          </small>
           <div className="row g-3">
             {/* Rent - Show for Residential and Commercial */}
             {(propertyCategory === "residential" || propertyCategory === "commercial") && (
-              <div className={`${propertyCategory === "commercial" ? "col-6" : "col-6 col-md-3"}`}>
+              <div className="col-6">
                 <button
                   type="button"
                   className={`btn w-100 ${
@@ -398,7 +636,7 @@ const PostPropertyForm = () => {
             )}
 
             {/* Resale/Sale - Show for all categories */}
-            <div className={`${propertyCategory === "commercial" ? "col-6" : propertyCategory === "land" ? "col-12" : "col-6 col-md-3"}`}>
+            <div className={`${propertyCategory === "land" ? "col-12" : "col-6"}`}>
               <button
                 type="button"
                 className={`btn w-100 ${
@@ -419,56 +657,6 @@ const PostPropertyForm = () => {
                 {propertyCategory === "commercial" ? "Sale" : "Resale"}
               </button>
             </div>
-
-            {/* PG/Hostel - Only for Residential */}
-            {propertyCategory === "residential" && (
-              <div className="col-6 col-md-3">
-                <button
-                  type="button"
-                  className={`btn w-100 ${
-                    propertyAdType === "pg" ? "btn-thm" : "btn-outline-secondary"
-                  }`}
-                  onClick={() => setPropertyAdType("pg")}
-                  style={{
-                    padding: "12px 16px",
-                    fontSize: "14px",
-                    fontWeight: "600",
-                    borderRadius: "8px",
-                    backgroundColor: propertyAdType === "pg" ? "#eb6753" : "white",
-                    color: propertyAdType === "pg" ? "white" : "#6B7280",
-                    border: "1px solid #E5E7EB",
-                    transition: "all 0.3s ease",
-                  }}
-                >
-                  PG/Hostel
-                </button>
-              </div>
-            )}
-
-            {/* Flatmates - Only for Residential */}
-            {propertyCategory === "residential" && (
-              <div className="col-6 col-md-3">
-                <button
-                  type="button"
-                  className={`btn w-100 ${
-                    propertyAdType === "flatmates" ? "btn-thm" : "btn-outline-secondary"
-                  }`}
-                  onClick={() => setPropertyAdType("flatmates")}
-                  style={{
-                    padding: "12px 16px",
-                    fontSize: "14px",
-                    fontWeight: "600",
-                    borderRadius: "8px",
-                    backgroundColor: propertyAdType === "flatmates" ? "#eb6753" : "white",
-                    color: propertyAdType === "flatmates" ? "white" : "#6B7280",
-                    border: "1px solid #E5E7EB",
-                    transition: "all 0.3s ease",
-                  }}
-                >
-                  Flatmates
-                </button>
-              </div>
-            )}
           </div>
         </div>
 

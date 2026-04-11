@@ -11,7 +11,7 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
     phone: "",
     password: "",
     role: "seller", // seller, buyer, broker
-    country: "India",
+    country: "Australia",
     // KYC fields
     aadhaarCard: null,
     panCard: null,
@@ -26,7 +26,16 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const countries = ["India", "USA", "UK", "Canada", "Australia"];
+  const countries = [
+    "Australia", "Austria", "Belgium", "Brazil", "Canada", "China", "Cyprus",
+    "Czech Republic", "Denmark", "Egypt", "Finland", "France", "Germany",
+    "Greece", "Hong Kong", "Hungary", "India", "Indonesia", "Ireland", "Israel",
+    "Italy", "Japan", "Jordan", "Latvia", "Luxembourg", "Malaysia", "Malta",
+    "Mexico", "Netherlands", "New Zealand", "Norway", "Philippines", "Poland",
+    "Portugal", "Qatar", "Romania", "Saudi Arabia", "Singapore", "South Africa",
+    "South Korea", "Spain", "Sweden", "Switzerland", "Thailand", "Turkey",
+    "UAE", "UK", "USA", "Vietnam"
+  ];
   const needsKYC = formData.role === "seller" || formData.role === "broker";
 
   const handleChange = (e) => {
@@ -142,6 +151,25 @@ const AuthModal = ({ isOpen, onClose, onSuccess }) => {
                     onChange={handleChange}
                     required={!isLogin}
                   />
+                </div>
+              )}
+
+              {!isLogin && (
+                <div className="mb20">
+                  <label className="form-label fw600">Country</label>
+                  <select
+                    name="country"
+                    className="form-select"
+                    value={formData.country}
+                    onChange={handleChange}
+                    required={!isLogin}
+                  >
+                    {countries.map((country) => (
+                      <option key={country} value={country}>
+                        {country}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               )}
 

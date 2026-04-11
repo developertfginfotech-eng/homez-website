@@ -4,12 +4,15 @@ import React, { useEffect, useRef, useState } from "react";
 import CountUp from "react-countup";
 import { useInView } from "react-intersection-observer";
 import Link from "next/link";
+import { useTranslate } from "@/hooks/useTranslate";
 
 const Funfact = () => {
+  const { t } = useTranslate();
+
   const funFacts = [
-    { number: 400, text: "Stores around the world" },
-    { number: 200, text: "Stores around the world" },
-    { number: 1000, text: "Stores around the world" },
+    { number: 400, text: t('stats.storesAroundWorld') },
+    { number: 200, text: t('stats.storesAroundWorld') },
+    { number: 1000, text: t('stats.storesAroundWorld') },
     // Add more fun facts if needed
   ];
 

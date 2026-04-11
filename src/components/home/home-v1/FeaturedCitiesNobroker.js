@@ -1,46 +1,102 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import { getCityCounts } from "@/helpers/propertyApi";
 
 const FeaturedCitiesNobroker = () => {
-  const cities = [
-    {
-      name: "Mumbai",
-      properties: "12,500+ Properties",
-      image: "/images/listings/listing-1.jpg",
-      link: "/grid-full-3-col?city=mumbai",
-    },
-    {
-      name: "Delhi NCR",
-      properties: "15,200+ Properties",
-      image: "/images/listings/listing-2.jpg",
-      link: "/grid-full-3-col?city=delhi",
-    },
-    {
-      name: "Bangalore",
-      properties: "18,300+ Properties",
-      image: "/images/listings/listing-3.jpg",
-      link: "/grid-full-3-col?city=bangalore",
-    },
-    {
-      name: "Hyderabad",
-      properties: "9,800+ Properties",
-      image: "/images/listings/listing-4.jpg",
-      link: "/grid-full-3-col?city=hyderabad",
-    },
-    {
-      name: "Pune",
-      properties: "11,400+ Properties",
-      image: "/images/listings/listing-5.jpg",
-      link: "/grid-full-3-col?city=pune",
-    },
-    {
-      name: "Chennai",
-      properties: "8,600+ Properties",
-      image: "/images/listings/listing-6.jpg",
-      link: "/grid-full-3-col?city=chennai",
-    },
-  ];
+  const [cities, setCities] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedCurrency, setSelectedCurrency] = useState('ALL');
+
+  useEffect(() => {
+    // Load selected currency from localStorage
+    const savedCurrency = localStorage.getItem('selectedCurrency') || 'ALL';
+    setSelectedCurrency(savedCurrency);
+
+    // Listen for currency changes
+    const handleCurrencyChange = (e) => {
+      setSelectedCurrency(e.detail.currency);
+    };
+
+    window.addEventListener('currencyChanged', handleCurrencyChange);
+    return () => window.removeEventListener('currencyChanged', handleCurrencyChange);
+  }, []);
+
+  useEffect(() => {
+    const fetchCities = async () => {
+      try {
+        const cityData = await getCityCounts();
+        // Backend API URL
+        const backendUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:3001';
+
+        // Currency to country mapping
+        const currencyCountryMap = {
+          'AED': ['UAE', 'United Arab Emirates'],
+          'USD': ['USA', 'United States', 'US'],
+          'EUR': ['Portugal', 'Cyprus', 'Malta', 'Latvia', 'Europe'],
+          'CAD': ['Canada'],
+          'AUD': ['Australia'],
+          'GBP': ['UK', 'United Kingdom'],
+          'INR': ['India'],
+        };
+
+        // Filter cities by selected currency
+        let filteredCityData = cityData;
+        if (selectedCurrency !== 'ALL') {
+          const allowedCountries = currencyCountryMap[selectedCurrency] || [];
+          filteredCityData = cityData.filter(city =>
+            allowedCountries.some(country =>
+              city.country?.toLowerCase() === country.toLowerCase()
+            )
+          );
+        }
+
+        // Get top 6 cities and format them for display
+        const formattedCities = filteredCityData.slice(0, 6).map((city, index) => {
+          // Construct full image URL from backend
+          let imageUrl = `/images/listings/listing-${index + 1}.jpg`;
+          if (city.image) {
+            imageUrl = city.image.startsWith('http') ? city.image : `${backendUrl}${city.image}`;
+          }
+
+          return {
+            name: city.city,
+            properties: `${city.count.toLocaleString()}+ Properties`,
+            image: imageUrl,
+            link: `/grid-full-3-col?city=${city.city.toLowerCase()}`,
+            country: city.country,
+          };
+        });
+        setCities(formattedCities);
+      } catch (error) {
+        console.error("Error fetching cities:", error);
+        // Set empty array on error
+        setCities([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCities();
+  }, [selectedCurrency]);
+
+  if (loading) {
+    return (
+      <section className="pt60 pb60 bgc-f7">
+        <div className="container">
+          <div className="text-center py-5">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Loading cities...</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (cities.length === 0) {
+    return null; // Don't show section if no cities
+  }
 
   return (
     <section className="pt60 pb60 bgc-f7">
@@ -51,7 +107,7 @@ const FeaturedCitiesNobroker = () => {
               Explore Properties by Cities
             </h2>
             <p className="text-muted fz16" style={{ marginTop: "10px" }}>
-              Find the best properties in top cities across the country
+              Find the best properties in top cities worldwide
             </p>
           </div>
           <div className="col-lg-4 text-end">
@@ -120,6 +176,11 @@ const FeaturedCitiesNobroker = () => {
                     <p className="mb-0" style={{ fontSize: "15px", color: "rgba(255,255,255,0.9)", fontWeight: "500" }}>
                       {city.properties}
                     </p>
+                    {city.country && (
+                      <p className="mb-0 mt-1" style={{ fontSize: "13px", color: "rgba(255,255,255,0.7)", fontWeight: "400" }}>
+                        {city.country}
+                      </p>
+                    )}
                   </div>
                 </div>
               </Link>

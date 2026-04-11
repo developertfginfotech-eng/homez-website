@@ -277,7 +277,22 @@ header.nav-homepage-style.sticky.at-home3 .sidemenu-btn .img-1 {
         position: fixed;
     }
     .login-info {
-        color: var(--headings-color);
+        color: #ffffff;
+        background-color: #000000;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s ease;
+
+        &:hover {
+            background-color: #2d2d2d;
+            color: #ffffff;
+        }
+
+        i {
+            color: #ffffff;
+        }
     }
 }
 
@@ -444,6 +459,27 @@ header.nav-homepage-style.light-header .ace-responsive-menu a {
         }
         .slider-slide-item {
             height: 100%;
+        }
+    }
+}
+
+// Equal height blog cards - more specific targeting
+section {
+    .row {
+        > .col-sm-6,
+        > .col-lg-4 {
+            display: flex !important;
+            flex-direction: column !important;
+
+            .blog-style1 {
+                display: flex !important;
+                flex-direction: column !important;
+                height: 100% !important;
+
+                .blog-img {
+                    flex-shrink: 0 !important;
+                }
+            }
         }
     }
 }

@@ -252,3 +252,25 @@ img.cover {
   padding-left: 0 !important;
   padding-right: 0 !important;
 }
+
+/* Leaflet Map Marker Fix */
+.leaflet-marker-icon {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDMyIDQwIj48cGF0aCBmaWxsPSIjZWI2NzUzIiBkPSJNMTYgMEM5LjQgMCA0IDUuNCA0IDEyYzAgOS4zIDEyIDI4IDEyIDI4czEyLTE4LjcgMTItMjhjMC02LjYtNS40LTEyLTEyLTEyeiIvPjxjaXJjbGUgY3g9IjE2IiBjeT0iMTIiIHI9IjUiIGZpbGw9IiNmZmYiLz48L3N2Zz4=');
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.leaflet-popup-content-wrapper {
+  padding: 0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.leaflet-popup-content {
+  margin: 0;
+  width: auto !important;
+}
+
+.leaflet-container {
+  font-family: inherit;
+}

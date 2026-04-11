@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import ContactMeta from "./ContactMeta";
@@ -5,8 +7,11 @@ import AppWidget from "./AppWidget";
 import Subscribe from "./Subscribe";
 import MenuWidget from "./MenuWidget";
 import Copyright from "./Copyright";
+import { useTranslation } from "react-i18next";
 
 const Footer = () => {
+  const { t } = useTranslation('common');
+
   return (
     <>
       <div className="container">
@@ -32,7 +37,7 @@ const Footer = () => {
           <div className="col-sm-6 col-lg-3">
             <div className="footer-widget mb-4 mb-lg-5">
               <div className="mailchimp-widget mb30">
-                <h6 className="title mb30">Keep Yourself Up to Date</h6>
+                <h6 className="title mb30">{t('footer.keepUpToDate')}</h6>
                 <Subscribe />
               </div>
 

@@ -21,6 +21,48 @@ const AddPropertyTabContent = () => {
   const [uploadedFiles, setUploadedFiles] = useState([]);
 
   useEffect(() => {
+    const handler = (e) => {
+      const data = e.detail;
+      if (!data) return;
+
+      const setField = (name, value) => {
+        const el = document.querySelector(`[name="${name}"]`);
+        if (el && value !== undefined && value !== null && value !== '') {
+          const proto = Object.getPrototypeOf(el);
+          const descriptor = Object.getOwnPropertyDescriptor(proto, 'value');
+          if (descriptor && descriptor.set) {
+            descriptor.set.call(el, String(value));
+          } else {
+            el.value = String(value);
+          }
+          el.dispatchEvent(new Event('input', { bubbles: true }));
+          el.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      };
+
+      if (data.title) setField('title', data.title);
+      if (data.description) setField('description', data.description);
+      if (data.bedrooms) setField('bedrooms', data.bedrooms);
+      if (data.bathrooms) setField('bathrooms', data.bathrooms);
+      if (data.sizeInFt) setField('sizeInFt', data.sizeInFt);
+      if (data.priceEstimate) {
+        // Extract numeric value from price string like "$450,000" or "450000"
+        const priceNum = String(data.priceEstimate).replace(/[^0-9]/g, '');
+        if (priceNum) setField('price', priceNum);
+      }
+      if (data.yearBuilt) setField('yearBuilt', data.yearBuilt);
+
+      // Switch to Description tab so user sees the auto-filled fields
+      setActiveTab('nav-item1');
+      setSuccess('AI auto-filled the form from your photos! Review and edit as needed.');
+      setTimeout(() => setSuccess(''), 6000);
+    };
+
+    window.addEventListener('aiListingData', handler);
+    return () => window.removeEventListener('aiListingData', handler);
+  }, []);
+
+  useEffect(() => {
     // Check user role and KYC status
     const checkKycStatus = async () => {
       try {

@@ -1,0 +1,170 @@
+{
+  "nav": {
+    "home": "Ana Sayfa",
+    "listing": "Listeler",
+    "property": "Mülk",
+    "blog": "Blog",
+    "pages": "Sayfalar",
+    "admin": "Yönetici"
+  },
+  "hero": {
+    "title": "Mükemmel Bir Mülk Bulmanın Kolay Yolu",
+    "subtitle": "Sınırlı süreli teklif indirimleriyle günde 10 ₺'dan başlayan fiyatlarla",
+    "searchPlaceholder": "Satın Almak İçin Ürün Ara",
+    "advanced": "Gelişmiş",
+    "watchVideo": "Video İzle"
+  },
+  "tabs": {
+    "buy": "Satın Al",
+    "rent": "Kirala",
+    "sold": "Satıldı"
+  },
+  "propertyTypes": {
+    "houses": "Evler",
+    "apartments": "Daireler",
+    "office": "Ofis",
+    "villa": "Villa"
+  },
+  "sections": {
+    "propertiesByCountries": "Ülkelere Göre Mülkler",
+    "exploreCountries": "Farklı ülkelerdeki öne çıkan mülklerimizi keşfedin",
+    "seeAllCountries": "Tüm Ülkeleri Gör",
+    "exploreApartmentTypes": "Daire Tiplerini Keşfedin",
+    "exploreSubtitle": "Aliquam lacinia diam quis lacus euismod",
+    "properties": "Mülkler",
+    "property": "Mülk",
+    "sellingOption": "Sizin için doğru satış seçeneğini bulalım",
+    "sellingDescription": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
+    "testimonialTitle": "İnsanlar Globperty ile Yaşamayı Seviyor",
+    "partnersTitle": "Dünyanın en iyileri tarafından güvenilir",
+    "blogTitle": "Blogumuzdan",
+    "loadingApartmentTypes": "Daire tipleri yükleniyor...",
+    "noApartmentTypes": "Daire tipi mevcut değil",
+    "discoverPopularProperties": "Popüler Mülkleri Keşfedin",
+    "exploreRealEstate": "Öne çıkan emlak ilanlarımızı keşfedin",
+    "getDreamHouse": "Hayalinizdeki Evi Alın",
+    "getDreamHouseDesc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
+    "registerNow": "Şimdi Kaydolun",
+    "livingRoom": "Oturma Odası",
+    "keepUpToDate": "Kendinizi Güncel Tutun"
+  },
+  "currency": {
+    "allCurrencies": "Tüm Para Birimleri"
+  },
+  "user": {
+    "adminUser": "Yönetici Kullanıcı"
+  },
+  "common": {
+    "search": "Ara",
+    "filter": "Filtrele",
+    "apply": "Uygula",
+    "cancel": "İptal",
+    "save": "Kaydet",
+    "delete": "Sil",
+    "edit": "Düzenle",
+    "loading": "Yükleniyor...",
+    "noData": "Veri yok",
+    "seeMore": "Daha Fazla Gör",
+    "learnMore": "Daha Fazla Bilgi"
+  },
+  "features": {
+    "propertyManagement": "Mülk Yönetimi",
+    "propertyManagementDesc": "Nullam sollicitudin blandit eros eu pretium. Nullam maximus ultricies auctor.",
+    "mortgageServices": "İpotek Hizmetleri",
+    "mortgageServicesDesc": "Nullam sollicitudin blandit eros eu pretium. Nullam maximus ultricies auctor.",
+    "currencyServices": "Döviz Hizmetleri",
+    "currencyServicesDesc": "Nullam sollicitudin blandit eros eu pretium. Nullam maximus ultricies auctor."
+  },
+  "stats": {
+    "storesAroundWorld": "Dünya çapında mağazalar"
+  },
+  "selling": {
+    "findDeals": "Mükemmel fırsatlar bulun",
+    "friendlySupport": "Dostane ev sahibi ve hızlı destek",
+    "listProperty": "Kendi mülkünüzü listeleyin"
+  },
+  "agents": {
+    "exclusiveAgents": "Özel Acenteler",
+    "designer": "Tasarımcı"
+  },
+  "testimonials": {
+    "greatWork": "Harika İş",
+    "testimonialText": "İnanılmaz tasarım, özelleştirmesi kolay ve optimize edilmiş performans için bulut platformunda üstün kaliteli hesap. Ve orijinal tasarımlarımızı değiştirmedik."
+  },
+  "propertyDetails": {
+    "overview": "Genel Bakış",
+    "propertyDescription": "Mülk Açıklaması",
+    "propertyDetails": "Mülk Detayları",
+    "address": "Adres",
+    "features": "Özellikler ve Olanaklar",
+    "forSale": "Satılık",
+    "forRent": "Kiralık",
+    "bedroom": "Yatak Odası",
+    "bath": "Banyo",
+    "yearBuilt": "Yapım Yılı",
+    "garage": "Garaj",
+    "sqft": "Metrekare",
+    "propertyType": "Mülk Tipi",
+    "moreInformation": "Daha Fazla Bilgi Alın",
+    "residential": "Konut",
+    "commercial": "Ticari"
+  },
+  "footer": {
+    "popularSearch": "Popüler Arama",
+    "discover": "Keşfet",
+    "quickLinks": "Hızlı Bağlantılar",
+    "apartmentForRent": "Kiralık Daire",
+    "apartmentLowToHide": "Gizlemek için Düşük Daire",
+    "officesForBuy": "Satılık Ofisler",
+    "officesForRent": "Kiralık Ofisler",
+    "miami": "Miami",
+    "losAngeles": "Los Angeles",
+    "chicago": "Chicago",
+    "newYork": "New York",
+    "termsOfUse": "Kullanım Koşulları",
+    "privacyPolicy": "Gizlilik Politikası",
+    "pricingPlans": "Fiyatlandırma Planları",
+    "ourServices": "Hizmetlerimiz",
+    "contactSupport": "Destek ile İletişim",
+    "careers": "Kariyer",
+    "faqs": "SSS",
+    "keepUpToDate": "Kendinizi Güncel Tutun",
+    "yourEmail": "E-postanız",
+    "apps": "Uygulamalar",
+    "downloadOn": "İndir",
+    "appleStore": "Apple Store",
+    "getItOn": "Edinin",
+    "googlePlay": "Google Play",
+    "address": "Adres",
+    "totalFreeCustomerCare": "Ücretsiz Müşteri Hizmetleri",
+    "needLiveSupport": "Canlı Desteğe İhtiyacınız Var mı?"
+  },
+  "blog": {
+    "livingRoom": "Oturma Odası",
+    "july": "Temmuz"
+  },
+  "listing": {
+    "housesForSaleRent": "Satılık ve Kiralık Evler",
+    "propertiesForSaleRent": "Satılık ve Kiralık Mülkler",
+    "properties": "Mülkler",
+    "forSale": "Satılık",
+    "forRent": "Kiralık",
+    "propertyType": "Mülk Tipi",
+    "price": "Fiyat",
+    "priceRange": "Fiyat Aralığı",
+    "bedsBaths": "Yatak / Banyo",
+    "moreFilter": "Daha Fazla Filtre",
+    "sortBy": "Sırala",
+    "newest": "En Yeni",
+    "grid": "Izgara",
+    "list": "Liste",
+    "bed": "yatak",
+    "bath": "banyo",
+    "sqft": "metrekare",
+    "propertyAvailable": "mülk mevcut",
+    "done": "Tamam",
+    "listingStatus": "İlan Durumu",
+    "filter": "Filtre",
+    "of": "/"
+  }
+}

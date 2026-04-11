@@ -1,0 +1,170 @@
+{
+  "nav": {
+    "home": "Início",
+    "listing": "Listagens",
+    "property": "Propriedade",
+    "blog": "Blog",
+    "pages": "Páginas",
+    "admin": "Admin"
+  },
+  "hero": {
+    "title": "Maneira Fácil de Encontrar uma Propriedade Perfeita",
+    "subtitle": "A partir de apenas €10 por dia com descontos por tempo limitado",
+    "searchPlaceholder": "Pesquisar Produtos para Comprar",
+    "advanced": "Avançado",
+    "watchVideo": "Assistir Vídeo"
+  },
+  "tabs": {
+    "buy": "Comprar",
+    "rent": "Alugar",
+    "sold": "Vendido"
+  },
+  "propertyTypes": {
+    "houses": "Casas",
+    "apartments": "Apartamentos",
+    "office": "Escritório",
+    "villa": "Moradia"
+  },
+  "sections": {
+    "propertiesByCountries": "Propriedades por Países",
+    "exploreCountries": "Explore nossas propriedades em destaque em diferentes países",
+    "seeAllCountries": "Ver Todos os Países",
+    "exploreApartmentTypes": "Explore Tipos de Apartamentos",
+    "exploreSubtitle": "Aliquam lacinia diam quis lacus euismod",
+    "properties": "Propriedades",
+    "property": "Propriedade",
+    "sellingOption": "Vamos encontrar a opção de venda certa para você",
+    "sellingDescription": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
+    "testimonialTitle": "As Pessoas Adoram Viver com Globperty",
+    "partnersTitle": "Confiado pelos melhores do mundo",
+    "blogTitle": "Do Nosso Blog",
+    "loadingApartmentTypes": "Carregando tipos de apartamentos...",
+    "noApartmentTypes": "Nenhum tipo de apartamento disponível",
+    "discoverPopularProperties": "Descubra Propriedades Populares",
+    "exploreRealEstate": "Explore nossas listagens imobiliárias em destaque",
+    "getDreamHouse": "Obtenha a Casa dos Seus Sonhos",
+    "getDreamHouseDesc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
+    "registerNow": "Registre-se Agora",
+    "livingRoom": "Sala de Estar",
+    "keepUpToDate": "Mantenha-se Atualizado"
+  },
+  "currency": {
+    "allCurrencies": "Todas as Moedas"
+  },
+  "user": {
+    "adminUser": "Usuário Admin"
+  },
+  "common": {
+    "search": "Pesquisar",
+    "filter": "Filtrar",
+    "apply": "Aplicar",
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "loading": "Carregando...",
+    "noData": "Nenhum dado disponível",
+    "seeMore": "Ver Mais",
+    "learnMore": "Saber Mais"
+  },
+  "features": {
+    "propertyManagement": "Gestão de Propriedades",
+    "propertyManagementDesc": "Nullam sollicitudin blandit eros eu pretium. Nullam maximus ultricies auctor.",
+    "mortgageServices": "Serviços de Hipoteca",
+    "mortgageServicesDesc": "Nullam sollicitudin blandit eros eu pretium. Nullam maximus ultricies auctor.",
+    "currencyServices": "Serviços de Câmbio",
+    "currencyServicesDesc": "Nullam sollicitudin blandit eros eu pretium. Nullam maximus ultricies auctor."
+  },
+  "stats": {
+    "storesAroundWorld": "Lojas ao redor do mundo"
+  },
+  "selling": {
+    "findDeals": "Encontre ofertas excelentes",
+    "friendlySupport": "Anfitrião amigável e suporte rápido",
+    "listProperty": "Liste sua própria propriedade"
+  },
+  "agents": {
+    "exclusiveAgents": "Agentes Exclusivos",
+    "designer": "Designer"
+  },
+  "testimonials": {
+    "greatWork": "Ótimo Trabalho",
+    "testimonialText": "Design incrível, fácil de personalizar e qualidade de design superlativa em sua plataforma em nuvem para desempenho otimizado. E não mudamos nossos designs originais."
+  },
+  "propertyDetails": {
+    "overview": "Visão Geral",
+    "propertyDescription": "Descrição da Propriedade",
+    "propertyDetails": "Detalhes da Propriedade",
+    "address": "Endereço",
+    "features": "Características e Comodidades",
+    "forSale": "Para venda",
+    "forRent": "Para alugar",
+    "bedroom": "Quarto",
+    "bath": "Banheiro",
+    "yearBuilt": "Ano de Construção",
+    "garage": "Garagem",
+    "sqft": "Pés quadrados",
+    "propertyType": "Tipo de Propriedade",
+    "moreInformation": "Obter Mais Informações",
+    "residential": "Residencial",
+    "commercial": "Comercial"
+  },
+  "footer": {
+    "popularSearch": "Pesquisa Popular",
+    "discover": "Descobrir",
+    "quickLinks": "Links Rápidos",
+    "apartmentForRent": "Apartamento para Alugar",
+    "apartmentLowToHide": "Apartamento Baixo para Ocultar",
+    "officesForBuy": "Escritórios para Comprar",
+    "officesForRent": "Escritórios para Alugar",
+    "miami": "Miami",
+    "losAngeles": "Los Angeles",
+    "chicago": "Chicago",
+    "newYork": "Nova York",
+    "termsOfUse": "Termos de Uso",
+    "keepUpToDate": "Mantenha-se Atualizado",
+    "yourEmail": "Seu E-mail",
+    "apps": "Aplicativos",
+    "downloadOn": "Baixar no",
+    "appleStore": "Apple Store",
+    "getItOn": "Obter no",
+    "googlePlay": "Google Play",
+    "address": "Endereço",
+    "totalFreeCustomerCare": "Atendimento ao Cliente Gratuito",
+    "needLiveSupport": "Precisa de Suporte ao Vivo?",
+    "privacyPolicy": "Política de Privacidade",
+    "pricingPlans": "Planos de Preços",
+    "ourServices": "Nossos Serviços",
+    "contactSupport": "Contatar Suporte",
+    "careers": "Carreiras",
+    "faqs": "Perguntas Frequentes"
+  },
+  "blog": {
+    "livingRoom": "Sala de Estar",
+    "july": "Julho"
+  },
+  "listing": {
+    "housesForSaleRent": "Casas para Venda e Aluguel",
+    "propertiesForSaleRent": "Propriedades para Venda e Aluguel",
+    "properties": "Propriedades",
+    "forSale": "À Venda",
+    "forRent": "Para Alugar",
+    "propertyType": "Tipo de Propriedade",
+    "price": "Preço",
+    "priceRange": "Faixa de Preço",
+    "bedsBaths": "Quartos / Banheiros",
+    "moreFilter": "Mais Filtros",
+    "sortBy": "Ordenar por",
+    "newest": "Mais Recente",
+    "grid": "Grade",
+    "list": "Lista",
+    "bed": "quarto",
+    "bath": "banheiro",
+    "sqft": "pés quad",
+    "propertyAvailable": "propriedade disponível",
+    "done": "Feito",
+    "listingStatus": "Status do Anúncio",
+    "filter": "Filtro",
+    "of": "de"
+  }
+}

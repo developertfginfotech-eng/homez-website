@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import ListingSidebar from "../../sidebar";
 import TopFilterBar from "./TopFilterBar";
@@ -15,6 +15,7 @@ export default function PropertyFiltering() {
   const [filteredData, setFilteredData] = useState([]);
   const [apiProperties, setApiProperties] = useState([]);
   const [isLoadingApi, setIsLoadingApi] = useState(false);
+  const [selectedCurrency, setSelectedCurrency] = useState('ALL');
 
   const [currentSortingOption, setCurrentSortingOption] = useState("Newest");
 
@@ -63,6 +64,41 @@ export default function PropertyFiltering() {
 
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Listen for currency changes
+  useEffect(() => {
+    const savedCurrency = localStorage.getItem('selectedCurrency') || 'ALL';
+    setSelectedCurrency(savedCurrency);
+
+    const handleCurrencyChange = (e) => {
+      setSelectedCurrency(e.detail.currency);
+    };
+
+    window.addEventListener('currencyChanged', handleCurrencyChange);
+    return () => window.removeEventListener('currencyChanged', handleCurrencyChange);
+  }, []);
+
+  // Get currency symbol based on country
+  const getCurrency = (country) => {
+    const currencyMap = {
+      'UAE': 'AED',
+      'United Arab Emirates': 'AED',
+      'USA': '$',
+      'United States': '$',
+      'US': '$',
+      'UK': '£',
+      'United Kingdom': '£',
+      'India': '₹',
+      'Europe': '€',
+      'Portugal': '€',
+      'Cyprus': '€',
+      'Malta': '€',
+      'Latvia': '€',
+      'Canada': 'CAD',
+      'Australia': 'AUD',
+    };
+    return currencyMap[country] || '$';
+  };
+
   // Update categories when URL parameter changes (for navigation between pages)
   useEffect(() => {
     if (categoryParam) {
@@ -96,6 +132,9 @@ export default function PropertyFiltering() {
 
         if (response.properties && Array.isArray(response.properties)) {
           // Convert API properties to listings format
+          const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+          const backendUrl = API_URL.replace('/api', '');
+
           const convertedProperties = response.properties.map((prop) => {
             // Handle image data - construct full backend URL for uploaded images
             let imageUrl = "/images/listings/list-1.jpg"; // Default fallback
@@ -105,23 +144,21 @@ export default function PropertyFiltering() {
               // If it starts with 'http', it's already a full URL
               if (firstImage.startsWith('http')) {
                 imageUrl = firstImage;
-              } else if (firstImage.startsWith('/uploads')) {
-                // Construct full URL for uploaded images
-                const backendUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'https://homez-q5lh.onrender.com';
+              } else {
+                // Construct full URL for any relative path (uploads or local images)
                 imageUrl = `${backendUrl}${firstImage}`;
-              } else if (firstImage.startsWith('/images')) {
-                // Local static images
-                imageUrl = firstImage;
               }
               console.log('🖼️ Image for', prop.title, ':', imageUrl);
             }
 
+            const currency = getCurrency(prop.country);
             return {
               id: prop._id,
               title: prop.title,
-              price: `$${prop.price}`,
+              price: `${currency} ${prop.price}`,
               location: `${prop.city}, ${prop.country}`,
               city: prop.city,
+              country: prop.country || 'Unknown',
               bed: prop.bedrooms || 0,
               bath: prop.bathrooms || 0,
               sqft: prop.sizeInFt || 0,
@@ -129,8 +166,8 @@ export default function PropertyFiltering() {
               image: imageUrl,
               features: Array.isArray(prop.amenities) ? prop.amenities : [],
               category: Array.isArray(prop.category) ? prop.category : [],
-              propertyType: prop.propertyType || "Rent",
-              forRent: prop.propertyType === "Rent",
+              propertyType: prop.propertyType || "House",
+              forRent: prop.propertyAdType === "rent",
               approvalStatus: prop.approvalStatus,
             };
           });
@@ -238,13 +275,35 @@ export default function PropertyFiltering() {
   };
 
   useEffect(() => {
-    // Only use API properties - no mock data fallback
-    const dataSource = apiProperties;
+    // Currency to country mapping
+    const currencyCountryMap = {
+      'AED': ['UAE', 'United Arab Emirates'],
+      'USD': ['USA', 'United States', 'US'],
+      'EUR': ['Portugal', 'Cyprus', 'Malta', 'Latvia', 'Europe'],
+      'CAD': ['Canada'],
+      'AUD': ['Australia'],
+      'GBP': ['UK', 'United Kingdom'],
+      'INR': ['India'],
+    };
 
-    if (apiProperties.length === 0 && !isLoadingApi) {
+    // Filter by currency first
+    let currencyFilteredListings = apiProperties;
+    if (selectedCurrency !== 'ALL') {
+      const allowedCountries = currencyCountryMap[selectedCurrency] || [];
+      currencyFilteredListings = apiProperties.filter(elm =>
+        allowedCountries.some(country =>
+          elm.country?.toLowerCase() === country.toLowerCase()
+        )
+      );
+    }
+
+    // Only use API properties - no mock data fallback
+    const dataSource = currencyFilteredListings;
+
+    if (currencyFilteredListings.length === 0 && !isLoadingApi) {
       console.warn(`⚠️ No properties found in database for the current filter`);
-    } else if (apiProperties.length > 0) {
-      console.log(`✓ Displaying ${apiProperties.length} real properties from database`);
+    } else if (currencyFilteredListings.length > 0) {
+      console.log(`✓ Displaying ${currencyFilteredListings.length} real properties from database`);
     }
 
     const refItems = dataSource.filter((elm) => {
@@ -311,10 +370,8 @@ export default function PropertyFiltering() {
       !categories.length
         ? [...refItems]
         : refItems.filter((elm) =>
-            categories.some((elem) =>
-              elm.category && elm.category.some((cat) =>
-                cat.toLowerCase() === elem.toLowerCase()
-              )
+            categories.every((elem) =>
+              elm.features && elm.features.includes(elem)
             )
           ),
     ];
@@ -327,12 +384,13 @@ export default function PropertyFiltering() {
     }
 
     if (priceRange.length > 0) {
-      const filtered = refItems.filter(
-        (elm) =>
-          Number(elm.price.split("$")[1].split(",").join("")) >=
-            priceRange[0] &&
-          Number(elm.price.split("$")[1].split(",").join("")) <= priceRange[1]
-      );
+      const filtered = refItems.filter((elm) => {
+        // Extract numeric value from price string (works with any currency)
+        const priceMatch = elm.price.match(/[\d,]+/);
+        if (!priceMatch) return false;
+        const numericPrice = Number(priceMatch[0].replace(/,/g, ''));
+        return numericPrice >= priceRange[0] && numericPrice <= priceRange[1];
+      });
       filteredArrays = [...filteredArrays, filtered];
     }
 
@@ -362,7 +420,36 @@ export default function PropertyFiltering() {
     console.log('🔍 Final properties:', commonItems.map(p => ({ title: p.title, category: p.category })));
 
     setFilteredData(commonItems);
+
+    // Track search behaviour for AI recommendations (debounced — only fires 1.5s after last filter change)
+    const searchTrackTimer = setTimeout(() => {
+      const hasActiveFilters =
+        listingStatus !== 'All' ||
+        propertyTypes.length > 0 ||
+        location !== 'All Cities' ||
+        bedrooms > 0 ||
+        bathroms > 0 ||
+        searchQuery.trim() !== '' ||
+        priceRange[0] > 0 ||
+        priceRange[1] < 10000000;
+
+      if (hasActiveFilters) {
+        propertiesAPI.trackSearch(searchQuery, {
+          city: location !== 'All Cities' ? location : undefined,
+          propertyType: propertyTypes[0] || undefined,
+          minPrice: priceRange[0] || undefined,
+          maxPrice: priceRange[1] < 10000000 ? priceRange[1] : undefined,
+          bedrooms: bedrooms || undefined,
+          bathrooms: bathroms || undefined,
+          propertyCategory: listingStatus !== 'All' ? listingStatus : undefined,
+        }, commonItems.length);
+      }
+    }, 1500);
+
+    return () => clearTimeout(searchTrackTimer);
   }, [
+    apiProperties,
+    selectedCurrency,
     listingStatus,
     propertyTypes,
     priceRange,
@@ -373,7 +460,6 @@ export default function PropertyFiltering() {
     yearBuild,
     categories,
     searchQuery,
-    apiProperties,
   ]);
 
   useEffect(() => {
@@ -384,18 +470,19 @@ export default function PropertyFiltering() {
       );
       setSortedFilteredData(sorted);
     } else if (currentSortingOption.trim() == "Price Low") {
-      const sorted = [...filteredData].sort(
-        (a, b) =>
-          a.price.split("$")[1].split(",").join("") -
-          b.price.split("$")[1].split(",").join("")
+      const sorted = [...filteredData].sort((a, b) => {
+        const priceA = Number(a.price.match(/[\d,]+/)?.[0]?.replace(/,/g, '') || 0);
+        const priceB = Number(b.price.match(/[\d,]+/)?.[0]?.replace(/,/g, '') || 0);
+        return priceA - priceB;
+      }
       );
       setSortedFilteredData(sorted);
     } else if (currentSortingOption.trim() == "Price High") {
-      const sorted = [...filteredData].sort(
-        (a, b) =>
-          b.price.split("$")[1].split(",").join("") -
-          a.price.split("$")[1].split(",").join("")
-      );
+      const sorted = [...filteredData].sort((a, b) => {
+        const priceA = Number(a.price.match(/[\d,]+/)?.[0]?.replace(/,/g, '') || 0);
+        const priceB = Number(b.price.match(/[\d,]+/)?.[0]?.replace(/,/g, '') || 0);
+        return priceB - priceA;
+      });
       setSortedFilteredData(sorted);
     } else {
       setSortedFilteredData(filteredData);

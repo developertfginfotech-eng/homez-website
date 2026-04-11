@@ -912,14 +912,27 @@ const DashboardKYCVerification = () => {
     }
   };
 
-  const handleFileChange = (e, fieldName) => {
+  const handleFileChange = (e, fieldName, side = null) => {
     const file = e.target.files[0];
     if (file) {
+      // If side is specified (front/back), store with suffix
+      const key = side ? `${fieldName}_${side}` : fieldName;
       setFormData({
         ...formData,
-        [fieldName]: file,
+        [key]: file,
       });
     }
+  };
+
+  // Helper function to determine if a document needs front/back upload
+  const needsFrontBackUpload = (fieldName) => {
+    const frontBackFields = [
+      'emiratesID', 'passport', 'passportCopy', 'driversLicense',
+      'nationalID', 'reraCard', 'govtID', 'idCard', 'license'
+    ];
+    return frontBackFields.some(field =>
+      fieldName.toLowerCase().includes(field.toLowerCase())
+    );
   };
 
   const handleSubmit = async (e) => {
@@ -1184,19 +1197,77 @@ const DashboardKYCVerification = () => {
                               <label className="form-label fw600">{doc.label}</label>
                               {doc.type === "file" ? (
                                 <>
-                                  <input
-                                    type="file"
-                                    className="form-control"
-                                    accept={doc.accept}
-                                    onChange={(e) => handleFileChange(e, doc.field)}
-                                    required
-                                  />
-                                  {doc.field.includes("Deed") || doc.field.includes("Title") || doc.field.includes("Certificate") ? (
-                                    <small className="text-muted">Upload property documents (PDF or Image)</small>
-                                  ) : doc.field.includes("License") || doc.field.includes("Certificate") ? (
-                                    <small className="text-muted">Upload valid license or certificate (PDF or Image)</small>
+                                  {needsFrontBackUpload(doc.field) ? (
+                                    // Render separate front and back upload fields for ID documents
+                                    <div className="row">
+                                      <div className="col-md-6 mb-3">
+                                        <label className="form-label" style={{ fontSize: "14px", color: "#6b7280", fontWeight: "600" }}>
+                                          <i className="fas fa-id-card me-2" style={{ color: "#eb6753" }}></i>
+                                          Front Side *
+                                        </label>
+                                        <input
+                                          type="file"
+                                          className="form-control"
+                                          accept={doc.accept}
+                                          onChange={(e) => handleFileChange(e, doc.field, 'front')}
+                                          required
+                                          style={{
+                                            padding: "10px",
+                                            border: "2px dashed #e5e7eb",
+                                            borderRadius: "8px",
+                                          }}
+                                        />
+                                        <small className="text-muted d-block mt-2">
+                                          <i className="fas fa-info-circle me-1"></i>
+                                          Upload front side of the document
+                                        </small>
+                                      </div>
+                                      <div className="col-md-6 mb-3">
+                                        <label className="form-label" style={{ fontSize: "14px", color: "#6b7280", fontWeight: "600" }}>
+                                          <i className="fas fa-id-card-alt me-2" style={{ color: "#eb6753" }}></i>
+                                          Back Side *
+                                        </label>
+                                        <input
+                                          type="file"
+                                          className="form-control"
+                                          accept={doc.accept}
+                                          onChange={(e) => handleFileChange(e, doc.field, 'back')}
+                                          required
+                                          style={{
+                                            padding: "10px",
+                                            border: "2px dashed #e5e7eb",
+                                            borderRadius: "8px",
+                                          }}
+                                        />
+                                        <small className="text-muted d-block mt-2">
+                                          <i className="fas fa-info-circle me-1"></i>
+                                          Upload back side of the document
+                                        </small>
+                                      </div>
+                                    </div>
                                   ) : (
-                                    <small className="text-muted">Upload document (PDF or Image)</small>
+                                    // Regular single file upload for other documents
+                                    <>
+                                      <input
+                                        type="file"
+                                        className="form-control"
+                                        accept={doc.accept}
+                                        onChange={(e) => handleFileChange(e, doc.field)}
+                                        required
+                                        style={{
+                                          padding: "10px",
+                                          border: "2px dashed #e5e7eb",
+                                          borderRadius: "8px",
+                                        }}
+                                      />
+                                      {doc.field.includes("Deed") || doc.field.includes("Title") || doc.field.includes("Certificate") ? (
+                                        <small className="text-muted">Upload property documents (PDF or Image)</small>
+                                      ) : doc.field.includes("License") || doc.field.includes("Certificate") ? (
+                                        <small className="text-muted">Upload valid license or certificate (PDF or Image)</small>
+                                      ) : (
+                                        <small className="text-muted">Upload document (PDF or Image)</small>
+                                      )}
+                                    </>
                                   )}
                                 </>
                               ) : doc.type === "select" ? (

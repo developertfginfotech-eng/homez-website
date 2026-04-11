@@ -2,9 +2,57 @@
 import Image from "next/image";
 import { Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { useState, useEffect } from "react";
+import { propertiesAPI } from "@/services/api";
 
-const GalleryBox = () => {
-  const imageUrls = ["/images/listings/listing-single-slide4.jpg"];
+const GalleryBox = ({ id }) => {
+  const [imageUrls, setImageUrls] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProperty = async () => {
+      try {
+        setLoading(true);
+        const response = await propertiesAPI.getById(id);
+        if (response.property) {
+          const prop = response.property;
+
+          // Construct image URLs
+          const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+          const backendUrl = API_URL.replace('/api', '');
+
+          if (prop.images && prop.images.length > 0) {
+            const urls = prop.images.map(img => {
+              return img.startsWith('http') ? img : `${backendUrl}${img}`;
+            });
+            setImageUrls(urls);
+          } else {
+            // Fallback image
+            setImageUrls(["/images/listings/listing-single-slide4.jpg"]);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching property images:', error);
+        setImageUrls(["/images/listings/listing-single-slide4.jpg"]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchProperty();
+    }
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="text-center py-5">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading images...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -27,7 +75,10 @@ const GalleryBox = () => {
                 height={475}
                 className=" w-100 h-100 cover"
                 src={imageUrl}
-                alt={`Image ${index + 1}`}
+                alt={`Property Image ${index + 1}`}
+                onError={(e) => {
+                  e.target.src = '/images/listings/listing-single-slide4.jpg';
+                }}
               />
             </div>
           </SwiperSlide>

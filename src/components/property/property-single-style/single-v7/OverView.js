@@ -1,8 +1,42 @@
-import listings from "@/data/listings";
-import React from "react";
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { getPropertyById } from "@/helpers/propertyApi";
 
 const OverView = ({ id }) => {
-  const data = listings.filter((elm) => elm.id == id)[0] || listings[0];
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProperty = async () => {
+      try {
+        setLoading(true);
+        const property = await getPropertyById(id);
+
+        const convertedData = {
+          bed: property.bedrooms || 0,
+          bath: property.bathrooms || 0,
+          sqft: property.sizeInFt || 0,
+          yearBuilding: property.yearBuilt || new Date().getFullYear(),
+          propertyType: property.propertyType || "House",
+        };
+
+        setData(convertedData);
+      } catch (error) {
+        console.error("Error fetching property:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchProperty();
+    }
+  }, [id]);
+
+  if (loading || !data) {
+    return null;
+  }
   const overviewData = [
     {
       icon: "flaticon-bed",

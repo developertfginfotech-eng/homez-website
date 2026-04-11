@@ -7,9 +7,11 @@ import PropertyType from "../../sidebar/PropertyType";
 import PriceRange from "../../sidebar/PriceRange";
 import Bedroom from "../../sidebar/Bedroom";
 import Bathroom from "../../sidebar/Bathroom";
+import { useTranslation } from "react-i18next";
 
 const TopFilterBar = ({filterFunctions,setCurrentSortingOption,colstyle,setColstyle}) => {
-  
+  const { t } = useTranslation('common');
+
   return (
     <>
       <div className="col-xl-9 d-none d-lg-block">
@@ -22,11 +24,11 @@ const TopFilterBar = ({filterFunctions,setCurrentSortingOption,colstyle,setColst
                 data-bs-toggle="dropdown"
                 data-bs-auto-close="outside"
               >
-                For Sale <i className="fa fa-angle-down ms-2" />
+                {t('listing.forSale')} <i className="fa fa-angle-down ms-2" />
               </button>
               <div className="dropdown-menu">
                 <div className="widget-wrapper bdrb1 pb25 mb0 pl20">
-                  <h6 className="list-title">Listing Status</h6>
+                  <h6 className="list-title">{t('listing.listingStatus')}</h6>
                   <div className="radio-element">
                     <ListingStatus filterFunctions={filterFunctions} />
                   </div>
@@ -36,7 +38,7 @@ const TopFilterBar = ({filterFunctions,setCurrentSortingOption,colstyle,setColst
                     type="button"
                     className="done-btn ud-btn btn-thm drop_btn"
                   >
-                    Done
+                    {t('listing.done')}
                   </button>
                 </div>
               </div>
@@ -50,11 +52,11 @@ const TopFilterBar = ({filterFunctions,setCurrentSortingOption,colstyle,setColst
                 data-bs-toggle="dropdown"
                 data-bs-auto-close="outside"
               >
-                Property Type <i className="fa fa-angle-down ms-2" />
+                {t('listing.propertyType')} <i className="fa fa-angle-down ms-2" />
               </button>
               <div className="dropdown-menu">
                 <div className="widget-wrapper bdrb1 pb25 mb0 pl20">
-                  <h6 className="list-title">Property Type</h6>
+                  <h6 className="list-title">{t('listing.propertyType')}</h6>
                   <div className="checkbox-style1">
                     <PropertyType filterFunctions={filterFunctions} />
                   </div>
@@ -64,7 +66,7 @@ const TopFilterBar = ({filterFunctions,setCurrentSortingOption,colstyle,setColst
                     type="button"
                     className="done-btn ud-btn btn-thm dropdown-toggle"
                   >
-                    Done
+                    {t('listing.done')}
                   </button>
                 </div>
               </div>
@@ -78,12 +80,12 @@ const TopFilterBar = ({filterFunctions,setCurrentSortingOption,colstyle,setColst
                 data-bs-toggle="dropdown"
                 data-bs-auto-close="outside"
               >
-                Price <i className="fa fa-angle-down ms-2" />
+                {t('listing.price')} <i className="fa fa-angle-down ms-2" />
               </button>
 
               <div className="dropdown-menu dd3">
                 <div className="widget-wrapper bdrb1 pb25 mb0 pl20 pr20">
-                  <h6 className="list-title">Price Range</h6>
+                  <h6 className="list-title">{t('listing.priceRange')}</h6>
                   {/* Range Slider Desktop Version */}
                   <div className="range-slider-style1">
                     <PriceRange filterFunctions={filterFunctions} />
@@ -94,7 +96,7 @@ const TopFilterBar = ({filterFunctions,setCurrentSortingOption,colstyle,setColst
                     type="button"
                     className="done-btn ud-btn btn-thm drop_btn3"
                   >
-                    Done
+                    {t('listing.done')}
                   </button>
                 </div>
               </div>
@@ -108,18 +110,18 @@ const TopFilterBar = ({filterFunctions,setCurrentSortingOption,colstyle,setColst
                 data-bs-toggle="dropdown"
                 data-bs-auto-close="outside"
               >
-                Beds / Baths <i className="fa fa-angle-down ms-2" />
+                {t('listing.bedsBaths')} <i className="fa fa-angle-down ms-2" />
               </button>
               <div className="dropdown-menu dd4 pb20">
                 <div className="widget-wrapper pl20 pr20">
-                  <h6 className="list-title">Bedrooms</h6>
+                  <h6 className="list-title">{t('propertyDetails.bedroom')}</h6>
                   <div className="d-flex">
                     <Bedroom filterFunctions={filterFunctions}/>
                   </div>
                 </div>
 
                 <div className="widget-wrapper bdrb1 pb25 mb0 pl20 pr20">
-                  <h6 className="list-title">Bathrooms</h6>
+                  <h6 className="list-title">{t('propertyDetails.bath')}</h6>
                   <div className="d-flex">
                     <Bathroom filterFunctions={filterFunctions}/>
                   </div>
@@ -129,7 +131,7 @@ const TopFilterBar = ({filterFunctions,setCurrentSortingOption,colstyle,setColst
                     type="button"
                     className="done-btn ud-btn btn-thm drop_btn4"
                   >
-                    Done
+                    {t('listing.done')}
                   </button>
                 </div>
               </div>
@@ -144,7 +146,7 @@ const TopFilterBar = ({filterFunctions,setCurrentSortingOption,colstyle,setColst
                 data-bs-toggle="modal"
                 data-bs-target="#advanceSeachModal"
               >
-                <i className="flaticon-settings me-2" /> More Filter
+                <i className="flaticon-settings me-2" /> {t('listing.moreFilter')}
               </button>
             </li>
           </ul>
@@ -155,9 +157,9 @@ const TopFilterBar = ({filterFunctions,setCurrentSortingOption,colstyle,setColst
       <div className="col-xl-3">
         <div className="page_control_shorting d-flex align-items-center justify-content-center justify-content-sm-end">
           <div className="pcs_dropdown pr10 d-flex align-items-center">
-            <span style={{ minWidth: "60px" }}>Sort by</span>
+            <span style={{ minWidth: "60px" }}>{t('listing.sortBy')}</span>
             <select className="form-select" onChange={(e)=>setCurrentSortingOption && setCurrentSortingOption(e.target.value)}>
-              <option>Newest</option>
+              <option>{t('listing.newest')}</option>
               <option>Best Seller</option>
               <option>Best Match</option>
               <option>Price Low</option>
@@ -165,10 +167,10 @@ const TopFilterBar = ({filterFunctions,setCurrentSortingOption,colstyle,setColst
             </select>
           </div>
           <div className={`pl15 pr15 bdrl1 bdrr1 d-none d-md-block cursor  ${!colstyle? 'menuActive':'#' } `}    onClick={()=>setColstyle(false)}>
-            Grid
+            {t('listing.grid')}
           </div>
           <div className={`pl15 d-none d-md-block cursor  ${colstyle? 'menuActive':'#' }`}   onClick={()=>setColstyle(true)}>
-            List
+            {t('listing.list')}
           </div>
         </div>
       </div>

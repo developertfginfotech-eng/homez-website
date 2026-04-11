@@ -2,9 +2,11 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import { propertiesAPI } from "@/services/api";
 
 const OverView = ({ property: propProperty }) => {
+  const { t } = useTranslation();
   const [property, setProperty] = useState(propProperty || null);
   const [loading, setLoading] = useState(!propProperty);
   const params = useParams();
@@ -40,34 +42,34 @@ const OverView = ({ property: propProperty }) => {
   const overviewData = [
     {
       icon: "flaticon-bed",
-      label: "Bedroom",
+      label: t('propertyDetails.bedroom'),
       value: property.bedrooms || 0,
     },
     {
       icon: "flaticon-shower",
-      label: "Bath",
+      label: t('propertyDetails.bath'),
       value: property.bathrooms || 0,
     },
     {
       icon: "flaticon-event",
-      label: "Year Built",
+      label: t('propertyDetails.yearBuilt'),
       value: property.yearBuilt || "N/A",
     },
     {
       icon: "flaticon-garage",
-      label: "Garage",
+      label: t('propertyDetails.garage'),
       value: property.garages || 0,
       xs: true,
     },
     {
       icon: "flaticon-expand",
-      label: "Sqft",
+      label: t('propertyDetails.sqft'),
       value: property.sizeInFt || 0,
       xs: true,
     },
     {
       icon: "flaticon-home-1",
-      label: "Property Type",
+      label: t('propertyDetails.propertyType'),
       value: property.category?.[0] || property.structureType || "N/A",
     },
   ];

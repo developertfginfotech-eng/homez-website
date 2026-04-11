@@ -1,316 +1,183 @@
 "use client";
-import {
-  GoogleMap,
-  Marker,
-  MarkerClusterer,
-  useLoadScript,
-  InfoWindow,
-} from "@react-google-maps/api";
-import { useMemo, useState } from "react";
-
-import listings from "@/data/listings";
+import { useMemo, useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 
-const option = {
-  zoomControl: true,
-  disableDefaultUI: true,
-  styles: [
-    {
-      featureType: "all",
-      elementType: "geometry.fill",
-      stylers: [
-        {
-          weight: "2.00",
-        },
-      ],
-    },
-    {
-      featureType: "all",
-      elementType: "geometry.stroke",
-      stylers: [
-        {
-          color: "#9c9c9c",
-        },
-      ],
-    },
-    {
-      featureType: "all",
-      elementType: "labels.text",
-      stylers: [
-        {
-          visibility: "on",
-        },
-      ],
-    },
-    {
-      featureType: "landscape",
-      elementType: "all",
-      stylers: [
-        {
-          color: "#f2f2f2",
-        },
-      ],
-    },
-    {
-      featureType: "landscape",
-      elementType: "geometry.fill",
-      stylers: [
-        {
-          color: "#ffffff",
-        },
-      ],
-    },
-    {
-      featureType: "landscape.man_made",
-      elementType: "geometry.fill",
-      stylers: [
-        {
-          color: "#ffffff",
-        },
-      ],
-    },
-    {
-      featureType: "poi",
-      elementType: "all",
-      stylers: [
-        {
-          visibility: "off",
-        },
-      ],
-    },
-    {
-      featureType: "road",
-      elementType: "all",
-      stylers: [
-        {
-          saturation: -100,
-        },
-        {
-          lightness: 45,
-        },
-      ],
-    },
-    {
-      featureType: "road",
-      elementType: "geometry.fill",
-      stylers: [
-        {
-          color: "#eeeeee",
-        },
-      ],
-    },
-    {
-      featureType: "road",
-      elementType: "labels.text.fill",
-      stylers: [
-        {
-          color: "#7b7b7b",
-        },
-      ],
-    },
-    {
-      featureType: "road",
-      elementType: "labels.text.stroke",
-      stylers: [
-        {
-          color: "#ffffff",
-        },
-      ],
-    },
-    {
-      featureType: "road.highway",
-      elementType: "all",
-      stylers: [
-        {
-          visibility: "simplified",
-        },
-      ],
-    },
-    {
-      featureType: "road.arterial",
-      elementType: "labels.icon",
-      stylers: [
-        {
-          visibility: "off",
-        },
-      ],
-    },
-    {
-      featureType: "transit",
-      elementType: "all",
-      stylers: [
-        {
-          visibility: "off",
-        },
-      ],
-    },
-    {
-      featureType: "water",
-      elementType: "all",
-      stylers: [
-        {
-          color: "#46bcec",
-        },
-        {
-          visibility: "on",
-        },
-      ],
-    },
-    {
-      featureType: "water",
-      elementType: "geometry.fill",
-      stylers: [
-        {
-          color: "#c8d7d4",
-        },
-      ],
-    },
-    {
-      featureType: "water",
-      elementType: "labels.text.fill",
-      stylers: [
-        {
-          color: "#070707",
-        },
-      ],
-    },
-    {
-      featureType: "water",
-      elementType: "labels.text.stroke",
-      stylers: [
-        {
-          color: "#ffffff",
-        },
-      ],
-    },
-  ],
-  scrollwheel: true,
-};
-const containerStyle = {
-  width: "100%",
-  height: "100%",
-};
-export default function ListingMap1() {
-  const [getLocation, setLocation] = useState(null);
+// Dynamically import Leaflet components (client-side only)
+const MapContainer = dynamic(
+  () => import("react-leaflet").then((mod) => mod.MapContainer),
+  { ssr: false }
+);
+const TileLayer = dynamic(
+  () => import("react-leaflet").then((mod) => mod.TileLayer),
+  { ssr: false }
+);
+const Marker = dynamic(
+  () => import("react-leaflet").then((mod) => mod.Marker),
+  { ssr: false }
+);
+const Popup = dynamic(
+  () => import("react-leaflet").then((mod) => mod.Popup),
+  { ssr: false }
+);
 
-  const { isLoaded } = useLoadScript({
-    googleMapsApiKey: "AIzaSyAAz77U5XQuEME6TpftaMdX0bBelQxXRlM",
-  });
-  const center = useMemo(
-    () => ({ lat: 27.411201277163975, lng: -96.12394824867293 }),
-    []
-  );
+export default function ListingMap1({ properties = [] }) {
+  const [leafletLoaded, setLeafletLoaded] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+  const [mapError, setMapError] = useState(null);
 
-  // add long & lat
-  const locationHandler = (location) => {
-    setLocation(location);
+  useEffect(() => {
+    try {
+      setIsMounted(true);
+      setLeafletLoaded(true);
+    } catch (error) {
+      console.error('Map initialization error:', error);
+      setMapError(error.message);
+    }
+  }, []);
+
+  // Country-specific default coordinates
+  const getCountryCoordinates = (countryName) => {
+    const coordinates = {
+      'Australia': [-33.8688, 151.2093], // Sydney
+      'UAE': [25.2048, 55.2708], // Dubai
+      'United Arab Emirates': [25.2048, 55.2708], // Dubai
+      'USA': [40.7128, -74.0060], // New York
+      'United States': [40.7128, -74.0060], // New York
+      'UK': [51.5074, -0.1278], // London
+      'United Kingdom': [51.5074, -0.1278], // London
+      'Canada': [43.6532, -79.3832], // Toronto
+      'India': [28.6139, 77.2090], // New Delhi
+      'Germany': [52.5200, 13.4050], // Berlin
+      'France': [48.8566, 2.3522], // Paris
+    };
+    return coordinates[countryName] || [25.2048, 55.2708]; // Default to Dubai if country not found
   };
 
-  // close handler
-  const closeCardHandler = () => {
-    setLocation(null);
-  };
+  // Calculate center based on properties or use country-specific default
+  const center = useMemo(() => {
+    if (properties.length > 0) {
+      // Try to use first property with valid coordinates
+      if (properties[0].latitude && properties[0].longitude) {
+        return [properties[0].latitude, properties[0].longitude];
+      }
+      // Otherwise use country-specific default
+      if (properties[0].country) {
+        return getCountryCoordinates(properties[0].country);
+      }
+    }
+    // Fallback to Dubai
+    return [25.2048, 55.2708];
+  }, [properties]);
+
+  if (mapError) {
+    return (
+      <div style={{ height: "100%", minHeight: "400px", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column" }}>
+        <p>Unable to load map</p>
+        <small style={{ color: "#999" }}>{mapError}</small>
+      </div>
+    );
+  }
+
+  if (!isMounted || !leafletLoaded) {
+    return <div style={{ height: "100%", minHeight: "400px", display: "flex", alignItems: "center", justifyContent: "center" }}>Loading map...</div>;
+  }
+
+  // Check if we're using property coordinates or country default
+  const hasPropertyCoordinates = properties.length > 0 && properties[0].latitude && properties[0].longitude;
+  const propertiesWithCoordinates = properties.filter(p => p.latitude && p.longitude);
 
   return (
     <>
-      {!isLoaded ? (
-        <p>Loading...</p>
-      ) : (
-        <GoogleMap
-          mapContainerStyle={containerStyle}
-          center={center}
-          zoom={4}
-          options={option}
-        >
-          <MarkerClusterer>
-            {(clusterer) =>
-              listings.slice(0, 6).map((marker) => (
-                <Marker
-                  key={marker.id}
-                  position={{
-                    lat: marker.lat,
-                    lng: marker.long,
-                  }}
-                  clusterer={clusterer}
-                  onClick={() => locationHandler(marker)}
-                ></Marker>
-              ))
-            }
-          </MarkerClusterer>
-          {getLocation !== null && (
-            <InfoWindow
-              position={{
-                lat: getLocation.lat,
-                lng: getLocation.long,
-              }}
-              onCloseClick={closeCardHandler}
+      {!hasPropertyCoordinates && properties.length > 0 && (
+        <div style={{
+          position: 'absolute',
+          top: '10px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          background: 'rgba(235, 103, 83, 0.95)',
+          color: 'white',
+          padding: '8px 16px',
+          borderRadius: '6px',
+          fontSize: '12px',
+          zIndex: 1000,
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          fontWeight: '500'
+        }}>
+          <i className="fas fa-info-circle me-2"></i>
+          Showing {properties[0].country || 'country'} overview - Add property coordinates for exact locations
+        </div>
+      )}
+      <MapContainer
+        key={`map-${properties.length}-${center[0]}-${center[1]}`}
+        center={center}
+        zoom={hasPropertyCoordinates ? (properties.length > 1 ? 10 : 13) : 11}
+        style={{ height: "100%", width: "100%", minHeight: "400px" }}
+        scrollWheelZoom={true}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+
+        {properties
+          .filter(marker => marker.latitude && marker.longitude)
+          .map((marker) => (
+            <Marker
+              key={marker.id}
+              position={[marker.latitude, marker.longitude]}
             >
-              <div>
-                <div className="listing-style1">
-                  <div className="list-thumb">
-                    <Image
-                      width={382}
-                      height={248}
-                      className="w-100 h-100 cover"
-                      src={getLocation.image}
-                      alt="listings"
-                    />
-                    <div className="sale-sticker-wrap">
-                      {!getLocation.forRent && (
-                        <div className="list-tag fz12">
-                          <span className="flaticon-electricity me-2" />
-                          FEATURED
+              <Popup>
+                <div style={{ width: "250px" }}>
+                  <div className="listing-style1">
+                    <div className="list-thumb">
+                      <Image
+                        width={250}
+                        height={150}
+                        className="w-100 h-auto cover"
+                        src={marker.image || "/images/listings/listing-1.jpg"}
+                        alt={marker.title}
+                        style={{ borderRadius: "8px 8px 0 0" }}
+                      />
+                      {!marker.forRent && (
+                        <div className="sale-sticker-wrap">
+                          <div className="list-tag fz12">
+                            <span className="flaticon-electricity me-2" />
+                            FEATURED
+                          </div>
                         </div>
                       )}
+                      <div className="list-price" style={{ position: "absolute", bottom: "10px", left: "10px", background: "rgba(0,0,0,0.7)", padding: "5px 10px", borderRadius: "4px", color: "white" }}>
+                        {marker.price} / <span>mo</span>
+                      </div>
                     </div>
-
-                    <div className="list-price">
-                      {getLocation.price} / <span>mo</span>
-                    </div>
-                  </div>
-                  <div className="list-content">
-                    <h6 className="list-title">
-                      <Link href={`/single-v1/${getLocation.id}`}>
-                        {getLocation.title}
-                      </Link>
-                    </h6>
-                    <p className="list-text">{getLocation.location}</p>
-                    <div className="list-meta d-flex align-items-center">
-                      <a href="#">
-                        <span className="flaticon-bed" /> {getLocation.bed} bed
-                      </a>
-                      <a href="#">
-                        <span className="flaticon-shower" /> {getLocation.bath}{" "}
-                        bath
-                      </a>
-                      <a href="#">
-                        <span className="flaticon-expand" /> {getLocation.sqft}{" "}
-                        sqft
-                      </a>
-                    </div>
-                    <hr className="mt-2 mb-2" />
-                    <div className="list-meta2 d-flex justify-content-between align-items-center">
-                      <span className="for-what">For Rent</span>
-                      <div className="icons d-flex align-items-center">
-                        <a href="#">
-                          <span className="flaticon-fullscreen" />
-                        </a>
-                        <a href="#">
-                          <span className="flaticon-new-tab" />
-                        </a>
-                        <a href="#">
-                          <span className="flaticon-like" />
-                        </a>
+                    <div className="list-content" style={{ padding: "10px" }}>
+                      <h6 className="list-title" style={{ fontSize: "14px", marginBottom: "5px" }}>
+                        <Link href={`/single-v5/${marker.id}`}>
+                          {marker.title}
+                        </Link>
+                      </h6>
+                      <p className="list-text" style={{ fontSize: "12px", marginBottom: "8px" }}>{marker.location}</p>
+                      <div className="list-meta d-flex align-items-center" style={{ fontSize: "11px", gap: "8px" }}>
+                        <span>
+                          <span className="flaticon-bed" /> {marker.bed} bed
+                        </span>
+                        <span>
+                          <span className="flaticon-shower" /> {marker.bath} bath
+                        </span>
+                        <span>
+                          <span className="flaticon-expand" /> {marker.sqft} sqft
+                        </span>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </InfoWindow>
-          )}
-        </GoogleMap>
-      )}
+              </Popup>
+            </Marker>
+          ))
+        }
+      </MapContainer>
     </>
   );
 }

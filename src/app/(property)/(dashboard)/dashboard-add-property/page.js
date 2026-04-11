@@ -47,49 +47,72 @@ const DashboardAddProperty = () => {
             return;
           }
 
-          // Fetch KYC status from API
+          // Fetch KYC status from API with timeout
           const token = localStorage.getItem("authToken");
           console.log('📋 Token exists:', !!token);
 
           try {
-            const response = await fetch("https://homez-q5lh.onrender.com/api/kyc/status", {
+            // Create abort controller for timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/kyc/status`, {
               method: "GET",
               headers: {
                 "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json"
-              }
+              },
+              signal: controller.signal
             });
 
-            console.log('API Response Status:', response.status);
+            clearTimeout(timeoutId);
+
             const data = await response.json();
-            console.log('API Response Data:', data);
 
             if (response.ok && data.success && data.kyc) {
               const kycStatus = data.kyc.status;
-              console.log('✓ KYC Status from API:', kycStatus);
+              console.log('✓ KYC Status:', kycStatus);
               localStorage.setItem("kycStatus", kycStatus);
-              
+
               if (kycStatus === "verified") {
-                console.log('✅ KYC Verified - showing add property form');
                 setKycVerified(true);
                 setKycPending(false);
               } else if (kycStatus === "pending") {
-                console.log('⏳ KYC Pending - showing pending message');
                 setKycVerified(false);
                 setKycPending(true);
               } else {
-                console.log('❌ KYC Not Submitted');
                 setKycVerified(false);
                 setKycPending(false);
               }
             } else {
-              throw new Error(data.message || "Invalid API response");
+              // No KYC record found or invalid response - this is normal for new users
+              console.log('ℹ️ No KYC record found - user needs to complete KYC verification');
+              localStorage.removeItem("kycStatus");
+              setKycVerified(false);
+              setKycPending(false);
             }
           } catch (error) {
-            console.error('❌ API Error:', error.message);
-            // Fallback to simple check
-            setKycVerified(false);
-            setKycPending(false);
+            // API error or timeout - check cache as fallback
+            if (error.name === 'AbortError') {
+              console.log('⚠️ KYC check timed out - using cached status');
+            } else {
+              console.log('ℹ️ Could not check KYC status - using cached status');
+            }
+
+            // Check cached KYC status from localStorage as fallback
+            const cachedStatus = localStorage.getItem("kycStatus");
+            if (cachedStatus === "verified") {
+              console.log('Using cached KYC status: verified');
+              setKycVerified(true);
+              setKycPending(false);
+            } else if (cachedStatus === "pending") {
+              console.log('Using cached KYC status: pending');
+              setKycVerified(false);
+              setKycPending(true);
+            } else {
+              setKycVerified(false);
+              setKycPending(false);
+            }
           }
 
           // Set user country
@@ -116,12 +139,10 @@ const DashboardAddProperty = () => {
       }
     };
 
-    // Check if there's existing data in sessionStorage
-    const savedData = sessionStorage.getItem("propertyFormData");
-    if (savedData && kycVerified) {
-      setInitialData(JSON.parse(savedData));
-      setShowDetailsForm(true);
-    }
+    // DON'T auto-load from sessionStorage - always start fresh
+    // User should always see the initial selection form first
+    // Clear any old data when page loads
+    sessionStorage.removeItem("propertyFormData");
 
     return () => {
       delete window.onPropertyFormSubmit;
@@ -286,12 +307,47 @@ const DashboardAddProperty = () => {
                             <p className="text-gray-dark">Reach thousands of potential buyers and renters</p>
                           </div>
                         </div>
+
+                        <div className="benefit-item d-flex mb20">
+                          <div className="icon-wrapper me-3">
+                            <i className="flaticon-verified text-thm fz24"></i>
+                          </div>
+                          <div>
+                            <h5 className="mb10">Verified Buyers</h5>
+                            <p className="text-gray-dark">Connect with genuine, verified buyers and tenants</p>
+                          </div>
+                        </div>
+
+                        <div className="benefit-item d-flex mb20">
+                          <div className="icon-wrapper me-3">
+                            <i className="flaticon-like text-thm fz24"></i>
+                          </div>
+                          <div>
+                            <h5 className="mb10">Easy Process</h5>
+                            <p className="text-gray-dark">Simple and quick property listing process</p>
+                          </div>
+                        </div>
+
+                        <div className="benefit-item d-flex">
+                          <div className="icon-wrapper me-3">
+                            <i className="flaticon-dollar text-thm fz24"></i>
+                          </div>
+                          <div>
+                            <h5 className="mb10">Free Posting</h5>
+                            <p className="text-gray-dark">Post your property absolutely free</p>
+                          </div>
+                        </div>
                       </div>
+                    </div>
+
+                    {/* Right Side - Property Form */}
+                    <div className="col-lg-8 col-xl-9 mb30">
+                      <PostPropertyForm />
                     </div>
                   </div>
                 </>
               ) : (
-                <PropertyDetailsForm userCountry={userCountry} />
+                <PropertyDetailsForm initialData={initialData} />
               )}
             </div>
           </div>

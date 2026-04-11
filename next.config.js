@@ -1,5 +1,16 @@
+
+
+
+
+
+
+
+
+const { i18n } = require('./next-i18next.config');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  i18n,
   sassOptions: {
     quietDeps: true, // This will silence deprecation warnings
     silenceDeprecations: [
@@ -28,8 +39,19 @@ const nextConfig = {
       {
         protocol: 'http',
         hostname: 'localhost',
+        port: '3001',
+        pathname: '/uploads/**',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
         port: '5000',
         pathname: '/uploads/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        pathname: '/**',
       },
     ],
   },

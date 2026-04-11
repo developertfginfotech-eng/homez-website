@@ -3,7 +3,7 @@ import GalleryBox from "./GalleryBox";
 import Map from "./Map";
 import RealMapView from "./RealMapView";
 
-const PropertyGallery = () => {
+const PropertyGallery = ({ id }) => {
   return (
     <>
       <div className="container">
@@ -76,7 +76,7 @@ const PropertyGallery = () => {
               <div className="row" data-aos="fade-up" data-aos-delay="300">
                 <div className="col-lg-12">
                   <div className="ps-v4-hero-slider-2">
-                    <GalleryBox />
+                    <GalleryBox id={id} />
                   </div>
                 </div>
               </div>
@@ -90,7 +90,7 @@ const PropertyGallery = () => {
             role="tabpanel"
             aria-labelledby="pills-profile-tab"
           >
-            <Map />
+            <Map id={id} />
           </div>
           {/* End tab-pane map */}
 
@@ -100,7 +100,7 @@ const PropertyGallery = () => {
             role="tabpanel"
             aria-labelledby="pills-contact-tab"
           >
-            <RealMapView />
+            <RealMapView id={id} />
           </div>
           {/* End tab-pane real location */}
         </div>

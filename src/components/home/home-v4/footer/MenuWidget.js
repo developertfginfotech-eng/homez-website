@@ -1,24 +1,28 @@
+"use client";
 import React from "react";
+import { useTranslate } from "@/hooks/useTranslate";
 
 const MenuWidget = () => {
+  const { t } = useTranslate();
+
   const menuSections = [
     {
-      title: "Popular Search",
+      title: t('footer.popularSearch'),
       links: [
-        { label: "Apartment for Rent", href: "#" },
-        { label: "Apartment Low to Hide", href: "#" },
-        { label: "Offices for Buy", href: "#" },
-        { label: "Offices for Rent", href: "#" },
+        { label: t('footer.apartmentForRent'), href: "#" },
+        { label: t('footer.apartmentLowToHide'), href: "#" },
+        { label: t('footer.officesForBuy'), href: "#" },
+        { label: t('footer.officesForRent'), href: "#" },
       ],
     },
 
     {
-      title: "Discover",
+      title: t('footer.discover'),
       links: [
-        { label: "Miami", href: "#" },
-        { label: "Los Angeles", href: "#" },
-        { label: "Chicago", href: "#" },
-        { label: "New York", href: "#" },
+        { label: t('footer.miami'), href: "#" },
+        { label: t('footer.losAngeles'), href: "#" },
+        { label: t('footer.chicago'), href: "#" },
+        { label: t('footer.newYork'), href: "#" },
       ],
     },
   ];
@@ -45,28 +49,28 @@ const MenuWidget = () => {
       <div className="col-sm-6 col-lg-3">
         <div className="footer-widget mb-4 mb-lg-5 ps-0 ps-lg-5">
           <div className="link-style1 light-style mb-3">
-            <h6 className="mb25">Quick Links</h6>
+            <h6 className="mb25">{t('footer.quickLinks')}</h6>
             <ul className="ps-0">
               <li>
-                <a href="#">Terms of Use</a>
+                <a href="#">{t('footer.termsOfUse')}</a>
               </li>
               <li>
-                <a href="#">Privacy Policy</a>
+                <a href="#">{t('footer.privacyPolicy')}</a>
               </li>
               <li>
-                <a href="#">Pricing Plans</a>
+                <a href="#">{t('footer.pricingPlans')}</a>
               </li>
               <li>
-                <a href="#">Our Services</a>
+                <a href="#">{t('footer.ourServices')}</a>
               </li>
               <li>
-                <a href="#">Contact Support</a>
+                <a href="#">{t('footer.contactSupport')}</a>
               </li>
               <li>
-                <a href="#">Careers</a>
+                <a href="#">{t('footer.careers')}</a>
               </li>
               <li>
-                <a href="#">FAQs</a>
+                <a href="#">{t('footer.faqs')}</a>
               </li>
             </ul>
           </div>

@@ -1,51 +1,82 @@
-import listings from "@/data/listings";
-import React from "react";
+"use client";
+import React, { useState, useEffect } from "react";
+import { propertiesAPI } from "@/services/api";
 
 const PropertyDetails = ({id}) => {
-  const data = listings.filter((elm) => elm.id == id)[0] || listings[0];
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProperty = async () => {
+      try {
+        setLoading(true);
+        const response = await propertiesAPI.getById(id);
+        if (response.property) {
+          setData(response.property);
+        }
+      } catch (error) {
+        console.error("Failed to fetch property:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchProperty();
+    }
+  }, [id]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!data) {
+    return <div>Property details not found</div>;
+  }
+
   const columns = [
     [
       {
         label: "Property ID",
-        value: "RT48",
+        value: data._id?.slice(-8) || "N/A",
       },
       {
         label: "Price",
-        value:data.price,
+        value: `$${data.price}`,
       },
       {
         label: "Property Size",
-        value: `${data.sqft} Sq Ft`,
+        value: `${data.sizeInFt || 0} Sq Ft`,
       },
       {
         label: "Bathrooms",
-        value: data.bath,
+        value: data.bathrooms || 0,
       },
       {
         label: "Bedrooms",
-        value: data.bed,
+        value: data.bedrooms || 0,
       },
     ],
     [
       {
         label: "Garage",
-        value: "2",
+        value: data.parking || "N/A",
       },
       {
         label: "Garage Size",
-        value: "200 SqFt",
+        value: "N/A",
       },
       {
         label: "Year Built",
-        value: data.yearBuilding,
+        value: data.yearBuilt || "N/A",
       },
       {
         label: "Property Type",
-        value: data.propertyType,
+        value: data.propertyType || "N/A",
       },
       {
         label: "Property Status",
-        value: `For ${data.forRent ? 'rent':'sale'}`,
+        value: `For ${data.propertyAdType === 'rent' ? 'rent' : 'sale'}`,
       },
     ],
   ];

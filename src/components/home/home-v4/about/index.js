@@ -1,13 +1,24 @@
+"use client";
+
 import React from "react";
 import SellingList from "./SellingList";
 import Link from "next/link";
 import ExclusiveAgnts from "./ExclusiveAgnts";
 import SingleAgent from "./SingleAgent";
 import Image from "next/image";
+import { useTranslate } from "@/hooks/useTranslate";
 
 const About = () => {
+  const { t } = useTranslate();
+
   return (
-    <div className="cta-banner bgc-f7 mx-auto maxw1600 pt70 pb140 pb30-md bdrs12 position-relative mx20-lg px20-sm">
+    <>
+      <style jsx>{`
+        .cta-banner:before {
+          display: none !important;
+        }
+      `}</style>
+      <div className="cta-banner bgc-f7 mx-auto maxw1600 pt70 pb140 pb30-md bdrs12 position-relative mx20-lg px20-sm">
       <div className="container">
         <div className="row align-items-start align-items-xl-center">
           <div className="col-md-10 col-lg-7 col-xl-6">
@@ -66,15 +77,14 @@ const About = () => {
               data-aos-delay="200"
             >
               <h2 className="title mb20">
-                Let’s find the right selling option for you
+                {t('sections.sellingOption')}
               </h2>
               <p className="text mb55 mb30-md fz14">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do{" "}
-                <br className="d-none d-xl-block" /> eiusmod tempor incididunt.
+                {t('sections.sellingDescription')}
               </p>
               <SellingList />
               <Link href="#" className="ud-btn btn-dark">
-                See More
+                {t('common.seeMore')}
                 <i className="fal fa-arrow-right-long" />
               </Link>
             </div>
@@ -82,6 +92,7 @@ const About = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

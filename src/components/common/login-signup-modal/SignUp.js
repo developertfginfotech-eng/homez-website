@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { authAPI, kycAPI } from "@/services/api";
+import { authAPI } from "@/services/api";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -11,30 +11,47 @@ const SignUp = () => {
     password: "",
     confirmPassword: "",
     phone: "",
-    countryCode: "+971",
+    countryCode: "+61",
     role: "buyer",
-    country: "UAE",
-    city: "",
-    address: "",
+    country: "Australia",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [validationErrors, setValidationErrors] = useState({
+    phone: "",
+    email: ""
+  });
 
   const countries = [
-    { code: "+971", name: "UAE" },
-    { code: "+1", name: "USA" },
-    { code: "+351", name: "Portugal" },
-    { code: "+1", name: "Canada" },
     { code: "+61", name: "Australia" },
-    { code: "+90", name: "Turkey" },
+    { code: "+1", name: "Canada" },
     { code: "+357", name: "Cyprus" },
-    { code: "+356", name: "Malta" },
     { code: "+36", name: "Hungary" },
     { code: "+371", name: "Latvia" },
-    { code: "+63", name: "Philippines" },
     { code: "+60", name: "Malaysia" },
+    { code: "+356", name: "Malta" },
+    { code: "+63", name: "Philippines" },
+    { code: "+351", name: "Portugal" },
+    { code: "+90", name: "Turkey" },
+    { code: "+971", name: "UAE" },
+    { code: "+1", name: "USA" },
   ];
+
+  // Phone validation patterns by country
+  const phoneValidation = {
+    "+971": { pattern: /^[0-9]{9}$/, message: "UAE phone number must be 9 digits" },
+    "+1": { pattern: /^[0-9]{10}$/, message: "Phone number must be 10 digits" },
+    "+351": { pattern: /^[0-9]{9}$/, message: "Portugal phone number must be 9 digits" },
+    "+61": { pattern: /^[0-9]{9}$/, message: "Australia phone number must be 9 digits" },
+    "+90": { pattern: /^[0-9]{10}$/, message: "Turkey phone number must be 10 digits" },
+    "+357": { pattern: /^[0-9]{8}$/, message: "Cyprus phone number must be 8 digits" },
+    "+356": { pattern: /^[0-9]{8}$/, message: "Malta phone number must be 8 digits" },
+    "+36": { pattern: /^[0-9]{9}$/, message: "Hungary phone number must be 9 digits" },
+    "+371": { pattern: /^[0-9]{8}$/, message: "Latvia phone number must be 8 digits" },
+    "+63": { pattern: /^[0-9]{10}$/, message: "Philippines phone number must be 10 digits" },
+    "+60": { pattern: /^[0-9]{9,10}$/, message: "Malaysia phone number must be 9-10 digits" },
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -47,6 +64,54 @@ const SignUp = () => {
         [name]: value,
         countryCode: selectedCountry ? selectedCountry.code : prev.countryCode,
       }));
+    } else if (name === "countryCode") {
+      // If country code changes, automatically update country
+      const selectedCountry = countries.find((c) => c.code === value);
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+        country: selectedCountry ? selectedCountry.name : prev.country,
+      }));
+    } else if (name === "role") {
+      setFormData((prev) => ({
+
+        ...prev,
+        [name]: value,
+      }));
+    } else if (name === "phone") {
+      // Validate phone number
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+
+      if (value) {
+        const validation = phoneValidation[formData.countryCode];
+        if (validation && !validation.pattern.test(value)) {
+          setValidationErrors(prev => ({ ...prev, phone: validation.message }));
+        } else {
+          setValidationErrors(prev => ({ ...prev, phone: "" }));
+        }
+      } else {
+        setValidationErrors(prev => ({ ...prev, phone: "" }));
+      }
+    } else if (name === "email") {
+      // Validate email
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+
+      if (value) {
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(value)) {
+          setValidationErrors(prev => ({ ...prev, email: "Please enter a valid email address" }));
+        } else {
+          setValidationErrors(prev => ({ ...prev, email: "" }));
+        }
+      } else {
+        setValidationErrors(prev => ({ ...prev, email: "" }));
+      }
     } else {
       setFormData((prev) => ({
         ...prev,
@@ -68,6 +133,22 @@ const SignUp = () => {
       return;
     }
 
+    // Validate phone number format based on country code
+    const validation = phoneValidation[formData.countryCode];
+    if (validation && !validation.pattern.test(formData.phone)) {
+      setError(validation.message);
+      setLoading(false);
+      return;
+    }
+
+    // Validate email format
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(formData.email)) {
+      setError("Please enter a valid email address");
+      setLoading(false);
+      return;
+    }
+
     try {
       // Remove confirmPassword before sending to backend
       const { confirmPassword, ...submitData } = formData;
@@ -85,24 +166,23 @@ const SignUp = () => {
           const userData = {
             ...response.user,
             country: formData.country,
-            city: formData.city,
-            address: formData.address,
             phone: formData.phone,
             countryCode: formData.countryCode
           };
           localStorage.setItem("user", JSON.stringify(userData));
         }
 
-        // Close registration modal
+        // Close registration modal first
         const modalElement = document.querySelector('[data-bs-dismiss="modal"]');
         if (modalElement) {
           modalElement.click();
         }
 
-        // Redirect everyone to home page after successful registration
+        // Wait for modal to close, then do a full page reload
+        // This ensures CSS loads properly
         setTimeout(() => {
           window.location.href = "/";
-        }, 1500);
+        }, 800);
       }
     } catch (err) {
       setError(err.message || "Registration failed. Please try again.");
@@ -143,12 +223,17 @@ const SignUp = () => {
         <input
           type="email"
           name="email"
-          className="form-control"
+          className={`form-control ${validationErrors.email ? "is-invalid" : formData.email && !validationErrors.email ? "is-valid" : ""}`}
           placeholder="Enter Email"
           value={formData.email}
           onChange={handleChange}
           required
         />
+        {validationErrors.email && (
+          <div className="invalid-feedback d-block">
+            {validationErrors.email}
+          </div>
+        )}
       </div>
       {/* End Email */}
 
@@ -163,8 +248,8 @@ const SignUp = () => {
             required
             style={{ maxWidth: "100px" }}
           >
-            {countries.map((country) => (
-              <option key={country.code} value={country.code}>
+            {countries.map((country, index) => (
+              <option key={`${country.code}-${index}`} value={country.code}>
                 {country.code}
               </option>
             ))}
@@ -172,13 +257,18 @@ const SignUp = () => {
           <input
             type="tel"
             name="phone"
-            className="form-control"
+            className={`form-control ${validationErrors.phone ? "is-invalid" : formData.phone && !validationErrors.phone ? "is-valid" : ""}`}
             placeholder="Enter Phone Number"
             value={formData.phone}
             onChange={handleChange}
             required
           />
         </div>
+        {validationErrors.phone && (
+          <div className="invalid-feedback d-block">
+            {validationErrors.phone}
+          </div>
+        )}
       </div>
       {/* End Phone */}
 
@@ -191,8 +281,8 @@ const SignUp = () => {
           onChange={handleChange}
           required
         >
-          {countries.map((country) => (
-            <option key={country.name} value={country.name}>
+          {countries.map((country, index) => (
+            <option key={`country-${index}`} value={country.name}>
               {country.name}
             </option>
           ))}
@@ -214,34 +304,6 @@ const SignUp = () => {
         </select>
       </div>
       {/* End Role */}
-
-      <div className="mb25">
-        <label className="form-label fw600 dark-color">City</label>
-        <input
-          type="text"
-          name="city"
-          className="form-control"
-          placeholder="Enter City"
-          value={formData.city}
-          onChange={handleChange}
-          required
-        />
-      </div>
-      {/* End City */}
-
-      <div className="mb25">
-        <label className="form-label fw600 dark-color">Address</label>
-        <input
-          type="text"
-          name="address"
-          className="form-control"
-          placeholder="Enter Address"
-          value={formData.address}
-          onChange={handleChange}
-          required
-        />
-      </div>
-      {/* End Address */}
 
       <div className="mb20">
         <label className="form-label fw600 dark-color">Password</label>

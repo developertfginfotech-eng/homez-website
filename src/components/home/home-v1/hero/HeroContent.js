@@ -1,11 +1,28 @@
 "use client";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { getCityCounts } from "@/helpers/propertyApi";
 
 const HeroContent = () => {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("buy");
   const [searchQuery, setSearchQuery] = useState("");
+  const [popularCities, setPopularCities] = useState([]);
+
+  useEffect(() => {
+    const fetchPopularCities = async () => {
+      try {
+        const cities = await getCityCounts();
+        // Get top 5 cities for popular searches
+        setPopularCities(cities.slice(0, 5));
+      } catch (error) {
+        console.error("Error fetching popular cities:", error);
+        // Fallback to empty array if fetch fails
+        setPopularCities([]);
+      }
+    };
+    fetchPopularCities();
+  }, []);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -21,7 +38,6 @@ const HeroContent = () => {
   const tabs = [
     { id: "buy", label: "Buy", icon: "fas fa-home" },
     { id: "rent", label: "Rent", icon: "fas fa-key" },
-    { id: "pg", label: "PG", icon: "fas fa-bed" },
     { id: "commercial", label: "Commercial", icon: "fas fa-building" },
     { id: "plots", label: "Plots", icon: "fas fa-map" },
   ];
@@ -110,32 +126,34 @@ const HeroContent = () => {
         </form>
 
         {/* Popular Searches */}
-        <div className="popular-searches mt-3 text-center">
-          <span className="text-white me-3" style={{ fontSize: "14px", fontWeight: "500" }}>
-            Popular Searches:
-          </span>
-          {["Mumbai", "Delhi", "Bangalore", "Hyderabad", "Pune"].map((city, index) => (
-            <button
-              key={index}
-              onClick={() => {
-                setSearchQuery(city);
-                router.push(`/grid-full-3-col?search=${encodeURIComponent(city)}`);
-              }}
-              className="btn btn-sm me-2 mb-2"
-              style={{
-                backgroundColor: "rgba(255,255,255,0.2)",
-                color: "white",
-                border: "1px solid rgba(255,255,255,0.3)",
-                borderRadius: "20px",
-                padding: "5px 15px",
-                fontSize: "13px",
-                fontWeight: "500",
-              }}
-            >
-              {city}
-            </button>
-          ))}
-        </div>
+        {popularCities.length > 0 && (
+          <div className="popular-searches mt-3 text-center">
+            <span className="text-white me-3" style={{ fontSize: "14px", fontWeight: "500" }}>
+              Popular Searches:
+            </span>
+            {popularCities.map((cityData, index) => (
+              <button
+                key={index}
+                onClick={() => {
+                  setSearchQuery(cityData.city);
+                  router.push(`/grid-full-3-col?search=${encodeURIComponent(cityData.city)}`);
+                }}
+                className="btn btn-sm me-2 mb-2"
+                style={{
+                  backgroundColor: "rgba(255,255,255,0.2)",
+                  color: "white",
+                  border: "1px solid rgba(255,255,255,0.3)",
+                  borderRadius: "20px",
+                  padding: "5px 15px",
+                  fontSize: "13px",
+                  fontWeight: "500",
+                }}
+              >
+                {cityData.city}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

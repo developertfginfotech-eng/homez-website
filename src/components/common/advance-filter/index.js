@@ -90,6 +90,7 @@ const AdvanceFilterModal = () => {
                       styles={customStyles}
                       className="select-custom"
                       classNamePrefix="select"
+                      instanceId="advance-filter-type"
                       required
                     />
                   )}
@@ -150,6 +151,7 @@ const AdvanceFilterModal = () => {
                       options={locationOptions}
                       className="select-custom"
                       classNamePrefix="select"
+                      instanceId="advance-filter-location"
                       required
                     />
                   )}

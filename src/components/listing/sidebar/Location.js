@@ -8,14 +8,12 @@ const Location = ({ filterFunctions }) => {
     setShowSelect(true);
   }, []);
   const locationOptions = [
-    { value: "All Cities", label: "All Cities" },
-    { value: "California", label: "California" },
-    { value: "Los Angeles", label: "Los Angeles" },
-    { value: "New Jersey", label: "New Jersey" },
-    { value: "New York", label: "New York" },
-    { value: "San Diego", label: "San Diego" },
-    { value: "San Francisco", label: "San Francisco" },
-    { value: "Texas", label: "Texas" },
+    { value: "All", label: "All Countries" },
+    { value: "Australia", label: "Australia" },
+    { value: "Canada", label: "Canada" },
+    { value: "UAE", label: "UAE" },
+    { value: "UK", label: "UK" },
+    { value: "USA", label: "USA" },
   ];
 
   const customStyles = {
@@ -38,14 +36,11 @@ const Location = ({ filterFunctions }) => {
       {" "}
       {showSelect && (
         <Select
-          defaultValue={[locationOptions[0]]}
+          defaultValue={locationOptions[0]}
           name="colors"
           styles={customStyles}
           options={locationOptions}
-          value={{
-            value: filterFunctions.location,
-            label: filterFunctions.location,
-          }}
+          value={locationOptions.find(opt => opt.value === filterFunctions.location) || locationOptions[0]}
           className="select-custom filterSelect"
           classNamePrefix="select"
           onChange={(e) => filterFunctions?.handlelocation(e.value)}

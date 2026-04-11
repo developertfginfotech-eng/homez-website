@@ -2,8 +2,19 @@
 import Select from "react-select";
 import SingleAgentInfo from "./SingleAgentInfo";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 const InfoWithForm = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    profession: "",
+    message: "",
+  });
+
   const inqueryType = [
     { value: "Engineer", label: "Engineer" },
     { value: "Doctor", label: "Doctor" },
@@ -26,10 +37,57 @@ const InfoWithForm = () => {
       };
     },
   };
+
   const [showSelect, setShowSelect] = useState(false);
+
   useEffect(() => {
     setShowSelect(true);
+
+    // Check if user is logged in
+    const token = localStorage.getItem('authToken');
+    const userData = localStorage.getItem('user');
+
+    if (token && userData) {
+      setIsLoggedIn(true);
+      try {
+        const parsedUser = JSON.parse(userData);
+        setUser(parsedUser);
+        setFormData({
+          name: parsedUser.name || "",
+          phone: parsedUser.phone || "",
+          email: parsedUser.email || "",
+          profession: "",
+          message: "",
+        });
+      } catch (err) {
+        console.error("Failed to parse user data:", err);
+      }
+    } else {
+      setIsLoggedIn(false);
+    }
   }, []);
+
+  // Show login message if user is not logged in
+  if (!isLoggedIn) {
+    return (
+      <>
+        <SingleAgentInfo />
+        <div className="row">
+          <div className="col-md-12">
+            <div className="alert alert-warning border-warning" role="alert" style={{ padding: '20px', borderRadius: '8px', background: '#fff8e1', border: '1px solid #ffd54f' }}>
+              <p className="mb-3" style={{ fontSize: '15px', color: '#333', lineHeight: '1.6' }}>
+                You must first <Link href="/login" className="text-decoration-underline fw-bold" style={{ color: '#eb6753' }}>Login</Link> to your USER ACCOUNT to submit requests.
+              </p>
+              <p className="mb-0" style={{ fontSize: '14px', color: '#666' }}>
+                If you haven't registered yet, it's really easy and free.{' '}
+                <Link href="/register" className="text-decoration-underline fw-bold" style={{ color: '#eb6753' }}>Signup</Link> here.
+              </p>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
@@ -46,8 +104,12 @@ const InfoWithForm = () => {
                 <input
                   type="text"
                   className="form-control"
-                  placeholder="Ali Tufan"
+                  placeholder="Your Full Name"
+                  value={formData.name}
+                  readOnly
+                  required
                 />
+                <small className="text-muted">Using your account name</small>
               </div>
             </div>
             {/* End .col */}
@@ -58,10 +120,14 @@ const InfoWithForm = () => {
                   Phone
                 </label>
                 <input
-                  type="text"
+                  type="tel"
                   className="form-control"
                   placeholder="Enter your phone"
+                  value={formData.phone}
+                  readOnly
+                  required
                 />
+                <small className="text-muted">Using your account phone</small>
               </div>
             </div>
             {/* End .col */}
@@ -74,8 +140,12 @@ const InfoWithForm = () => {
                 <input
                   type="email"
                   className="form-control"
-                  placeholder="creativelayers088"
+                  placeholder="Your Email Address"
+                  value={formData.email}
+                  readOnly
+                  required
                 />
+                <small className="text-muted">Using your account email</small>
               </div>
             </div>
             {/* End .col */}

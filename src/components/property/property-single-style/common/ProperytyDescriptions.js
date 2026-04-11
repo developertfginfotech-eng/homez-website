@@ -2,9 +2,11 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import { propertiesAPI } from "@/services/api";
 
 const ProperytyDescriptions = ({ property: propProperty }) => {
+  const { t } = useTranslation();
   const [property, setProperty] = useState(propProperty || null);
   const [loading, setLoading] = useState(!propProperty);
   const params = useParams();
@@ -74,7 +76,7 @@ const ProperytyDescriptions = ({ property: propProperty }) => {
                 aria-expanded="false"
                 aria-controls="flush-collapseOne"
               >
-                Show more
+                {t('propertyDetails.showMore')}
               </button>
             </h2>
           </div>
