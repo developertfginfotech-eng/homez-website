@@ -56,6 +56,16 @@ const nextConfig = {
         hostname: 'images.unsplash.com',
         pathname: '/**',
       },
+      {
+        protocol: 'http',
+        hostname: '35.154.81.186',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'homez-q5lh.onrender.com',
+        pathname: '/**',
+      },
     ],
   },
 };
