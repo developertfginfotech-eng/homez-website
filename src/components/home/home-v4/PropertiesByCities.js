@@ -61,16 +61,8 @@ const PropertiesByCities = () => {
           'INR': ['India'],
         };
 
-        // Filter by currency if not ALL
+        // Countries section always shows all countries regardless of currency
         let filteredProps = approvedProps;
-        if (selectedCurrency !== 'ALL') {
-          const allowedCountries = currencyCountryMap[selectedCurrency] || [];
-          filteredProps = approvedProps.filter(property =>
-            allowedCountries.some(country =>
-              property.country?.toLowerCase() === country.toLowerCase()
-            )
-          );
-        }
 
         // Country landmark images mapping
         const countryLandmarkImages = {
