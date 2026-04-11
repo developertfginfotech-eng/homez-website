@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import ListingSidebar from "../../sidebar";
 import TopFilterBar from "./TopFilterBar";
@@ -8,7 +8,7 @@ import FeaturedListings from "./FeatuerdListings";
 import { propertiesAPI } from "@/services/api";
 import PaginationTwo from "../../PaginationTwo";
 
-export default function PropertyFiltering() {
+function PropertyFilteringInner() {
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get('category');
 
@@ -554,5 +554,13 @@ export default function PropertyFiltering() {
       </div>
       {/* End .container */}
     </section>
+  );
+}
+
+export default function PropertyFiltering() {
+  return (
+    <Suspense fallback={null}>
+      <PropertyFilteringInner />
+    </Suspense>
   );
 }

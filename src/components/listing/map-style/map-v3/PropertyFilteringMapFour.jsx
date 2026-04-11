@@ -2,7 +2,7 @@
 
 
 import { propertiesAPI } from "@/services/api";
-import React, { useState,useEffect } from 'react'
+import React, { useState, useEffect, Suspense } from 'react'
 import ListingSidebar from "../../sidebar";
 import TopFilterBar from "./TopFilterBar";
 import FeaturedListings from "./FeatuerdListings";
@@ -12,7 +12,7 @@ import ListingMap1 from "../ListingMap1";
 import { useSearchParams } from 'next/navigation';
 import { getCountryBySlug } from "@/data/countryDetails";
 
-export default function PropertyFilteringMapFour() {
+function PropertyFilteringMapFourInner() {
     const searchParams = useSearchParams();
     const countryParam = searchParams.get('country');
 
@@ -966,4 +966,12 @@ export default function PropertyFilteringMapFour() {
       </section>
     </>
   )
+}
+
+export default function PropertyFilteringMapFour() {
+  return (
+    <Suspense fallback={null}>
+      <PropertyFilteringMapFourInner />
+    </Suspense>
+  );
 }

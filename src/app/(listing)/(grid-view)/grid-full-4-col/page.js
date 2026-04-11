@@ -4,11 +4,11 @@ import DefaultHeader from "@/components/common/DefaultHeader";
 import Footer from "@/components/common/default-footer";
 import MobileMenu from "@/components/common/mobile-menu";
 import ProperteyFiltering from "@/components/listing/grid-view/grid-full-4-col/PropertyFiltering";
-import React from "react";
+import React, { Suspense } from "react";
 import { useSearchParams } from 'next/navigation';
 import { useTranslation } from "react-i18next";
 
-const GridFull4Col = () => {
+function GridFull4ColInner() {
   const { t } = useTranslation('common');
   const searchParams = useSearchParams();
   const propertyType = searchParams.get('type');
@@ -18,7 +18,6 @@ const GridFull4Col = () => {
   const getTitle = () => {
     let title = t('listing.properties');
     if (propertyType) {
-      // Map property types to translation keys
       const typeMap = {
         'House': 'propertyTypes.houses',
         'Houses': 'propertyTypes.houses',
@@ -79,8 +78,6 @@ const GridFull4Col = () => {
 
       {/* Property Filtering */}
       <ProperteyFiltering/>
-      
-      {/* Property Filtering */}
 
       {/* Start Our Footer */}
       <section className="footer-style1 pt60 pb-0">
@@ -89,6 +86,12 @@ const GridFull4Col = () => {
       {/* End Our Footer */}
     </>
   );
-};
+}
 
-export default GridFull4Col;
+export default function GridFull4Col() {
+  return (
+    <Suspense fallback={null}>
+      <GridFull4ColInner />
+    </Suspense>
+  );
+}

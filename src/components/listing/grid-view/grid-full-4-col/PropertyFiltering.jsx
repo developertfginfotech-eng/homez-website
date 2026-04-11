@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, Suspense } from 'react'
 import ListingSidebar from '../../sidebar'
 import AdvanceFilterModal from '@/components/common/advance-filter-two'
 import TopFilterBar from './TopFilterBar'
@@ -10,7 +10,7 @@ import PaginationTwo from "../../PaginationTwo";
 import { getAllProperties } from "@/helpers/propertyApi";
 import { useSearchParams } from 'next/navigation';
 
-export default function PropertyFiltering() {
+function PropertyFilteringInner() {
     const searchParams = useSearchParams();
     const [filteredData, setFilteredData] = useState([]);
     const [apiProperties, setApiProperties] = useState([]);
@@ -469,4 +469,12 @@ export default function PropertyFiltering() {
         {/* End .container */}
       </section>
   )
+}
+
+export default function PropertyFiltering() {
+  return (
+    <Suspense fallback={null}>
+      <PropertyFilteringInner />
+    </Suspense>
+  );
 }
