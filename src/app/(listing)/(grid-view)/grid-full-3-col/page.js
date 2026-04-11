@@ -4,10 +4,10 @@ import DefaultHeader from "@/components/common/DefaultHeader";
 import Footer from "@/components/common/default-footer";
 import MobileMenu from "@/components/common/mobile-menu";
 import ProperteyFiltering from "@/components/listing/grid-view/grid-full-3-col/ProperteyFiltering";
-import React from "react";
+import React, { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
-const GridFull3Col = () => {
+function GridFull3ColInner() {
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get("search") || searchParams.get("city") || "";
   const type = searchParams.get("type") || "All";
@@ -18,17 +18,14 @@ const GridFull3Col = () => {
   const gym = searchParams.get("gym") === "true";
   const pool = searchParams.get("pool") === "true";
 
-  // Build smart title from all available filters
   const buildTitle = () => {
     if (isInvest) return `Best Investment Properties${searchQuery ? ` in ${searchQuery}` : ""}`;
 
-    // Build noun part: "3 Bedroom Houses" or "Properties"
     const noun = [];
     if (beds) noun.push(`${beds} Bedroom`);
     if (propertyType) noun.push(propertyType);
     else noun.push("Properties");
 
-    // Build amenity modifier: "with Gym & Pool"
     const amenities = [];
     if (gym) amenities.push("Gym");
     if (pool) amenities.push("Pool");
@@ -86,7 +83,7 @@ const GridFull3Col = () => {
       {/* End Breadcumb Sections */}
 
       {/* Property Filtering */}
-      <ProperteyFiltering/>
+      <ProperteyFiltering />
       {/* Property Filtering */}
 
       {/* Start Our Footer */}
@@ -96,6 +93,12 @@ const GridFull3Col = () => {
       {/* End Our Footer */}
     </>
   );
-};
+}
 
-export default GridFull3Col;
+export default function GridFull3Col() {
+  return (
+    <Suspense fallback={null}>
+      <GridFull3ColInner />
+    </Suspense>
+  );
+}

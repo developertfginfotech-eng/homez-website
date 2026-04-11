@@ -380,6 +380,7 @@ const PropertyDetailsForm = ({ initialData }) => {
 
   // Get user's country from localStorage
   const getUserCountry = () => {
+    if (typeof window === 'undefined') return 'UAE';
     try {
       const userStr = localStorage.getItem("user");
       if (userStr) {
