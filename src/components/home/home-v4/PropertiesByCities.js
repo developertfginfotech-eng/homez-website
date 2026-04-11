@@ -33,7 +33,7 @@ const PropertiesByCities = () => {
 
   // Listen for currency changes
   useEffect(() => {
-    const savedCurrency = localStorage.getItem('selectedCurrency') || 'USD';
+    const savedCurrency = localStorage.getItem('selectedCurrency') || 'ALL';
     setSelectedCurrency(savedCurrency);
 
     const handleCurrencyChange = (e) => {
