@@ -52,6 +52,11 @@ const SidebarDashboard = () => {
           icon: "flaticon-chat",
           text: "Property Inquiries",
         },
+        {
+          href: "/dashboard-notifications",
+          icon: "flaticon-bell",
+          text: "Notifications",
+        },
       ],
     },
     {
@@ -79,6 +84,35 @@ const SidebarDashboard = () => {
           icon: "flaticon-home",
           text: "My Properties",
           visibleTo: ["broker", "seller", "admin"],
+        },
+        {
+          href: "/dashboard-offers",
+          icon: "flaticon-receipt",
+          text: "Manage Offers",
+          visibleTo: ["broker", "seller", "admin"],
+        },
+        {
+          href: "/dashboard-listing-analytics",
+          icon: "flaticon-search-chart",
+          text: "Listing Analytics",
+          visibleTo: ["broker", "seller", "admin"],
+        },
+        {
+          href: "/dashboard-leads",
+          icon: "flaticon-user",
+          text: "CRM Leads",
+          visibleTo: ["broker", "seller", "admin"],
+        },
+        {
+          href: "/dashboard-deal-tracker",
+          icon: "flaticon-discovery",
+          text: "Deal Tracker",
+        },
+        {
+          href: "/dashboard-my-offers",
+          icon: "flaticon-receipt",
+          text: "My Offers",
+          visibleTo: ["buyer", "user"],
         },
         {
           href: "/dashboard-image-enhancer",
