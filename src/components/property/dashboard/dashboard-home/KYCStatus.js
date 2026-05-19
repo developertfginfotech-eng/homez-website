@@ -135,7 +135,7 @@ const KYCStatus = () => {
   if (error || !kycData) {
     return (
       <div className="ps-widget bgc-white bdrs12 default-box-shadow2 p30 mb30 overflow-hidden position-relative">
-        <div className="d-flex justify-content-between align-items-center">
+        <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3">
           <div>
             <h4 className="title fz17 mb10">KYC Verification</h4>
             <p className="text fz15 mb-0">
@@ -144,8 +144,7 @@ const KYCStatus = () => {
           </div>
           <Link
             href="/kyc-property-verification"
-            className="ud-btn btn-thm"
-            style={{ whiteSpace: "nowrap" }}
+            className="ud-btn btn-thm flex-shrink-0"
           >
             Verify Now
             <i className="fal fa-arrow-right-long ms-2" />

@@ -63,7 +63,7 @@ const PropertyViews = () => {
             id="hourly"
             role="tabpanel"
             aria-labelledby="hourly-tab"
-            style={{ height: "500px", maxHeight: "100%" }}
+            style={{ height: "clamp(280px, 40vw, 500px)" }}
           >
             <HoursBarChart />
           </div>
@@ -74,7 +74,7 @@ const PropertyViews = () => {
             id="weekly"
             role="tabpanel"
             aria-labelledby="weekly-tab"
-            style={{ height: "500px" }}
+            style={{ height: "clamp(280px, 40vw, 500px)" }}
           >
             <div className="chart-container">
               <WeeklyLineChart />
@@ -87,7 +87,7 @@ const PropertyViews = () => {
             id="monthly"
             role="tabpanel"
             aria-labelledby="monthly-tab"
-            style={{ height: "500px" }}
+            style={{ height: "clamp(280px, 40vw, 500px)" }}
           >
             <MonthlyPieChart />
           </div>
