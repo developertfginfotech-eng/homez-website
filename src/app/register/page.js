@@ -22,8 +22,8 @@ const Register = () => {
           data-aos-delay="300"
         />
         <div className="container">
-          <div className="row" data-aos="fade-left" data-aos-delay="300">
-            <div className="col-lg-6">
+          <div className="row justify-content-center" data-aos="fade-left" data-aos-delay="300">
+            <div className="col-12 col-sm-10 col-md-8 col-lg-6">
               <div className="log-reg-form signup-modal form-style1 bgc-white p50 p30-sm default-box-shadow2 bdrs12">
                 <div className="text-center mb40">
                   <Link href="/">
