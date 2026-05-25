@@ -12,7 +12,7 @@ const Footer = () => {
     <>
       <div className="container">
         <div className="row">
-          <div className="col-lg-5">
+          <div className="col-lg-4">
             <div className="footer-widget mb-4 mb-lg-5">
               <Link className="footer-logo" href="/">
                 <Image
@@ -31,9 +31,9 @@ const Footer = () => {
               </div>
             </div>
           </div>
-          {/* End .col-lg-5 */}
+          {/* End .col-lg-4 */}
 
-          <div className="col-lg-7">
+          <div className="col-lg-8">
             <div className="footer-widget mb-4 mb-lg-5">
               <Subscribe />
               <div className="row justify-content-between">

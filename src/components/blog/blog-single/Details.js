@@ -4,15 +4,15 @@ import React from 'react'
 
 export default function Details({id}) {
     const data = allblogs.filter((elm) => elm.id == id)[0] || allblogs[0];
+    const heroImage = data?.image || '/images/blog/blog-single-1.jpg';
   return (
     <>
      <div className="container">
           <div className="row" data-aos="fade-up" data-aos-delay="100">
             <div className="col-lg-12">
               <h2 className="blog-title">
-                {data.title ||  data.content || `7 Simple Ways to Keep Your Kid&apos;s Toys From Taking Over Your
-                Home`}
-                
+                {data.title ||  data.content || `7 Simple Ways to Keep Your Kid's Toys From Taking Over Your Home`}
+
               </h2>
               <div className="blog-single-meta">
                 <div className="post-author d-sm-flex align-items-center">
@@ -27,7 +27,7 @@ export default function Details({id}) {
                     Leslie Alexander
                   </a>
                   <a className="ml15 pr15 bdrr1" href="#">
-                    Home Improvement
+                    {data.tag || "Home Improvement"}
                   </a>
                   <a className="ml15" href="#">
                     {data.date.month} {data.date.day}, {data.date.year || 2022}
@@ -52,8 +52,7 @@ export default function Details({id}) {
                   height={600}
                   priority
                   className="w-100 h-100 cover"
-                  // style={{maxHeight:'600px',objectFit:'cover'}}
-                  src='/images/blog/blog-single-1.jpg'
+                  src={heroImage}
                   alt="blog"
                 />
               </div>

@@ -1,3 +1,5 @@
+import { knowledgeBaseArticles } from './knowledgeBase';
+
 export const blogs = [
   {
     id: 1,
@@ -290,4 +292,5 @@ export const allblogs = [
   ...blogDataTwo,
   ...blogsThree,
   ...posts,
+  ...knowledgeBaseArticles,
 ];
